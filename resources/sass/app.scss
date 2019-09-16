@@ -1,3 +1,9 @@
+// fontawesome
+$fa-font-path: "../webfonts";
+@import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
+@import "~@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~@fortawesome/fontawesome-free/scss/brands.scss";
+
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
@@ -10,3 +16,5 @@
 // adminLTE v3
 @import '~admin-lte/dist/css/adminlte.css';
 
+// icheck-bootstrap
+@import '~icheck-bootstrap/icheck-bootstrap.css';
