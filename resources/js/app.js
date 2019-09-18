@@ -12,11 +12,19 @@ import VueRouter from 'vue-router'
 import { Form, HasError, AlertError } from 'vform'
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar'
+import Swal from 'sweetalert2'
+import api from './api'
+
 
 Vue.use(VueRouter)
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
+window.Swal = Swal;
+Vue.component('pagination', require('laravel-vue-pagination'));
+// all components will inherit that property as this.$api.
+Vue.prototype.$api = api
+
 
 // routes
 let routes = [
@@ -53,6 +61,16 @@ Vue.use(VueProgressBar, {
 Vue.filter('myDate', function (createAt) {
     return moment(createAt).format(' DD/MM/YYYY');
 })
+
+// sweetalert
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+})
+
+window.Toast = Toast;
 
 const router = new VueRouter({
     mode: 'history',

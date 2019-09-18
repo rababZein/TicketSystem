@@ -48,6 +48,15 @@
               </tbody>
             </table>
           </div>
+          <div class="card-footer clear-fix">
+            <pagination
+              align="right"
+              size="small"
+              :show-disabled="true"
+              :data="users"
+              @pagination-change-page="getResults"
+            ></pagination>
+          </div>
           <!-- /.card-body -->
         </div>
         <!-- /.card -->
@@ -73,41 +82,41 @@
           </div>
           <form @submit.prevent="createUser" @keydown="form.onKeydown($event)">
             <div class="modal-body">
-                <div class="form-group">
-                  <label for="name">Username</label>
-                  <input
-                    v-model="form.name"
-                    type="text"
-                    name="name"
-                    class="form-control"
-                    :class="{ 'is-invalid': form.errors.has('name') }"
-                  />
-                  <has-error :form="form" field="name"></has-error>
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input
-                    v-model="form.email"
-                    type="email"
-                    name="email"
-                    class="form-control"
-                    :class="{ 'is-invalid': form.errors.has('email') }"
-                  />
-                  <has-error :form="form" field="email"></has-error>
-                </div>
-                <div class="form-group">
-                  <label for="password">Password</label>
-                  <input
-                    v-model="form.password"
-                    type="password"
-                    name="password"
-                    class="form-control"
-                    :class="{ 'is-invalid': form.errors.has('password') }"
-                  />
-                  <has-error :form="form" field="password"></has-error>
-                </div>
+              <div class="form-group">
+                <label for="name">Username</label>
+                <input
+                  v-model="form.name"
+                  type="text"
+                  name="name"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('name') }"
+                />
+                <has-error :form="form" field="name"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                  v-model="form.email"
+                  type="email"
+                  name="email"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('email') }"
+                />
+                <has-error :form="form" field="email"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  v-model="form.password"
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('password') }"
+                />
+                <has-error :form="form" field="password"></has-error>
+              </div>
             </div>
-          
+
             <div class="modal-footer">
               <button type="submit" class="btn btn-primary">Save</button>
             </div>
@@ -131,25 +140,39 @@ export default {
     };
   },
   methods: {
-    getResults() {
-      this.$Progress.start()
-      axios.get("api/user").then(response => {
-        this.users = response.data;
-        this.$Progress.finish();
-      }).catch(error => {
-        this.$Progress.fail();
-      });
+    getResults(page = 1) {
+      this.$Progress.start();
+      this.$api.users
+        .get({ page: page })
+        .then(response => {
+          this.users = response.data;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
     },
     createUser() {
-      this.$Progress.start()
-      this.form.post("api/user").then(response => {
-        $('#newUser').modal('hide');
-        this.$Progress.finish();
-        this.getResults();
-      }).catch(error => {
-        this.$Progress.fail();
-      });
-    }
+      this.$Progress.start();
+      this.form
+        .post("api/users")
+        .then(response => {
+          $("#newUser").modal("hide");
+          this.$Progress.finish();
+          this.getResults();
+          Toast.fire({
+            type: "success",
+            title: "User created successfully"
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: "can't create new user"
+          });
+        });
+    },
   },
   mounted() {
     this.getResults();
