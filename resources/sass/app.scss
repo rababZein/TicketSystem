@@ -1,11 +1,17 @@
+
+// icheck-bootstrap
+@import '~icheck-bootstrap/icheck-bootstrap.css';
+
 // fontawesome
 $fa-font-path: "../webfonts";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome.scss";
 @import "~@fortawesome/fontawesome-free/scss/solid.scss";
+@import "~@fortawesome/fontawesome-free/scss/regular.scss";
 @import "~@fortawesome/fontawesome-free/scss/brands.scss";
 
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700');
 
 // Variables
 @import 'variables';
@@ -14,7 +20,4 @@ $fa-font-path: "../webfonts";
 @import '~bootstrap/scss/bootstrap';
 
 // adminLTE v3
-@import '~admin-lte/dist/css/adminlte.css';
-
-// icheck-bootstrap
-@import '~icheck-bootstrap/icheck-bootstrap.css';
+@import '~admin-lte/build/scss/AdminLTE';

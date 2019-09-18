@@ -9,14 +9,50 @@ require('admin-lte');
 
 window.Vue = require('vue');
 import VueRouter from 'vue-router'
+import { Form, HasError, AlertError } from 'vform'
+import moment from 'moment';
+import VueProgressBar from 'vue-progressbar'
 
 Vue.use(VueRouter)
+window.Form = Form;
+Vue.component(HasError.name, HasError)
+Vue.component(AlertError.name, AlertError)
 
+// routes
 let routes = [
-    { path: '/home', component: require('./components/DashboardComponent.vue').default },
-    { path: '/dashboard', component: require('./components/DashboardComponent.vue').default },
-    { path: '/users', component: require('./components/UsersComponent.vue').default },
+    {
+        path: '/home',
+        component: require('./components/DashboardComponent.vue').default,
+        alias: '',
+        meta: { title: 'Dashboard' }
+    },
+    {
+        path: '/dashboard',
+        component: require('./components/DashboardComponent.vue').default,
+        meta: { title: 'Dashboard' }
+    },
+    {
+        path: '/users',
+        component: require('./components/UsersComponent.vue').default,
+        meta: { title: 'Users' }
+    },
+    {
+        path: '*',
+        component: require('./components/UsersComponent.vue').default
+    }
 ]
+
+// progressbar
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '2px'
+})
+
+// global filters
+Vue.filter('myDate', function (createAt) {
+    return moment(createAt).format(' DD/MM/YYYY');
+})
 
 const router = new VueRouter({
     mode: 'history',
