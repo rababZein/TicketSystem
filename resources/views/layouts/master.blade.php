@@ -30,8 +30,11 @@
 
             <!-- Main content -->
             <div class="content">
-                <router-view></router-view>
-                <vue-progress-bar></vue-progress-bar>
+                {{-- <router-view></router-view>
+                <vue-progress-bar></vue-progress-bar> --}}
+                <div class="container-fluid">
+                    @yield('content')
+                </div>
             </div>
             <!-- /.content -->
         </div>

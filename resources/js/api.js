@@ -8,7 +8,7 @@ const API = axios.create({
 // users end point
 const users = {
     get: params => API.get('/users', {params}),
-    delete: params => API.delete('/comments', { params }),
+    post: params => API.post('/users', { params }),
 }
 
 export default {

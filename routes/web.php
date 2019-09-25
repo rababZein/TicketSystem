@@ -11,10 +11,16 @@
 |
 */
 
-Route::get('/', 'HomeController@index');
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
-
-Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );
+Route::group(['middleware' => ['auth']], function() {
+    Route::get('/', 'HomeController@index');
+    Route::get('/home', 'HomeController@index')->name('home');
+    Route::resource('/users', 'admin\UsersController');
+    Route::resource('/settings', 'admin\UsersController');
+    Route::resource('/permissions', 'admin\PermissionsController');  
+    Route::resource('/roles', 'admin\RolesController');  
+      
+});
+// Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );

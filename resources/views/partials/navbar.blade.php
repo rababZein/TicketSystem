@@ -19,7 +19,7 @@
     <!-- Messages Dropdown Menu -->
     <li class="nav-item dropdown">
         <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
-            <i class="far fa-comments"></i>
+            <i class="far fa-bell"></i>
             <span class="badge badge-danger navbar-badge">3</span>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -74,5 +74,24 @@
             <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
         </div>
     </li>
-    
+
+    <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+            <i class="far fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+            <a href="#" class="dropdown-item">
+                <i class="fas fa-user mr-2"></i> profile
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="{{ route('logout') }}"
+                onclick="event.preventDefault(); document.getElementById('frm-logout').submit();" class="dropdown-item">
+                <i class="fas fa-lock mr-2"></i> logout
+            </a>
+            <form id="frm-logout" action="{{ route('logout') }}" method="POST" style="display: none;">
+                {{ csrf_field() }}
+            </form>
+        </div>
+    </li>
+
 </ul>

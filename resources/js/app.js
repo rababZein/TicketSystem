@@ -8,15 +8,14 @@ require('./bootstrap');
 require('admin-lte');
 
 window.Vue = require('vue');
-import VueRouter from 'vue-router'
-import { Form, HasError, AlertError } from 'vform'
+import {Form, HasError, AlertError} from 'vform'
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar'
 import Swal from 'sweetalert2'
 import api from './api'
+import router from './routes'
 
 
-Vue.use(VueRouter)
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
@@ -24,31 +23,6 @@ window.Swal = Swal;
 Vue.component('pagination', require('laravel-vue-pagination'));
 // all components will inherit that property as this.$api.
 Vue.prototype.$api = api
-
-
-// routes
-let routes = [
-    {
-        path: '/home',
-        component: require('./components/DashboardComponent.vue').default,
-        alias: '',
-        meta: { title: 'Dashboard' }
-    },
-    {
-        path: '/dashboard',
-        component: require('./components/DashboardComponent.vue').default,
-        meta: { title: 'Dashboard' }
-    },
-    {
-        path: '/users',
-        component: require('./components/UsersComponent.vue').default,
-        meta: { title: 'Users' }
-    },
-    {
-        path: '*',
-        component: require('./components/UsersComponent.vue').default
-    }
-]
 
 // progressbar
 Vue.use(VueProgressBar, {
@@ -70,13 +44,9 @@ const Toast = Swal.mixin({
     timer: 3000
 })
 
+// global toaster alert
 window.Toast = Toast;
 
-const router = new VueRouter({
-    mode: 'history',
-    routes, // short for `routes: routes`
-    linkExactActiveClass: 'active',
-})
 
 /**
  * The following block of code may be used to automatically register your
@@ -86,8 +56,8 @@ const router = new VueRouter({
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-// const files = require.context('./', true, /\.vue$/i);
-// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+const files = require.context('./', true, /\.vue$/i);
+files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
