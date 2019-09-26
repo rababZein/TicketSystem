@@ -15,7 +15,6 @@ import Swal from 'sweetalert2'
 import api from './api'
 import router from './routes'
 
-
 window.Form = Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
