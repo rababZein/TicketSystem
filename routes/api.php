@@ -17,3 +17,7 @@ Route::middleware('auth:api')->get('users', function (Request $request) {
 });
 
 Route::apiResources(['users' => 'API\UsersController']);
+
+Route::group(['namespace' => 'API'], function() {
+    Route::apiResources(['/roles' => 'RolesController']);
+});
