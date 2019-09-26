@@ -14,13 +14,13 @@
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth']], function() {
+Route::group(['middleware' => ['auth'], 'namespace' => 'Admin'], function() {
     Route::get('/', 'HomeController@index');
     Route::get('/home', 'HomeController@index')->name('home');
-    Route::resource('/users', 'admin\UsersController');
-    Route::resource('/settings', 'admin\UsersController');
-    Route::resource('/permissions', 'admin\PermissionsController');  
-    Route::resource('/roles', 'admin\RolesController');  
+    Route::resource('/users', 'UsersController');
+    Route::resource('/settings', 'UsersController');
+    Route::resource('/permissions', 'PermissionsController');  
+    Route::resource('/roles', 'RolesController');  
       
 });
 // Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );
