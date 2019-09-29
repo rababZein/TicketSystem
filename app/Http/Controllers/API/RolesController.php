@@ -16,7 +16,7 @@ class RolesController extends Controller
      */
     public function index()
     {
-        $roles = Role::paginate(10);
+        $roles = Role::with('permissions')->paginate(10);
         return $roles;
 
     }
@@ -29,10 +29,23 @@ class RolesController extends Controller
      */
     public function store(Request $request)
     {
-        $role = Role::create([
-            'name' => $request->name
+        $this->validate($request, [
+            'name' => 'required|string|max:191'
         ]);
-        return $role;
+
+        // creating new role
+        $role = new Role;
+        $role->name = $request->name;
+
+        // insert permissions for role
+        $permissionsArray = [];
+        foreach ($request->permissions as $permission) {
+            $permissionsArray[] = $permission['name'];
+        }
+        $role->syncPermissions($permissionsArray);
+        
+        // save role
+        $role->save();
     }
 
     /**
@@ -55,7 +68,19 @@ class RolesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // edit role by id
+        $role = Role::findOrFail($id);
+        $role->name = $request->name;
+        
+        // insert permissions for role
+        $permissionsArray = [];
+        foreach ($request->permissions as $permission) {
+            $permissionsArray[] = $permission['name'];
+        }
+        $role->syncPermissions($permissionsArray);
+
+        // save role
+        $role->save();
     }
 
     /**
@@ -66,6 +91,18 @@ class RolesController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // find the role
+        $role = Role::findOrFail($id);
+
+        // get permission of this role
+        $permissions = $role->permissions->pluck('name', 'id');
+
+        // revoke(remove) all permission from this role
+        if (!empty($permissions)) {
+            $role->revokePermissionTo($permissions);
+        }
+
+        // delete role
+        $role->delete();
     }
 }
