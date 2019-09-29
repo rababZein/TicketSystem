@@ -57,3 +57,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::delete('/{receipt_id}', 'API\ReceiptController@destroy');
     });
 });
+
+Route::apiResources(['users' => 'API\UsersController']);
+
+Route::group(['namespace' => 'API'], function() {
+    Route::apiResources(['/roles' => 'RolesController']);
+});
+

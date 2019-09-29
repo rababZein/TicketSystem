@@ -22,7 +22,18 @@ class RolesAndPermissionsSeeder extends Seeder
         $user = factory(User::class)->create();
 
         $user->assignRole('user');
-        Role::create(['name' => 'admin']);
+        $role = Role::create(['name' => 'admin']);
+
+        $role->givePermissionTo([
+        'role-list',
+        'role-create',
+        'role-edit',
+        'role-delete',
+        'permission-list',
+        'permission-create',
+        'permission-edit',
+        'permission-delete'
+        ]);
 
         /** @var User $user */
         $admin = factory(User::class)->create([
