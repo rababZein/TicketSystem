@@ -62,6 +62,7 @@ Route::apiResources(['users' => 'API\UsersController']);
 
 Route::group(['namespace' => 'API'], function() {
     Route::apiResources(['/roles' => 'RolesController']);
+    Route::get('/permissions/getall', 'PermissionsController@getAllPermissions');
     Route::apiResources(['/permissions' => 'PermissionsController']);
 });
 

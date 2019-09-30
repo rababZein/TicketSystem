@@ -20,6 +20,7 @@ const roles = {
 // permissions end point
 const permissions = {
     get: params => API.get('/permissions', {params}),
+    getAll: params => API.get('permissions/getall', {params}),
     delete: params => API.delete('/permissions/'+params),
 }
 

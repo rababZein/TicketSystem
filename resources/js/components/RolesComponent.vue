@@ -178,9 +178,9 @@ export default {
     },
     getPermissions() {
       this.$api.permissions
-        .get()
+        .getAll()
         .then(response => {
-          this.permissions = _.map(response.data.data, function(key, value) {
+          this.permissions = _.map(response.data, function(key, value) {
             return { id: key.id, name: key.name };
           });
           this.$Progress.finish();

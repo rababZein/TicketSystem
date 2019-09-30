@@ -2305,8 +2305,8 @@ __webpack_require__.r(__webpack_exports__);
     getPermissions: function getPermissions() {
       var _this2 = this;
 
-      this.$api.permissions.get().then(function (response) {
-        _this2.permissions = _.map(response.data.data, function (key, value) {
+      this.$api.permissions.getAll().then(function (response) {
+        _this2.permissions = _.map(response.data, function (key, value) {
           return {
             id: key.id,
             name: key.name
@@ -77672,6 +77672,11 @@ var roles = {
 var permissions = {
   get: function get(params) {
     return API.get('/permissions', {
+      params: params
+    });
+  },
+  getAll: function getAll(params) {
+    return API.get('permissions/getall', {
       params: params
     });
   },
