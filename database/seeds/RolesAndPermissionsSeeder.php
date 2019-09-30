@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use App\Models\User;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -17,8 +18,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
 
         Role::create(['name' => 'user']);
-        /** @var \App\User $user */
-        $user = factory(\App\User::class)->create();
+        /** @var User $user */
+        $user = factory(User::class)->create();
 
         $user->assignRole('user');
         $role = Role::create(['name' => 'admin']);
@@ -34,8 +35,8 @@ class RolesAndPermissionsSeeder extends Seeder
         'permission-delete'
         ]);
 
-        /** @var \App\User $user */
-        $admin = factory(\App\User::class)->create([
+        /** @var User $user */
+        $admin = factory(User::class)->create([
             'name' => 'admin',
             'email' => 'admin@admin.com',
             // default password "password"
