@@ -18,7 +18,6 @@ class RolesController extends Controller
     {
         $roles = Role::with('permissions')->paginate(10);
         return $roles;
-
     }
 
     /**

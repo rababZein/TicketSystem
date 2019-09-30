@@ -93,4 +93,9 @@ class PermissionsController extends Controller
         // delete role
         $permission->delete();
     }
+
+    public function getAllPermissions() {
+        $permissions = Permission::all();
+        return $permissions;
+    }
 }
