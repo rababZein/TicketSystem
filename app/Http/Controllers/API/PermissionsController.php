@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class RolesController extends Controller
+class PermissionsController extends Controller
 {
-
     /**
      * Display a listing of the resource.
      *
@@ -16,9 +16,8 @@ class RolesController extends Controller
      */
     public function index()
     {
-        $roles = Role::with('permissions')->paginate(10);
-        return $roles;
-
+        $permissions = Permission::paginate(10);
+        return $permissions;
     }
 
     /**
@@ -33,19 +32,12 @@ class RolesController extends Controller
             'name' => 'required|string|max:191'
         ]);
 
-        // creating new role
-        $role = new Role;
-        $role->name = $request->name;
+        // creating new permission
+        $permission = new Permission;
+        $permission->name = $request->name;
 
-        // insert permissions for role
-        $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
-            $permissionsArray[] = $permission['name'];
-        }
-        $role->syncPermissions($permissionsArray);
-        
-        // save role
-        $role->save();
+        // save permission
+        $permission->save();
     }
 
     /**
@@ -68,19 +60,16 @@ class RolesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // edit role by id
-        $role = Role::findOrFail($id);
-        $role->name = $request->name;
-        
-        // insert permissions for role
-        $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
-            $permissionsArray[] = $permission['name'];
-        }
-        $role->syncPermissions($permissionsArray);
+        $this->validate($request, [
+            'name' => 'required|string|max:191'
+        ]);
 
-        // save role
-        $role->save();
+        // update permission
+        $permission = Permission::findOrFail($id);
+        $permission->name = $request->name;
+
+        // save permission
+        $permission->save();
     }
 
     /**
@@ -91,18 +80,17 @@ class RolesController extends Controller
      */
     public function destroy($id)
     {
-        // find the role
-        $role = Role::findOrFail($id);
+        // delete permission
+        $permission = Permission::findOrFail($id);
 
-        // get permission of this role
-        $permissions = $role->permissions->pluck('name', 'id');
+        $roles = $permission->roles->pluck('name', 'id');
 
-        // revoke(remove) all permission from this role
+        // revoke(remove) this permission from all role
         if (!empty($permissions)) {
-            $role->revokePermissionTo($permissions);
+            $permission->removeRole($roles);
         }
-
+        
         // delete role
-        $role->delete();
+        $permission->delete();
     }
 }

@@ -7,12 +7,7 @@
             <h3 class="card-title">Roles Table</h3>
 
             <div class="card-tools">
-              <button
-                type="submit"
-                class="btn btn-success btn-sm"
-                data-toggle="modal"
-                data-target="#newRole"
-              >
+              <button type="submit" class="btn btn-success btn-sm" @click="newModel">
                 <i class="fas fa-plus fa-fw"></i>
                 <span class="d-none d-lg-inline">New role</span>
               </button>
@@ -24,7 +19,8 @@
               <thead>
                 <tr>
                   <th width="10">ID</th>
-                  <th width="80%">name</th>
+                  <th width="20%">name</th>
+                  <th width="60%">permissions</th>
                   <th>action</th>
                 </tr>
               </thead>
@@ -33,10 +29,17 @@
                   <td>{{ role.id }}</td>
                   <td>{{ role.name }}</td>
                   <td>
-                    <a href="#" class="btn btn-info btn-sm">
+                    <span
+                      v-for="item in role.permissions"
+                      :key="item.id"
+                      class="badge badge-danger mr-1"
+                    >{{ item.name }}</span>
+                  </td>
+                  <td>
+                    <a href="#" @click="editModel(role)" class="btn btn-info btn-sm">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
-                    <a href="#" class="btn btn-danger btn-sm">
+                    <a href="#" @click="deleteRole(role.id)" class="btn btn-danger btn-sm">
                       <i class="fas fa-trash fa-fw"></i>
                     </a>
                   </td>
@@ -71,12 +74,16 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="newRoleLabel">Create New role</h5>
+            <h5 v-show="!editMode" class="modal-title" id="newRoleLabel">Create New role</h5>
+            <h5 v-show="editMode" class="modal-title" id="newRoleLabel">Edit role</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createRole" @keydown="form.onKeydown($event)">
+          <form
+            @submit.prevent="editMode ? editRole(form.id) : createRole()"
+            @keydown="form.onKeydown($event)"
+          >
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">Role Name</label>
@@ -89,10 +96,34 @@
                 />
                 <has-error :form="form" field="name"></has-error>
               </div>
+              <div class="form-group">
+                <label for="name">Permissions</label>
+                <multiselect
+                  v-model="form.permissions"
+                  :options="permissions"
+                  :multiple="true"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Pick some"
+                  label="name"
+                  track-by="name"
+                  :preselect-first="true"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="name"></has-error>
+              </div>
             </div>
 
             <div class="modal-footer">
-              <button type="submit" class="btn btn-primary">Save</button>
+              <button v-show="!editMode" type="submit" class="btn btn-primary">Save</button>
+              <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
             </div>
           </form>
         </div>
@@ -105,10 +136,16 @@
 export default {
   data() {
     return {
+      editMode: false,
       roles: {},
       form: new Form({
-        name: ""
-      })
+        id: "",
+        name: "",
+        permissions: [],
+        selected: null
+      }),
+      selected: null,
+      permissions: []
     };
   },
   methods: {
@@ -118,6 +155,34 @@ export default {
         .get({ page: page })
         .then(response => {
           this.roles = response.data;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    newModel() {
+      this.editMode = false;
+      this.form.reset();
+      $("#newRole").modal("show");
+    },
+    editModel(role) {
+      this.editMode = true;
+      this.form.reset();
+      $("#newRole").modal("show");
+      this.form.fill(role);
+
+      this.form.selected = _.map(this.form.permissions, function(value, key) {
+        return value.name;
+      });
+    },
+    getPermissions() {
+      this.$api.permissions
+        .get()
+        .then(response => {
+          this.permissions = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
           this.$Progress.finish();
         })
         .catch(error => {
@@ -145,10 +210,63 @@ export default {
           });
         });
     },
+    editRole(id) {
+      this.$Progress.start();
+      this.form
+        .put("api/roles/" + id)
+        .then(response => {
+          $("#newRole").modal("hide");
+          this.$Progress.finish();
+          this.getResults();
+          Toast.fire({
+            type: "success",
+            title: "Role updated successfully"
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: "can't update the role"
+          });
+        });
+    },
+    deleteRole(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$api.roles
+            .delete(id)
+            .then(response => {
+              this.$Progress.finish();
+              this.getResults();
+              Swal.fire("Deleted!", "The role has been deleted.", "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: "can't delete the role"
+              });
+            });
+        }
+      });
+    }
   },
   mounted() {
     this.getResults();
+    this.getPermissions();
     console.log("Component mounted.");
   }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
