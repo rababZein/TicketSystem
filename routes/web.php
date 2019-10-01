@@ -14,13 +14,29 @@
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth'], 'namespace' => 'Admin'], function() {
+Route::group(['middleware' => ['auth'],'namespace' => 'Admin'], function() {
     Route::get('/', 'HomeController@index');
     Route::get('/home', 'HomeController@index')->name('home');
-    Route::resource('/users', 'UsersController');
-    Route::resource('/settings', 'UsersController');
-    Route::resource('/permissions', 'PermissionsController');  
-    Route::resource('/roles', 'RolesController');  
+
+
+    // roles
+    Route::get('/roles/list', 'RolesController@list');
+    Route::resource('/roles', 'RolesController')->except('show', 'create');
+    
+    // permissions
+    Route::get('/permissions/list', 'PermissionsController@list');
+    Route::get('/permissions/getall', 'PermissionsController@getAllPermissions');
+    Route::resource('/permissions', 'PermissionsController')->except('show', 'create');
+
+    // users
+    Route::get('/users/list', 'UsersController@list');
+    Route::resource('/users', 'UsersController')->except('show', 'create');
+});
+
+Route::group(['middleware' => ['auth'], 'namespace' => 'Admin'], function() {
+    // Route::resource('/users', 'UsersController');
+    // Route::resource('/permissions', 'PermissionsController');  
+    // Route::resource('/roles', 'RolesController');  
       
 });
 // Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );

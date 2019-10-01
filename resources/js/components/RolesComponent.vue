@@ -1,67 +1,64 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Roles Table</h3>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Roles Table</h3>
 
-            <div class="card-tools">
-              <button type="submit" class="btn btn-success btn-sm" @click="newModel">
-                <i class="fas fa-plus fa-fw"></i>
-                <span class="d-none d-lg-inline">New role</span>
-              </button>
-            </div>
+          <div class="card-tools">
+            <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+              <i class="fas fa-plus fa-fw"></i>
+              <span class="d-none d-lg-inline">New role</span>
+            </button>
           </div>
-          <!-- /.card-header -->
-          <div class="card-body table-responsive p-0">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th width="10">ID</th>
-                  <th width="20%">name</th>
-                  <th width="60%">permissions</th>
-                  <th>action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="role in roles.data" :key="role.id">
-                  <td>{{ role.id }}</td>
-                  <td>{{ role.name }}</td>
-                  <td>
-                    <span
-                      v-for="item in role.permissions"
-                      :key="item.id"
-                      class="badge badge-danger mr-1"
-                    >{{ item.name }}</span>
-                  </td>
-                  <td>
-                    <a href="#" @click="editModel(role)" class="btn btn-info btn-sm">
-                      <i class="fas fa-edit fa-fw"></i>
-                    </a>
-                    <a href="#" @click="deleteRole(role.id)" class="btn btn-danger btn-sm">
-                      <i class="fas fa-trash fa-fw"></i>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="card-footer clear-fix">
-            <pagination
-              align="right"
-              size="small"
-              :show-disabled="true"
-              :data="roles"
-              @pagination-change-page="getResults"
-            ></pagination>
-          </div>
-          <!-- /.card-body -->
         </div>
-        <!-- /.card -->
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th width="10">ID</th>
+                <th width="20%">name</th>
+                <th width="60%">permissions</th>
+                <th>action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="role in roles.data" :key="role.id">
+                <td>{{ role.id }}</td>
+                <td>{{ role.name }}</td>
+                <td>
+                  <span
+                    v-for="item in role.permissions"
+                    :key="item.id"
+                    class="badge badge-danger mr-1"
+                  >{{ item.name }}</span>
+                </td>
+                <td>
+                  <a href="#" @click="editModel(role)" class="btn btn-info btn-sm">
+                    <i class="fas fa-edit fa-fw"></i>
+                  </a>
+                  <a href="#" @click="deleteRole(role.id)" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash fa-fw"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer clear-fix">
+          <pagination
+            align="right"
+            size="small"
+            :show-disabled="true"
+            :data="roles"
+            @pagination-change-page="getResults"
+          ></pagination>
+        </div>
+        <!-- /.card-body -->
       </div>
+      <!-- /.card -->
     </div>
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -154,7 +151,7 @@ export default {
       this.$api.roles
         .get({ page: page })
         .then(response => {
-          this.roles = response.data;
+          this.roles = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
@@ -180,7 +177,7 @@ export default {
       this.$api.permissions
         .getAll()
         .then(response => {
-          this.permissions = _.map(response.data, function(key, value) {
+          this.permissions = _.map(response.data.data, function(key, value) {
             return { id: key.id, name: key.name };
           });
           this.$Progress.finish();
@@ -192,42 +189,42 @@ export default {
     createRole() {
       this.$Progress.start();
       this.form
-        .post("api/roles")
+        .post("/roles/")
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Role created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't create new role"
+            title: error.response.data.message
           });
         });
     },
     editRole(id) {
       this.$Progress.start();
       this.form
-        .put("api/roles/" + id)
+        .put("/roles/" + id)
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Role updated successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't update the role"
+            title: error.response.data.message
           });
         });
     },
