@@ -49,6 +49,8 @@ class ProjectController extends BaseController
       'owner_id' => 'required|integer|exists:users,id',
       'task_rate' => 'required|integer',
       'budget_hours' => 'required|integer',
+      'assign_to' => 'array',
+      'assign_to.*' => 'integer|exists:users,id',
     ]);
 
     if($validator->fails()){
@@ -60,6 +62,12 @@ class ProjectController extends BaseController
     $input['created_by'] = auth()->user()->id;
 
     $project = Project::create($input);
+
+    // assign people to project
+    $employees = User::find($input['assign_to']);
+    unset($input['assign_to']);
+    $project->assigns()->attach($employees);
+    $project->assigns;
 
     return $this->sendResponse($project->toArray(), 'Project created successfully.');
     
