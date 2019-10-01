@@ -11,6 +11,7 @@ class CreateTicketsTable extends Migration {
 			$table->increments('id');
 			$table->timestamp('created_at');
 			$table->timestamp('updated_at')->nullable();
+			$table->string('name');
 			$table->boolean('read')->default(0);
 			$table->integer('project_id')->unsigned();
 			$table->integer('created_by')->unsigned();

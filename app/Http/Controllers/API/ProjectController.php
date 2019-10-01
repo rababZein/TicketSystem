@@ -141,6 +141,22 @@ class ProjectController extends BaseController
 
     return $this->sendResponse($project->toArray(), 'Project deleted successfully.');
   }
+
+
+  /**
+   * Search in projects.
+   *
+   * @param  int  $searchKey
+   * @return Response
+   */
+  public function search($searchKey)
+  {
+    $project_model = new Project();
+    $projects = $project_model->search($searchKey);
+    
+    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+  
+  }
   
 }
 
