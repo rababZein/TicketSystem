@@ -43,7 +43,20 @@ class Project extends Model
 
     public function assigns()
     {
-        return $this->belongsToMany('App\Models\User', 'project_assigns', 'project_id', 'assign_to');
+        return $this->belongsToMany('App\Models\User','project_assigns', 'project_id', 'assign_to');
+    }
+
+    public function search($searckKey)
+    {
+        return Project::with('tasks', 'tickets', 'assigns')
+                    ->select('projects.*')
+                    ->leftJoin('tasks', 'tasks.project_id', '=', 'projects.id')
+                    ->leftJoin('tickets', 'tickets.project_id', '=', 'projects.id')
+                    ->where('tasks.name', 'like', '%'.$searckKey.'%')
+                    ->orWhere('tickets.name', 'like', '%'.$searckKey.'%')
+                    ->orWhere('projects.name', 'like', '%'.$searckKey.'%')
+                    ->get();
+
     }
 
 }
