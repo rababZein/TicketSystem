@@ -44,7 +44,7 @@ class ProjectController extends BaseController
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'name' => 'required|string',
+      'name' => 'required|string|unique:projects',
       'description' => 'required|string',
       'owner_id' => 'required|integer|exists:users,id',
       'task_rate' => 'required|integer',
