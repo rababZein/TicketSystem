@@ -124,8 +124,10 @@ class ProjectController extends BaseController
     $updated = $project->fill($request->all())->save();
 
     // update assign people
+    $input = $request->all();
     $employees = User::find($input['project_assign']);
     $project->assigns()->sync($employees);
+    $project->assigns;
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
