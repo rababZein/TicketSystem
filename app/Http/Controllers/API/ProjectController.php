@@ -66,7 +66,6 @@ class ProjectController extends BaseController
 
     // assign people to project
     $employees = User::find($input['project_assign']);
-    unset($input['project_assign']);
     $project->assigns()->attach($employees);
     $project->assigns;
 
@@ -105,6 +104,8 @@ class ProjectController extends BaseController
       'owner_id' => 'integer|exists:users,id',
       'task_rate' => 'integer',
       'budget_hours' => 'integer',
+      'project_assign' => 'array',
+      'project_assign.*' => 'integer|exists:users,id',
     ]);
 
     if($validator->fails()){
@@ -121,6 +122,10 @@ class ProjectController extends BaseController
     $project->updated_by = auth()->user()->id;
 
     $updated = $project->fill($request->all())->save();
+
+    // update assign people
+    $employees = User::find($input['project_assign']);
+    $project->assigns()->sync($employees);
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
