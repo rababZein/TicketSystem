@@ -56,6 +56,7 @@ class Project extends Model
                     ->orWhere('tickets.name', 'like', '%'.$searckKey.'%')
                     ->orWhere('projects.name', 'like', '%'.$searckKey.'%')
                     ->get();
+
     }
 
 }

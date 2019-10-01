@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\API\BaseController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
-class PermissionsController extends Controller
+class PermissionsController extends BaseController
 {
     /**
      * Create a new controller instance.
@@ -16,7 +16,11 @@ class PermissionsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware(['role:admin']); //isAdmin middleware lets only users with a //specific permission permission to access these resources
+        $this->middleware('permission:permission-list|permission-create|permission-edit|permission-delete', ['only' => ['index', 'list']]);
+        $this->middleware('permission:permission-create', ['only' => ['store']]);
+        $this->middleware('permission:permission-edit', ['only' => ['update']]);
+        $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:permission-list', ['only' => ['getAllPermissions']]);
     }
 
     /**
@@ -26,18 +30,13 @@ class PermissionsController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::paginate(10);
-        return view('pages.permissions.index',compact('permissions'));
+        return view('pages.permissions.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function list()
     {
-        //
+        $permissions = Permission::paginate(10);
+        return $this->sendResponse($permissions->toArray(), 'Permissions retrieved successfully.');
     }
 
     /**
@@ -48,29 +47,18 @@ class PermissionsController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $this->validate($request, [
+            'name' => 'required|string|max:191'
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
+        // creating new permission
+        $permission = new Permission;
+        $permission->name = $request->name;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
+        // save permission
+        $permission->save();
+
+        return $this->sendResponse($permission->toArray(), 'permission created successfully.');
     }
 
     /**
@@ -82,7 +70,18 @@ class PermissionsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string|max:191'
+        ]);
+
+        // update permission
+        $permission = Permission::findOrFail($id);
+        $permission->name = $request->name;
+
+        // save permission
+        $permission->save();
+
+        return $this->sendResponse($permission->toArray(), 'permission updated successfully.');
     }
 
     /**
@@ -93,6 +92,25 @@ class PermissionsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        // delete permission
+        $permission = Permission::findOrFail($id);
+
+        $roles = $permission->roles->pluck('name', 'id');
+
+        // revoke(remove) this permission from all role
+        if (!empty($permissions)) {
+            $permission->removeRole($roles);
+        }
+        
+        // delete role
+        $permission->delete();
+
+        return $this->sendResponse($permission->toArray(), 'permission deleted successfully.');
+
+    }
+
+    public function getAllPermissions() {
+        $permissions = Permission::all();
+        return $this->sendResponse($permissions->toArray(), 'permission listed successfully.');
     }
 }
