@@ -127,7 +127,7 @@ export default {
       this.$api.permissions
         .get({ page: page })
         .then(response => {
-          this.permissions = response.data;
+          this.permissions = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
@@ -137,42 +137,42 @@ export default {
     createPermission() {
       this.$Progress.start();
       this.form
-        .post("api/permissions")
+        .post("/permissions")
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Permission created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't create new Permission"
+            title: error.response.data.message
           });
         });
     },
     editPermission(id) {
       this.$Progress.start();
       this.form
-        .put("api/permissions/" + id)
+        .put("/permissions/" + id)
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Role updated successfully"
+            title: "permission updated successfully"
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't update the role"
+            title: "can't update the permission"
           });
         });
     },
@@ -193,13 +193,13 @@ export default {
             .then(response => {
               this.$Progress.finish();
               this.getResults();
-              Swal.fire("Deleted!", "The role has been deleted.", "success");
+              Swal.fire("Deleted!", "permission has been deleted.", "success");
             })
             .catch(error => {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the role"
+                title: "can't delete permission"
               });
             });
         }

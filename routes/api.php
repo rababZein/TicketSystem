@@ -21,11 +21,9 @@ use Illuminate\Http\Request;
 
 Route::post('register', 'API\AuthController@register');
 Route::post('login', 'API\AuthController@authenticate');
-Route::get('open', 'DataController@open');
 
 Route::group(['middleware' => ['jwt.verify']], function() {
     Route::get('user', 'API\AuthController@getAuthenticatedUser');
-    // Route::get('closed', 'DataController@closed');
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
@@ -58,12 +56,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 });
 
-Route::apiResources(['users' => 'API\UsersController']);
 
-Route::group(['namespace' => 'API'], function() {
-    Route::apiResources(['/roles' => 'RolesController']);
-    Route::get('/permissions/getall', 'PermissionsController@getAllPermissions');
-    Route::apiResources(['/permissions' => 'PermissionsController']);
-});
 
 

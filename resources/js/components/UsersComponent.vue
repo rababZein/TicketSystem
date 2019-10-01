@@ -1,68 +1,65 @@
 <template>
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header">
-            <h3 class="card-title">Users Table</h3>
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Users Table</h3>
 
-            <div class="card-tools">
-              <button
-                type="submit"
-                class="btn btn-success btn-sm"
-                data-toggle="modal"
-                data-target="#newUser"
-              >
-                <i class="fas fa-plus fa-fw"></i>
-                <span class="d-none d-lg-inline">New user</span>
-              </button>
-            </div>
+          <div class="card-tools">
+            <button
+              type="submit"
+              class="btn btn-success btn-sm"
+              data-toggle="modal"
+              data-target="#newUser"
+            >
+              <i class="fas fa-plus fa-fw"></i>
+              <span class="d-none d-lg-inline">New user</span>
+            </button>
           </div>
-          <!-- /.card-header -->
-          <div class="card-body table-responsive p-0">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>name</th>
-                  <th>email</th>
-                  <th>created at</th>
-                  <th>action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="user in users.data" :key="user.id">
-                  <td>{{user.id}}</td>
-                  <td>{{user.name}}</td>
-                  <td>{{user.email}}</td>
-                  <td>{{user.created_at | myDate}}</td>
-                  <td>
-                    <a href="#" class="btn btn-info btn-sm">
-                      <i class="fas fa-edit fa-fw"></i>
-                    </a>
-                    <a href="#" class="btn btn-danger btn-sm">
-                      <i class="fas fa-trash fa-fw"></i>
-                    </a>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="card-footer clear-fix">
-            <pagination
-              align="right"
-              size="small"
-              :show-disabled="true"
-              :data="users"
-              @pagination-change-page="getResults"
-            ></pagination>
-          </div>
-          <!-- /.card-body -->
         </div>
-        <!-- /.card -->
+        <!-- /.card-header -->
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>name</th>
+                <th>email</th>
+                <th>created at</th>
+                <th>action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="user in users.data" :key="user.id">
+                <td>{{user.id}}</td>
+                <td>{{user.name}}</td>
+                <td>{{user.email}}</td>
+                <td>{{user.created_at | myDate}}</td>
+                <td>
+                  <a href="#" class="btn btn-info btn-sm">
+                    <i class="fas fa-edit fa-fw"></i>
+                  </a>
+                  <a href="#" class="btn btn-danger btn-sm">
+                    <i class="fas fa-trash fa-fw"></i>
+                  </a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer clear-fix">
+          <pagination
+            align="right"
+            size="small"
+            :show-disabled="true"
+            :data="users"
+            @pagination-change-page="getResults"
+          ></pagination>
+        </div>
+        <!-- /.card-body -->
       </div>
+      <!-- /.card -->
     </div>
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -154,24 +151,24 @@ export default {
     createUser() {
       this.$Progress.start();
       this.form
-        .post("api/users")
+        .post("/users")
         .then(response => {
           $("#newUser").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "User created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't create new user"
+            title: error.response.data.message
           });
         });
-    },
+    }
   },
   mounted() {
     this.getResults();
