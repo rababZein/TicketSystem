@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
@@ -44,11 +45,13 @@ class ProjectController extends BaseController
   public function store(Request $request)
   {
     $validator = Validator::make($request->all(), [
-      'name' => 'required|string',
+      'name' => 'required|string|unique:projects',
       'description' => 'required|string',
       'owner_id' => 'required|integer|exists:users,id',
       'task_rate' => 'required|integer',
       'budget_hours' => 'required|integer',
+      'project_assign' => 'array',
+      'project_assign.*' => 'integer|exists:users,id',
     ]);
 
     if($validator->fails()){
@@ -60,6 +63,11 @@ class ProjectController extends BaseController
     $input['created_by'] = auth()->user()->id;
 
     $project = Project::create($input);
+
+    // assign people to project
+    $employees = User::find($input['project_assign']);
+    $project->assigns()->attach($employees);
+    $project->assigns;
 
     return $this->sendResponse($project->toArray(), 'Project created successfully.');
     
@@ -96,6 +104,8 @@ class ProjectController extends BaseController
       'owner_id' => 'integer|exists:users,id',
       'task_rate' => 'integer',
       'budget_hours' => 'integer',
+      'project_assign' => 'array',
+      'project_assign.*' => 'integer|exists:users,id',
     ]);
 
     if($validator->fails()){
@@ -112,6 +122,12 @@ class ProjectController extends BaseController
     $project->updated_by = auth()->user()->id;
 
     $updated = $project->fill($request->all())->save();
+
+    // update assign people
+    $input = $request->all();
+    $employees = User::find($input['project_assign']);
+    $project->assigns()->sync($employees);
+    $project->assigns;
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);

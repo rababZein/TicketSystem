@@ -43,7 +43,7 @@ class Project extends Model
 
     public function assigns()
     {
-        return $this->belongsToMany('App\Models\User', 'assign_to');
+        return $this->belongsToMany('App\Models\User', 'project_assigns', 'project_id', 'assign_to');
     }
 
 }
