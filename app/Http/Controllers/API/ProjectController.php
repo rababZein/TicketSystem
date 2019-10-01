@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
@@ -49,8 +50,8 @@ class ProjectController extends BaseController
       'owner_id' => 'required|integer|exists:users,id',
       'task_rate' => 'required|integer',
       'budget_hours' => 'required|integer',
-      'assign_to' => 'array',
-      'assign_to.*' => 'integer|exists:users,id',
+      'project_assign' => 'array',
+      'project_assign.*' => 'integer|exists:users,id',
     ]);
 
     if($validator->fails()){
@@ -64,8 +65,8 @@ class ProjectController extends BaseController
     $project = Project::create($input);
 
     // assign people to project
-    $employees = User::find($input['assign_to']);
-    unset($input['assign_to']);
+    $employees = User::find($input['project_assign']);
+    unset($input['project_assign']);
     $project->assigns()->attach($employees);
     $project->assigns;
 
