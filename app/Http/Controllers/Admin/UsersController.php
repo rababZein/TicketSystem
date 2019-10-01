@@ -29,7 +29,7 @@ class UsersController extends BaseController
      */
     public function index()
     {
-        return view('pages.users');
+        return view('pages.users.index');
     }
 
     public function list()
