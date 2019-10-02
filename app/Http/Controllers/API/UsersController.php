@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\API\BaseController;
 use App\Models\User;
 use App\Http\Resources\User as UserResource;
 use Illuminate\Support\Facades\Hash;
 
 
-class UsersController extends Controller
+class UsersController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -19,6 +19,17 @@ class UsersController extends Controller
     public function index()
     {
         return UserResource::collection(User::paginate(10));
+    }
+
+     /**
+     * Display a data listing of the resource.
+     *
+     * @return Response
+     */
+    public function getClients()
+    {
+        $clients = User::where('type', 'client')->get();
+        return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
     }
 
     /**
@@ -73,5 +84,12 @@ class UsersController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function getAllResponsibles()
+    {
+        $users = User::where('type','regular-user')->get();
+
+        return $this->sendResponse($users->toArray(), 'Users retrieved successfully.');
     }
 }
