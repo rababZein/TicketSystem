@@ -14,10 +14,9 @@
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth'],'namespace' => 'Admin'], function() {
+Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
     Route::get('/', 'HomeController@index');
     Route::get('/home', 'HomeController@index')->name('home');
-
 
     // roles
     Route::get('/roles/list', 'RolesController@list');
@@ -31,12 +30,12 @@ Route::group(['middleware' => ['auth'],'namespace' => 'Admin'], function() {
     // users
     Route::get('/users/list', 'UsersController@list');
     Route::resource('/users', 'UsersController')->except('show', 'create');
+
+    // projects
+    Route::get('/projects/index', 'ProjectController@view')->name('project.view');
+    Route::resource('/projects', 'ProjectController')->except('create');
+
 });
 
-Route::group(['middleware' => ['auth'], 'namespace' => 'Admin'], function() {
-    // Route::resource('/users', 'UsersController');
-    // Route::resource('/permissions', 'PermissionsController');  
-    // Route::resource('/roles', 'RolesController');  
-      
-});
+
 // Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );

@@ -34,6 +34,15 @@
                 </a>
             </li>
             @hasanyrole('admin')
+            <li class="nav-item">
+                <a href="{{route('project.view')}}"
+                    class="nav-link {{ (Request::is('projects')) ? 'active' : '' }}">
+                    <i class="nav-icon fas fa-briefcase"></i>
+                    <p>
+                        Projects
+                    </p>
+                </a>
+            </li>
             <li class="nav-item has-treeview  {{ (Request::is('users')) ? ' menu-open' : '' }}">
                 <a href="#" class="nav-link {{ (Request::is('users')) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-users"></i>
