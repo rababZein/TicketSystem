@@ -54,4 +54,24 @@ Route::group(['prefix' => 'ticket', 'middleware' => ['auth']], function () {
 
 Route::group(['prefix' => 'project', 'middleware' => ['auth']], function () {
     Route::get('/getall', 'API\ProjectController@getAll');
+    Route::get('/getAllByOwner/{owner_id}', 'API\ProjectController@getAllByOwner');
+});
+
+Route::group(['prefix' => 'owner', 'middleware' => ['auth']], function () {
+    Route::get('/getall', 'API\UsersController@getClients');
+});
+
+Route::group(['prefix' => 'user', 'middleware' => ['auth']], function () {
+    Route::get('/getAllResponsibles', 'API\UsersController@getAllResponsibles');
+});
+
+Route::group(['prefix' => 'task', 'middleware' => ['auth']], function () {
+    Route::get('/',[
+        'as' => 'tasks.index',
+        'uses' =>'API\TaskController@index'
+    ]);
+    Route::get('/getall', 'API\TaskController@getAll');
+    Route::post('/', 'API\TaskController@store');
+    Route::patch('/{task_id}', 'API\TaskController@update');
+    Route::delete('/{task_id}', 'API\TaskController@destroy');
 });

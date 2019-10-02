@@ -37,6 +37,23 @@ const tickets = {
 // projects end point
 const projects = {
     getAll: params => API.get('project/getall'),
+    getAllByOwner: params => API.get('project/getAllByOwner/'+params),
+}
+
+// owners end point
+const owners = {
+    getAll: params => API.get('owner/getall'),
+}
+
+// responsibles end point
+const responsibles = {
+    getAll: params => API.get('user/getAllResponsibles'),
+}
+
+// tasks end point
+const tasks = {
+    getAll: params => API.get('task/getall'),
+    delete: params => API.delete('/task/'+params),
 }
 
 export default {
@@ -44,5 +61,8 @@ export default {
     roles,
     permissions,
     tickets,
-    projects
+    owners,
+    projects,
+    tasks,
+    responsibles
 }
