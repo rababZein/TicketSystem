@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // The Base Route
 const API = axios.create({
-    baseURL: '/api'
+    baseURL: ''
 })
 
 // users end point
@@ -24,8 +24,21 @@ const permissions = {
     delete: params => API.delete('/permissions/'+params),
 }
 
+// tickets end point
+const tickets = {
+    getAll: params => API.get('ticket/getall'),
+    delete: params => API.delete('/ticket/'+params),
+}
+
+// projects end point
+const projects = {
+    getAll: params => API.get('project/getall'),
+}
+
 export default {
     users,
     roles,
-    permissions
+    permissions,
+    tickets,
+    projects
 }
