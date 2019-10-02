@@ -25,13 +25,23 @@ class TicketController extends BaseController
   }
 
   /**
-   * Display a listing of the resource.
+   * Display a listing of the resource view.
    *
    * @return Response
    */
   public function index()
   {
-    $tickets = Ticket::all();
+    return view('pages.tickets.index');
+  }
+
+  /**
+   * Display a data listing of the resource.
+   *
+   * @return Response
+   */
+  public function getAll()
+  {
+    $tickets = Ticket::with('project')->get();
 
     return $this->sendResponse($tickets->toArray(), 'Tickets retrieved successfully.');
   }
