@@ -43,9 +43,14 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function getAll()
+  public function getAllByOwner($owner_id)
   {
-    $projects = Project::all();
+    // $projects = Project::with('owner')->get();
+    // $projects = $projects->where('owner_id', $owner_id)->get();
+
+    $projects = Project::whereHas('owner', function ($query)  use ($owner_id) {
+      $query->where('owner_id','=', $owner_id);
+    })->with('owner')->get();
 
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
   }
