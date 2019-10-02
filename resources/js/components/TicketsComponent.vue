@@ -109,7 +109,6 @@
                 <multiselect
                   v-model="form.project"
                   :options="projects"
-                  
                   :close-on-select="false"
                   :clear-on-select="false"
                   :preserve-search="true"
@@ -225,7 +224,9 @@ export default {
     },
     editTicket(id) {
       this.$Progress.start();
-      this.form.project_id = this.form.project_id.id;
+
+      this.form.project_id = this.form.project.id;
+      
       this.form
         .patch("ticket/" + id)
         .then(response => {
