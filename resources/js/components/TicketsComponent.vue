@@ -18,10 +18,11 @@
             <thead>
               <tr>
                 <th width="10">ID</th>
-                <th width="30%">Name</th>
+                <th width="20%">Name</th>
                 <th width="40%">Description</th>
-                <th width="40%">Project</th>
-                <th width="20%">Read</th>
+                <th width="20%">Client</th>
+                <th width="20%">Project</th>
+                <th width="10%">Read</th>
                 <th>action</th>
               </tr>
             </thead>
@@ -30,8 +31,8 @@
                 <td>{{ ticket.id }}</td>
                 <td>{{ ticket.name }}</td>
                 <td>{{ ticket.description }}</td>
+                <td>{{ ticket.project.owner.name }}</td>
                 <td>{{ ticket.project.name }}</td>
-                <!-- <td>{{ ticket.read ?? 'Read' : 'Not Read'}}</td> -->
                 <td v-if="!ticket.read">Not Read</td>
                 <td v-else>Read</td>
                 <td>
@@ -105,7 +106,30 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Project Name</label>
+                <label for="name">Client</label>
+                <multiselect
+                  v-model="form.project.owner"
+                  :options="owners"
+                  @input="getProjects(form.project.owner.id)"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Pick some"
+                  label="name"
+                  track-by="name"
+                  :preselect-first="true"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="name"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Project</label>
                 <multiselect
                   v-model="form.project"
                   :options="projects"
@@ -148,11 +172,16 @@ export default {
         id: "",
         name: "",
         description: "",
-        project: "",
+        project: {
+          id: "",
+          name: "",
+          owner: ""
+        },
         project_id: ""
       }),
       tickets: {},
-      projects: []
+      projects: [],
+      owners: []
     };
   },
   methods: {
@@ -166,6 +195,7 @@ export default {
       this.form.reset();
       $("#newTicket").modal("show");
       this.form.fill(ticket);
+      this.getProjects(ticket.project.owner.id);
 
       this.form.selected = _.map(this.form.projects, function(value, key) {
         return value.name;
@@ -185,12 +215,25 @@ export default {
           this.$Progress.fail();
         });
     },
-    getProjects() {
-      this.$api.projects
+    getOwners() {
+      this.$api.owners
         .getAll()
         .then(response => {
-          this.projects = _.map(response.data.data, function(key, value) {
+          this.owners = _.map(response.data.data, function(key, value) {
             return { id: key.id, name: key.name };
+          });
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getProjects(owner_id) {
+      this.$api.projects
+        .getAllByOwner(owner_id)
+        .then(response => {
+          this.projects = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name, owner:key.owner };
           });
           this.$Progress.finish();
         })
@@ -278,8 +321,9 @@ export default {
   },
   mounted() {
     this.getResults();
-    this.getProjects();
-    console.log(this.projects);
+    this.getOwners();
+    // this.getProjects();
+    console.log(this.owners);
   }
 };
 </script>
