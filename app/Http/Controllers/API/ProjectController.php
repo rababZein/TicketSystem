@@ -36,6 +36,19 @@ class ProjectController extends BaseController
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
   }
 
+
+  /**
+   * Display a data listing of the resource.
+   *
+   * @return Response
+   */
+  public function getAll()
+  {
+    $projects = Project::all();
+
+    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+  }
+
   /**
    * Store a newly created resource in storage.
    *
