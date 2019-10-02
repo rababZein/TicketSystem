@@ -9,11 +9,11 @@ class Ticket extends Model
 
     protected $table = 'tickets';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at', 'read', 'project_id', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'created_by', 'updated_by');
 
     public function project()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo('App\Models\Project');
     }
 
     public function creator()
