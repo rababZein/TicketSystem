@@ -2408,6 +2408,310 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js&":
+/*!***************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js& ***!
+  \***************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      editMode: false,
+      form: new Form({
+        id: "",
+        name: "",
+        description: "",
+        project: "",
+        project_id: ""
+      }),
+      tickets: {},
+      projects: []
+    };
+  },
+  methods: {
+    newModel: function newModel() {
+      this.editMode = false;
+      this.form.reset();
+      $("#newTicket").modal("show");
+    },
+    editModel: function editModel(ticket) {
+      this.editMode = true;
+      this.form.reset();
+      $("#newTicket").modal("show");
+      this.form.fill(ticket);
+      this.form.selected = _.map(this.form.projects, function (value, key) {
+        return value.name;
+      });
+    },
+    getResults: function getResults() {
+      var _this = this;
+
+      var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
+      this.$Progress.start();
+      this.$api.tickets.getAll().then(function (response) {
+        _this.tickets = response.data.data;
+        console.log(_this.tickets);
+
+        _this.$Progress.finish();
+      })["catch"](function (error) {
+        _this.$Progress.fail();
+      });
+    },
+    getProjects: function getProjects() {
+      var _this2 = this;
+
+      this.$api.projects.getAll().then(function (response) {
+        _this2.projects = _.map(response.data.data, function (key, value) {
+          return {
+            id: key.id,
+            name: key.name
+          };
+        });
+
+        _this2.$Progress.finish();
+      })["catch"](function (error) {
+        _this2.$Progress.fail();
+      });
+    },
+    createTicket: function createTicket() {
+      var _this3 = this;
+
+      this.$Progress.start(); // need to be enhance
+
+      this.form.project_id = this.form.project.id;
+      this.form.post("ticket").then(function (response) {
+        $("#newTicket").modal("hide");
+
+        _this3.$Progress.finish();
+
+        _this3.getResults();
+
+        Toast.fire({
+          type: "success",
+          title: "Ticket created successfully"
+        });
+      })["catch"](function (error) {
+        _this3.$Progress.fail();
+
+        Toast.fire({
+          type: "error",
+          title: "can't create new Ticket"
+        });
+      });
+    },
+    editTicket: function editTicket(id) {
+      var _this4 = this;
+
+      this.$Progress.start();
+      this.form.project_id = this.form.project_id.id;
+      this.form.patch("ticket/" + id).then(function (response) {
+        $("#newTicket").modal("hide");
+
+        _this4.$Progress.finish();
+
+        _this4.getResults();
+
+        Toast.fire({
+          type: "success",
+          title: "Ticket updated successfully"
+        });
+      })["catch"](function (error) {
+        _this4.$Progress.fail();
+
+        Toast.fire({
+          type: "error",
+          title: "can't update the ticket"
+        });
+      });
+    },
+    deleteTicket: function deleteTicket(id) {
+      var _this5 = this;
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(function (result) {
+        if (result.value) {
+          _this5.$Progress.start();
+
+          _this5.$api.tickets["delete"](id).then(function (response) {
+            _this5.$Progress.finish();
+
+            _this5.getResults();
+
+            Swal.fire("Deleted!", "The ticket has been deleted.", "success");
+          })["catch"](function (error) {
+            _this5.$Progress.fail();
+
+            Toast.fire({
+              type: "error",
+              title: "can't delete the ticket"
+            });
+          });
+        }
+      });
+    }
+  },
+  mounted: function mounted() {
+    this.getResults();
+    this.getProjects();
+    console.log(this.projects);
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UsersComponent.vue?vue&type=script&lang=js&":
 /*!*************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/UsersComponent.vue?vue&type=script&lang=js& ***!
@@ -62175,6 +62479,425 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141&":
+/*!*******************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141& ***!
+  \*******************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "row" }, [
+    _c("div", { staticClass: "col-12" }, [
+      _c("div", { staticClass: "card" }, [
+        _c("div", { staticClass: "card-header" }, [
+          _c("h3", { staticClass: "card-title" }, [_vm._v("Tickets Table")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "card-tools" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-success btn-sm",
+                attrs: { type: "submit" },
+                on: { click: _vm.newModel }
+              },
+              [
+                _c("i", { staticClass: "fas fa-plus fa-fw" }),
+                _vm._v(" "),
+                _c("span", { staticClass: "d-none d-lg-inline" }, [
+                  _vm._v("New Ticket")
+                ])
+              ]
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "card-body table-responsive p-0" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.tickets, function(ticket) {
+                return _c("tr", { key: ticket.id }, [
+                  _c("td", [_vm._v(_vm._s(ticket.id))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(ticket.name))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(ticket.description))]),
+                  _vm._v(" "),
+                  _c("td", [_vm._v(_vm._s(ticket.project.name))]),
+                  _vm._v(" "),
+                  !ticket.read
+                    ? _c("td", [_vm._v("Not Read")])
+                    : _c("td", [_vm._v("Read")]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-primary btn-xs",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.editModel(ticket)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-edit fa-fw" })]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      {
+                        staticClass: "btn btn-danger btn-xs",
+                        attrs: { href: "#" },
+                        on: {
+                          click: function($event) {
+                            return _vm.deleteTicket(ticket.id)
+                          }
+                        }
+                      },
+                      [_c("i", { staticClass: "fas fa-trash fa-fw" })]
+                    )
+                  ])
+                ])
+              }),
+              0
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          { staticClass: "card-footer clear-fix" },
+          [
+            _c("pagination", {
+              attrs: {
+                align: "right",
+                size: "small",
+                "show-disabled": true,
+                data: _vm.tickets
+              },
+              on: { "pagination-change-page": _vm.getResults }
+            })
+          ],
+          1
+        )
+      ])
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        staticClass: "modal fade",
+        attrs: {
+          id: "newTicket",
+          tabindex: "-1",
+          role: "dialog",
+          "aria-labelledby": "newTicketLabel",
+          "aria-hidden": "true"
+        }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: !_vm.editMode,
+                        expression: "!editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "newTicketLabel" }
+                  },
+                  [_vm._v("Create New Ticket")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "h5",
+                  {
+                    directives: [
+                      {
+                        name: "show",
+                        rawName: "v-show",
+                        value: _vm.editMode,
+                        expression: "editMode"
+                      }
+                    ],
+                    staticClass: "modal-title",
+                    attrs: { id: "newTicketLabel" }
+                  },
+                  [_vm._v("Edit Ticket")]
+                ),
+                _vm._v(" "),
+                _vm._m(1)
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      _vm.editMode
+                        ? _vm.editTicket(_vm.form.id)
+                        : _vm.createTicket()
+                    },
+                    keydown: function($event) {
+                      return _vm.form.onKeydown($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "name" } }, [
+                          _vm._v("Ticket Name")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.name,
+                              expression: "form.name"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: { "is-invalid": _vm.form.errors.has("name") },
+                          attrs: { type: "text", name: "name" },
+                          domProps: { value: _vm.form.name },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(_vm.form, "name", $event.target.value)
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "name" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "description" } }, [
+                          _vm._v("Ticket Description")
+                        ]),
+                        _vm._v(" "),
+                        _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.form.description,
+                              expression: "form.description"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          class: {
+                            "is-invalid": _vm.form.errors.has("description")
+                          },
+                          attrs: { type: "text", name: "description" },
+                          domProps: { value: _vm.form.description },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.$set(
+                                _vm.form,
+                                "description",
+                                $event.target.value
+                              )
+                            }
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "description" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "name" } }, [
+                          _vm._v("Project Name")
+                        ]),
+                        _vm._v(" "),
+                        _c("multiselect", {
+                          attrs: {
+                            options: _vm.projects,
+                            "close-on-select": false,
+                            "clear-on-select": false,
+                            "preserve-search": true,
+                            placeholder: "Pick some",
+                            label: "name",
+                            "track-by": "name",
+                            "preselect-first": true
+                          },
+                          scopedSlots: _vm._u([
+                            {
+                              key: "selection",
+                              fn: function(ref) {
+                                var values = ref.values
+                                var search = ref.search
+                                var isOpen = ref.isOpen
+                                return [
+                                  values.length && !isOpen
+                                    ? _c(
+                                        "span",
+                                        { staticClass: "multiselect__single" },
+                                        [
+                                          _vm._v(
+                                            _vm._s(values.length) +
+                                              " options selected"
+                                          )
+                                        ]
+                                      )
+                                    : _vm._e()
+                                ]
+                              }
+                            }
+                          ]),
+                          model: {
+                            value: _vm.form.project,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "project", $$v)
+                            },
+                            expression: "form.project"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "name" }
+                        })
+                      ],
+                      1
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: !_vm.editMode,
+                            expression: "!editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        directives: [
+                          {
+                            name: "show",
+                            rawName: "v-show",
+                            value: _vm.editMode,
+                            expression: "editMode"
+                          }
+                        ],
+                        staticClass: "btn btn-success",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Update")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    )
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { width: "10" } }, [_vm._v("ID")]),
+        _vm._v(" "),
+        _c("th", { attrs: { width: "30%" } }, [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", { attrs: { width: "40%" } }, [_vm._v("Description")]),
+        _vm._v(" "),
+        _c("th", { attrs: { width: "40%" } }, [_vm._v("Project")]),
+        _vm._v(" "),
+        _c("th", { attrs: { width: "20%" } }, [_vm._v("Read")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("action")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/UsersComponent.vue?vue&type=template&id=47d47080&":
 /*!*****************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/UsersComponent.vue?vue&type=template&id=47d47080& ***!
@@ -77593,6 +78316,7 @@ var map = {
 	"./components/DashboardComponent.vue": "./resources/js/components/DashboardComponent.vue",
 	"./components/PermissionsComponent.vue": "./resources/js/components/PermissionsComponent.vue",
 	"./components/RolesComponent.vue": "./resources/js/components/RolesComponent.vue",
+	"./components/TicketsComponent.vue": "./resources/js/components/TicketsComponent.vue",
 	"./components/UsersComponent.vue": "./resources/js/components/UsersComponent.vue"
 };
 
@@ -77632,7 +78356,7 @@ __webpack_require__.r(__webpack_exports__);
  // The Base Route
 
 var API = axios__WEBPACK_IMPORTED_MODULE_0___default.a.create({
-  baseURL: '/api'
+  baseURL: ''
 }); // users end point
 
 var users = {
@@ -77683,11 +78407,28 @@ var permissions = {
   "delete": function _delete(params) {
     return API["delete"]('/permissions/' + params);
   }
+}; // tickets end point
+
+var tickets = {
+  getAll: function getAll(params) {
+    return API.get('ticket/getall');
+  },
+  "delete": function _delete(params) {
+    return API["delete"]('/ticket/' + params);
+  }
+}; // projects end point
+
+var projects = {
+  getAll: function getAll(params) {
+    return API.get('project/getall');
+  }
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
   users: users,
   roles: roles,
-  permissions: permissions
+  permissions: permissions,
+  tickets: tickets,
+  projects: projects
 });
 
 /***/ }),
@@ -78038,6 +78779,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/TicketsComponent.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/components/TicketsComponent.vue ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./TicketsComponent.vue?vue&type=template&id=0ea5d141& */ "./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141&");
+/* harmony import */ var _TicketsComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TicketsComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _TicketsComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/TicketsComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketsComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./TicketsComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketsComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketsComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141&":
+/*!*************************************************************************************!*\
+  !*** ./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141& ***!
+  \*************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./TicketsComponent.vue?vue&type=template&id=0ea5d141& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/TicketsComponent.vue?vue&type=template&id=0ea5d141&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_TicketsComponent_vue_vue_type_template_id_0ea5d141___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/UsersComponent.vue":
 /*!****************************************************!*\
   !*** ./resources/js/components/UsersComponent.vue ***!
@@ -78182,8 +78992,8 @@ var routes = [{
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! E:\work\tecsee\accounting-app\alferp\alferp\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! E:\work\tecsee\accounting-app\alferp\alferp\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /home/rabab/Desktop/Tecsee-ERPsystem/New/alferp/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /home/rabab/Desktop/Tecsee-ERPsystem/New/alferp/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
