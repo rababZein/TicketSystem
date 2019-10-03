@@ -32,18 +32,14 @@ const permissions = {
 const projects = {
     get: params => API.get('/projects', {params}),
     post: params => API.post('/projects', {params}),
+    getAll: params => API.get('project/getall'),
+    getAllByOwner: params => API.get('project/getAllByOwner/'+params),
 } 
 
 // tickets end point
 const tickets = {
     getAll: params => API.get('ticket/getall'),
     delete: params => API.delete('/ticket/'+params),
-}
-
-// projects end point
-const projects = {
-    getAll: params => API.get('project/getall'),
-    getAllByOwner: params => API.get('project/getAllByOwner/'+params),
 }
 
 // owners end point
