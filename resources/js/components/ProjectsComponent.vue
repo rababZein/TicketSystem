@@ -22,7 +22,7 @@
           <h3>{{ project.name }}</h3>
 
           <p>{{ project.name }}</p>
-          <a href="#" @click="editModal" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
+          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
           <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light"><i class="fas fa-trash fa-fw"></i></a>
         </div>
         <div class="icon">
@@ -43,7 +43,7 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newModal"
+      id="Modal"
       tabindex="-1"
       role="dialog"
       aria-labelledby="newModalLabel"
@@ -57,7 +57,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createProject" @keydown="form.onKeydown($event)">
+          <form @submit.prevent="editMode ? editProject(form.id) : createProject()" @keydown="form.onKeydown($event)">
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">name</label>
@@ -86,22 +86,17 @@
                 <multiselect
                   v-model="owner_id"
                   :options="owners"
+                  :searchable="true"
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
                   placeholder="Select one"
-                  return="id"
                   label="name"
-                  track-by="id"
+                  track-by="name"
                   :preselect-first="true"
                   @input="opt => form.owner_id = opt.id"
                 >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
+
                 </multiselect>
                 <has-error :form="form" field="name"></has-error>
               </div>
@@ -147,6 +142,7 @@
 export default {
   data() {
     return {
+      editMode: false,
       projects: {},
       form: new Form({
         id: "",
@@ -187,18 +183,25 @@ export default {
           this.$Progress.fail();
         });
     },
-    newModal() {
-      $("#newModal").modal("show");
-      this.form.reset();
+    selectOwnerId(opt) {
+      opt => form.owner_id = opt.id
     },
-    editModal() {
-
+    newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $("#Modal").modal("show");
+    },
+    editModal(item) {
+      this.editMode = true;
+      this.form.reset();
+      $("#Modal").modal("show");
+      this.form.fill(item);
     },
     createProject() {
       this.form
         .post("/projects")
         .then(response => {
-          $("#newModal").modal("hide");
+          $("#Modal").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
@@ -213,6 +216,27 @@ export default {
             title: error.response.data.message
           });
           this.form.errors.errors = error.response.data.data;
+        });
+    },
+    editProject(id) {
+      this.$Progress.start();
+      this.form
+        .put("/projects/" + id)
+        .then(response => {
+          $("#Modal").modal("hide");
+          this.$Progress.finish();
+          this.getResults();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
         });
     },
     deleteProject(id) {
