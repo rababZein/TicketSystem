@@ -12,9 +12,9 @@
             <img src="/dist/img/profile.png" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
-            <a href="#" class="d-block">    
+            <a href="#" class="d-block">
                 @auth
-                    {{ Auth::user()->name }}
+                {{ Auth::user()->name }}
                 @endauth
             </a>
         </div>
@@ -34,15 +34,6 @@
                 </a>
             </li>
             @hasanyrole('admin')
-            <li class="nav-item">
-                <a href="{{route('project.view')}}"
-                    class="nav-link {{ (Request::is('projects')) ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-briefcase"></i>
-                    <p>
-                        Projects
-                    </p>
-                </a>
-            </li>
             <li class="nav-item has-treeview  {{ (Request::is('users')) ? ' menu-open' : '' }}">
                 <a href="#" class="nav-link {{ (Request::is('users')) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-users"></i>
@@ -63,8 +54,8 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item has-treeview  {{ (Request::is('ticket', 'task', 'receipt')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('ticket', 'task', 'receipt')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview  {{ (Request::is('projects/*', 'ticket', 'task', 'receipt')) ? ' menu-open' : '' }}">
+                <a href="#" class="nav-link {{ (Request::is('projects/*', 'ticket', 'task', 'receipt')) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-project-diagram"></i>
                     <p>
                         Projects Management
@@ -72,6 +63,15 @@
                     </p>
                 </a>
                 <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{route('project.view')}}"
+                            class="nav-link {{ (Request::is('projects/*')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-briefcase"></i>
+                            <p>
+                                Projects
+                            </p>
+                        </a>
+                    </li>
                     <li class="nav-item">
                         <a href="{{route('tickets.index')}}"
                             class="nav-link {{ (Request::is('ticket')) ? 'active' : '' }}">
@@ -84,8 +84,7 @@
                 </ul>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('tasks.index')}}"
-                            class="nav-link {{ (Request::is('task')) ? 'active' : '' }}">
+                        <a href="{{route('tasks.index')}}" class="nav-link {{ (Request::is('task')) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-tasks"></i>
                             <p>
                                 Tasks
