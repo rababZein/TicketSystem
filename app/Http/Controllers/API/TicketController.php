@@ -41,8 +41,8 @@ class TicketController extends BaseController
    */
   public function getAll()
   {
-    $tickets = Ticket::with('project')->get();
-
+    $tickets = Ticket::with('project.owner')->get();
+ 
     return $this->sendResponse($tickets->toArray(), 'Tickets retrieved successfully.');
   }
 

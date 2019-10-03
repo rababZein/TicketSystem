@@ -52,5 +52,9 @@ Route::group(['prefix' => 'ticket', 'middleware' => ['auth']], function () {
 });
 
 Route::group(['prefix' => 'project', 'middleware' => ['auth']], function () {
-    Route::get('/getall', 'API\ProjectController@getAll');
+    Route::get('/getAllByOwner/{owner_id}', 'API\ProjectController@getAllByOwner');
+});
+
+Route::group(['prefix' => 'owner', 'middleware' => ['auth']], function () {
+    Route::get('/getall', 'API\UsersController@getClients');
 });

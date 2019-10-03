@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\API\BaseController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\User as UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
-
 
 class UsersController extends BaseController
 {
@@ -39,6 +38,18 @@ class UsersController extends BaseController
     {
         $users = UserResource::collection(User::paginate(10));
         return $this->sendResponse($users, 'users retrieved successfully.');
+    }
+
+    /**
+     * Display a data listing of the resource.
+     *
+     * @return Response
+     */
+    public function getClients()
+    {
+        $clients = User::where('type', 'client')->get();
+
+        return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
     }
 
     /**

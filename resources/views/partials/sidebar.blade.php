@@ -63,8 +63,8 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item has-treeview  {{ (Request::is('tickets')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('tickets')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview  {{ (Request::is('ticket')) ? ' menu-open' : '' }}">
+                <a href="#" class="nav-link {{ (Request::is('ticket')) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-project-diagram"></i>
                     <p>
                         Projects Management
@@ -74,7 +74,7 @@
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
                         <a href="{{route('tickets.index')}}"
-                            class="nav-link {{ (Request::is('tickets')) ? 'active' : '' }}">
+                            class="nav-link {{ (Request::is('ticket')) ? 'active' : '' }}">
                             <i class="nav-icon fas fa-ticket-alt"></i>
                             <p>
                                 Tickets
