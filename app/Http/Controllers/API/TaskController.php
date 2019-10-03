@@ -24,14 +24,24 @@ class TaskController extends BaseController
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
   }
 
-  /**
-   * Display a listing of the resource.
+   /**
+   * Display a view listing of the resource view.
    *
    * @return Response
    */
   public function index()
   {
-    $tasks = Task::all();
+    return view('pages.tasks.index');
+  }
+
+  /**
+   * Display data listing of the resource.
+   *
+   * @return Response
+   */
+  public function getAll()
+  {
+    $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
 
     return $this->sendResponse($tasks->toArray(), 'Tasks retrieved successfully.');
   }
@@ -47,7 +57,7 @@ class TaskController extends BaseController
       'name' => 'required|string',
       'description' => 'required|string',
       'project_id' => 'required|integer|exists:projects,id',
-      'ticket_id' => 'integer|exists:tasks,id',
+      'ticket_id' => 'integer|exists:tickets,id',
       'responsible_id' => 'integer|exists:users,id',
       'count_hours' => 'float|min:0'
     ]);
@@ -95,7 +105,7 @@ class TaskController extends BaseController
       'name' => 'string',
       'description' => 'string',
       'project_id' => 'integer|exists:projects,id',
-      'ticket_id' => 'integer|exists:tasks,id',
+      'ticket_id' => 'integer|exists:tickets,id',
       'responsible_id' => 'integer|exists:users,id',
       'count_hours' => 'float|min:0'
     ]);

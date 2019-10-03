@@ -9,11 +9,11 @@ class Task extends Model
 
     protected $table = 'tasks';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at', 'name', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours');
+    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours');
 
     public function responsible()
     {
-        return $this->hasOne('App\Models\User', 'responsible_id');
+        return $this->hasOne('App\Models\User', 'id', 'responsible_id');
     }
 
     public function creator()

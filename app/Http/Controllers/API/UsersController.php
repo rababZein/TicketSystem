@@ -40,7 +40,7 @@ class UsersController extends BaseController
         return $this->sendResponse($users, 'users retrieved successfully.');
     }
 
-    /**
+     /**
      * Display a data listing of the resource.
      *
      * @return Response
@@ -48,7 +48,6 @@ class UsersController extends BaseController
     public function getClients()
     {
         $clients = User::where('type', 'client')->get();
-
         return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
     }
 
@@ -129,5 +128,12 @@ class UsersController extends BaseController
 
         return $this->sendResponse($user, 'users deleted successfully.');
 
+    }
+
+    public function getAllResponsibles()
+    {
+        $users = User::where('type','regular-user')->get();
+
+        return $this->sendResponse($users->toArray(), 'Users retrieved successfully.');
     }
 }
