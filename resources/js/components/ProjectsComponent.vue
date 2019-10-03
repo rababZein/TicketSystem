@@ -22,6 +22,8 @@
           <h3>{{ project.name }}</h3>
 
           <p>{{ project.name }}</p>
+          <a href="#" @click="editModal" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
+          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light"><i class="fas fa-trash fa-fw"></i></a>
         </div>
         <div class="icon">
           <i class="fas fa-briefcase"></i>
@@ -107,7 +109,9 @@
                 <label for="task_rate">task rate</label>
                 <input
                   v-model="form.task_rate"
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   name="task_rate"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('task_rate') }"
@@ -118,7 +122,9 @@
                 <label for="budget_hours">budget hours</label>
                 <input
                   v-model="form.budget_hours"
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   name="budget_hours"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('budget_hours') }"
@@ -143,6 +149,7 @@ export default {
     return {
       projects: {},
       form: new Form({
+        id: "",
         name: "",
         owner_id: "",
         description: "",
@@ -184,6 +191,9 @@ export default {
       $("#newModal").modal("show");
       this.form.reset();
     },
+    editModal() {
+
+    },
     createProject() {
       this.form
         .post("/projects")
@@ -204,6 +214,35 @@ export default {
           });
           this.form.errors.errors = error.response.data.data;
         });
+    },
+    deleteProject(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$api.projects
+            .delete(id)
+            .then(response => {
+              this.$Progress.finish();
+              this.getResults();
+              Swal.fire("Deleted!", response.data.message, "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: "can't delete the project"
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
