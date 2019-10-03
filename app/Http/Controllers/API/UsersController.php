@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-
 class UsersController extends BaseController
 {
     /**
@@ -49,6 +48,18 @@ class UsersController extends BaseController
     public function getClients()
     {
         $clients = User::where('type', 'client')->get();
+        return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
+    }
+
+    /**
+     * Display a data listing of the resource.
+     *
+     * @return Response
+     */
+    public function getClients()
+    {
+        $clients = User::where('type', 'client')->get();
+
         return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
     }
 
