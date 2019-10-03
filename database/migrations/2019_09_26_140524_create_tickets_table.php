@@ -12,11 +12,11 @@ class CreateTicketsTable extends Migration {
 			$table->timestamp('created_at');
 			$table->timestamp('updated_at')->nullable();
 			$table->string('name');
+			$table->longText('description')->nullable();
 			$table->boolean('read')->default(0);
 			$table->integer('project_id')->unsigned();
 			$table->integer('created_by')->unsigned();
-			$table->integer('updated_by')->unsigned();
-			$table->integer('task_id')->unsigned();
+			$table->integer('updated_by')->unsigned()->nullable();
 		});
 	}
 
