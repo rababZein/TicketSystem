@@ -33,8 +33,8 @@
                 <td>{{ receipt.description }}</td>
                 <td>{{ receipt.task.name }}</td>
                 <td>{{ receipt.total }}</td>
-                <td v-if="!receipt.is_paid">Not Read</td>
-                <td v-else>Read</td>
+                <td v-if="!receipt.is_paid">Not Paid</td>
+                <td v-else>Paid</td>
                 <td>
                   <a href="#" @click="editModel(receipt)" class="btn btn-primary btn-xs">
                     <i class="fas fa-edit fa-fw"></i>
@@ -139,14 +139,13 @@
                 <has-error :form="form" field="total"></has-error>
               </div>
               <div class="form-group">
-                <label for="is_paid">Is Paid</label>
                 <input
                   v-model="form.is_paid"
                   type="checkbox"
                   name="is_paid"
-                  class="form-control"
                   :class="{ 'is-invalid': form.errors.has('is_paid') }"
                 />
+                <label for="is_paid">Is Paid</label>
                 <has-error :form="form" field="is_paid"></has-error>
               </div>
             </div>
@@ -179,7 +178,8 @@ export default {
         },
         task_id: ""
       }),
-      tasks: []
+      tasks: [],
+      receipts: {}
     };
   },
   methods: {
@@ -199,9 +199,11 @@ export default {
       this.$api.receipts
         .getAll()
         .then(response => {
-          
           this.receipts = response.data.data;
-          console.log(this.receipts);
+
+          // convert array to object for paginate
+          this.receipts = Object.assign({}, this.receipts);
+
           this.$Progress.finish();
         })
         .catch(error => {
