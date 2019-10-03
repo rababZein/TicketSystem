@@ -74,3 +74,14 @@ Route::group(['prefix' => 'task', 'middleware' => ['auth']], function () {
     Route::patch('/{task_id}', 'API\TaskController@update');
     Route::delete('/{task_id}', 'API\TaskController@destroy');
 });
+
+Route::group(['prefix' => 'receipt', 'middleware' => ['auth']], function () {
+    Route::get('/',[
+        'as' => 'receipts.index',
+        'uses' =>'API\ReceiptController@index'
+    ]);
+    Route::get('/getall', 'API\ReceiptController@getAll');
+    Route::post('/', 'API\ReceiptController@store');
+    Route::patch('/{task_id}', 'API\ReceiptController@update');
+    Route::delete('/{task_id}', 'API\ReceiptController@destroy');
+});

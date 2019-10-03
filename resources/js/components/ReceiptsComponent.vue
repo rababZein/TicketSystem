@@ -3,12 +3,12 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Tickets Table</h3>
+          <h3 class="card-title">Receipts Table</h3>
 
           <div class="card-tools">
             <button type="submit" class="btn btn-success btn-sm" @click="newModel">
               <i class="fas fa-plus fa-fw"></i>
-              <span class="d-none d-lg-inline">New Ticket</span>
+              <span class="d-none d-lg-inline">New Receipt</span>
             </button>
           </div>
         </div>
@@ -20,26 +20,26 @@
                 <th width="10">ID</th>
                 <th width="20%">Name</th>
                 <th width="40%">Description</th>
-                <th width="20%">Client</th>
-                <th width="20%">Project</th>
-                <th width="10%">Read</th>
+                <th width="20%">Task</th>
+                <th width="20%">Total</th>
+                <th width="10%">Is Paid</th>
                 <th>action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="ticket in tickets" :key="ticket.id">
-                <td>{{ ticket.id }}</td>
-                <td>{{ ticket.name }}</td>
-                <td>{{ ticket.description }}</td>
-                <td>{{ ticket.project.owner.name }}</td>
-                <td>{{ ticket.project.name }}</td>
-                <td v-if="!ticket.read">Not Read</td>
-                <td v-else>Read</td>
+              <tr v-for="receipt in receipts" :key="receipt.id">
+                <td>{{ receipt.id }}</td>
+                <td>{{ receipt.name }}</td>
+                <td>{{ receipt.description }}</td>
+                <td>{{ receipt.task.name }}</td>
+                <td>{{ receipt.total }}</td>
+                <td v-if="!receipt.is_paid">Not Paid</td>
+                <td v-else>Paid</td>
                 <td>
-                  <a href="#" @click="editModel(ticket)" class="btn btn-primary btn-xs">
+                  <a href="#" @click="editModel(receipt)" class="btn btn-primary btn-xs">
                     <i class="fas fa-edit fa-fw"></i>
                   </a>
-                  <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
+                  <a href="#" @click="deleteReceipt(receipt.id)" class="btn btn-danger btn-xs">
                     <i class="fas fa-trash fa-fw"></i>
                   </a>
                 </td>
@@ -52,7 +52,7 @@
             align="right"
             size="small"
             :show-disabled="true"
-            :data="tickets"
+            :data="receipts"
             @pagination-change-page="getResults"
           ></pagination>
         </div>
@@ -63,28 +63,28 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newTicket"
+      id="newReceipt"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="newTicketLabel"
+      aria-labelledby="newReceiptLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 v-show="!editMode" class="modal-title" id="newTicketLabel">Create New Ticket</h5>
-            <h5 v-show="editMode" class="modal-title" id="newTicketLabel">Edit Ticket</h5>
+            <h5 v-show="!editMode" class="modal-title" id="newReceiptLabel">Create New Receipt</h5>
+            <h5 v-show="editMode" class="modal-title" id="newReceiptLabel">Edit Receipt</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editTicket(form.id) : createTicket()"
+            @submit.prevent="editMode ? editReceipt(form.id) : createReceipt()"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
               <div class="form-group">
-                <label for="name">Ticket Name</label>
+                <label for="name">Receipt Name</label>
                 <input
                   v-model="form.name"
                   type="text"
@@ -95,7 +95,7 @@
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <label for="description">Ticket Description</label>
+                <label for="description">Receipt Description</label>
                 <input
                   v-model="form.description"
                   type="text"
@@ -106,11 +106,10 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Client</label>
+                <label for="name">Task</label>
                 <multiselect
-                  v-model="form.project.owner"
-                  :options="owners"
-                  @input="getProjects(form.project.owner.id)"
+                  v-model="form.task"
+                  :options="tasks"
                   :close-on-select="false"
                   :clear-on-select="false"
                   :preserve-search="true"
@@ -129,26 +128,25 @@
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Project</label>
-                <multiselect
-                  v-model="form.project"
-                  :options="projects"
-                  :close-on-select="false"
-                  :clear-on-select="false"
-                  :preserve-search="true"
-                  placeholder="Pick some"
-                  label="name"
-                  track-by="name"
-                  :preselect-first="true"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <label for="total">Total</label>
+                <input
+                  v-model="form.total"
+                  type="text"
+                  name="total"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('total') }"
+                />
+                <has-error :form="form" field="total"></has-error>
+              </div>
+              <div class="form-group">
+                <input
+                  v-model="form.is_paid"
+                  type="checkbox"
+                  name="is_paid"
+                  :class="{ 'is-invalid': form.errors.has('is_paid') }"
+                />
+                <label for="is_paid">Is Paid</label>
+                <has-error :form="form" field="is_paid"></has-error>
               </div>
             </div>
 
@@ -172,44 +170,39 @@ export default {
         id: "",
         name: "",
         description: "",
-        project: {
+        total: "",
+        is_paid: "",
+        task: {
           id: "",
-          name: "",
-          owner: ""
+          name: ""
         },
-        project_id: ""
+        task_id: ""
       }),
-      tickets: {},
-      projects: [],
-      owners: []
+      tasks: [],
+      receipts: {}
     };
   },
   methods: {
     newModel() {
       this.editMode = false;
       this.form.reset();
-      $("#newTicket").modal("show");
+      $("#newReceipt").modal("show");
     },
-    editModel(ticket) {
+    editModel(receipt) {
       this.editMode = true;
       this.form.reset();
-      $("#newTicket").modal("show");
-      this.form.fill(ticket);
-      this.getProjects(ticket.project.owner.id);
-
-      this.form.selected = _.map(this.form.projects, function(value, key) {
-        return value.name;
-      });
+      $("#newReceipt").modal("show");
+      this.form.fill(receipt);
     },
     getResults(page = 1) {
       this.$Progress.start();
-      this.$api.tickets
+      this.$api.receipts
         .getAll()
         .then(response => {
-          this.tickets = response.data.data;
-                   
+          this.receipts = response.data.data;
+
           // convert array to object for paginate
-          this.tickets = Object.assign({}, this.tickets);
+          this.receipts = Object.assign({}, this.receipts);
 
           this.$Progress.finish();
         })
@@ -217,11 +210,11 @@ export default {
           this.$Progress.fail();
         });
     },
-    getOwners() {
-      this.$api.owners
+    getTasks() {
+      this.$api.tasks
         .getAll()
         .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
+          this.tasks = _.map(response.data.data, function(key, value) {
             return { id: key.id, name: key.name };
           });
           this.$Progress.finish();
@@ -230,68 +223,55 @@ export default {
           this.$Progress.fail();
         });
     },
-    getProjects(owner_id) {
-      this.$api.projects
-        .getAllByOwner(owner_id)
-        .then(response => {
-          this.projects = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name, owner:key.owner };
-          });
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    createTicket() {
+    createReceipt() {
       this.$Progress.start();
       // need to be enhance
-      this.form.project_id = this.form.project.id;
+      this.form.task_id = this.form.task.id;
 
       this.form
-        .post("ticket")
+        .post("receipt")
         .then(response => {
-          $("#newTicket").modal("hide");
+          $("#newReceipt").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Ticket created successfully"
+            title: "Receipt created successfully"
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't create new Ticket"
+            title: "can't create new Receipt"
           });
         });
     },
-    editTicket(id) {
+    editReceipt(id) {
       this.$Progress.start();
 
-      this.form.project_id = this.form.project.id;
+      this.form.task_id = this.form.task.id;
       
       this.form
-        .patch("ticket/" + id)
+        .patch("receipt/" + id)
         .then(response => {
-          $("#newTicket").modal("hide");
+          $("#newReceipt").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Ticket updated successfully"
+            title: "Receipt updated successfully"
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't update the ticket"
+            title: "can't update the Receipt"
           });
         });
     },
-    deleteTicket(id) {
+    deleteReceipt(id) {
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -303,18 +283,18 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.tickets
+          this.$api.receipts
             .delete(id)
             .then(response => {
               this.$Progress.finish();
               this.getResults();
-              Swal.fire("Deleted!", "The ticket has been deleted.", "success");
+              Swal.fire("Deleted!", "The Receipt has been deleted.", "success");
             })
             .catch(error => {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the ticket"
+                title: "can't delete the Receipt"
               });
             });
         }
@@ -323,9 +303,7 @@ export default {
   },
   mounted() {
     this.getResults();
-    this.getOwners();
-    // this.getProjects();
-    console.log(this.owners);
+    this.getTasks();
   }
 };
 </script>
