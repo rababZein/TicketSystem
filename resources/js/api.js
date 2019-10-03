@@ -58,6 +58,12 @@ const tasks = {
     delete: params => API.delete('/task/'+params),
 }
 
+// receipts end point
+const receipts = {
+    getAll: params => API.get('receipt/getall'),
+    delete: params => API.delete('/receipt/'+params),
+}
+
 export default {
     users,
     roles,
@@ -66,5 +72,6 @@ export default {
     owners,
     projects,
     tasks,
-    responsibles
+    responsibles,
+    receipts
 }
