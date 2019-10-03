@@ -86,7 +86,7 @@
                     <li class="nav-item">
                         <a href="{{route('tasks.index')}}"
                             class="nav-link {{ (Request::is('task')) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-ticket-alt"></i>
+                            <i class="nav-icon fas fa-tasks"></i>
                             <p>
                                 Tasks
                             </p>
@@ -97,7 +97,7 @@
                     <li class="nav-item">
                         <a href="{{route('receipts.index')}}"
                             class="nav-link {{ (Request::is('receipt')) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-ticket-alt"></i>
+                            <i class="nav-icon fas fa-receipt"></i>
                             <p>
                                 Receipts
                             </p>
