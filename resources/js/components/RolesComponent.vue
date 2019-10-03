@@ -94,7 +94,7 @@
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Permissions</label>
+                <label for="permissions">Permissions</label>
                 <multiselect
                   v-model="form.permissions"
                   :options="permissions"
@@ -114,7 +114,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="permissions"></has-error>
               </div>
             </div>
 

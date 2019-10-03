@@ -4,13 +4,27 @@ namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\API\BaseController;
-use App\Models\User;
 use App\Http\Resources\User as UserResource;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 
 class UsersController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'list']]);
+        $this->middleware('permission:user-create', ['only' => ['store']]);
+        $this->middleware('permission:user-edit', ['only' => ['update']]);
+        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+    }
+    
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +32,13 @@ class UsersController extends BaseController
      */
     public function index()
     {
-        return UserResource::collection(User::paginate(10));
+        return view('pages.users.index');
+    }
+
+    public function list()
+    {
+        $users = UserResource::collection(User::paginate(10));
+        return $this->sendResponse($users, 'users retrieved successfully.');
     }
 
      /**
@@ -45,22 +65,19 @@ class UsersController extends BaseController
             'email' => 'required|string|email|max:191|unique:users',
             'password' => 'required|string|min:6'
         ]);
-        return User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+
+        // add role to user
+        $user->assignRole($request->roles);
+
+        // save User
+        $user->save();
+
+        return $this->sendResponse($user->toArray(), 'users created successfully.');
     }
 
     /**
@@ -72,7 +89,28 @@ class UsersController extends BaseController
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $this->validate($request, [
+            'name' => 'required|string|max:191',
+            'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
+            'password' => 'sometimes|string|min:6'
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if (!empty($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+
+        // add role to user
+        $user->syncRoles($request->roles);
+
+        // save User
+        $user->save();
+
+        return $this->sendResponse($user->toArray(), 'users updated successfully.');
+
     }
 
     /**
@@ -83,7 +121,14 @@ class UsersController extends BaseController
      */
     public function destroy($id)
     {
-        //
+        // delete user
+        $user = User::findOrFail($id);
+        $user->roles()->detach();
+
+        $user->delete();
+
+        return $this->sendResponse($user, 'users deleted successfully.');
+
     }
 
     public function getAllResponsibles()
