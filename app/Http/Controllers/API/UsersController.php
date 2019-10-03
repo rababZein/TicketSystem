@@ -52,18 +52,6 @@ class UsersController extends BaseController
     }
 
     /**
-     * Display a data listing of the resource.
-     *
-     * @return Response
-     */
-    public function getClients()
-    {
-        $clients = User::where('type', 'client')->get();
-
-        return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
