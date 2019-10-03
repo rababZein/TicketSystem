@@ -93,7 +93,8 @@ class UsersController extends BaseController
         $this->validate($request, [
             'name' => 'required|string|max:191',
             'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
-            'password' => 'sometimes|string|min:6'
+            'password' => 'sometimes|string|min:6',
+            'type' => 'string|min:6'
         ]);
 
         $user->name = $request->name;
@@ -101,6 +102,7 @@ class UsersController extends BaseController
         if (!empty($request->password)) {
             $user->password = Hash::make($request->password);
         }
+        $user->type = $request->type;
 
         // add role to user
         $user->syncRoles($request->roles);

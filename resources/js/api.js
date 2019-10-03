@@ -34,6 +34,7 @@ const projects = {
     post: params => API.post('/projects', {params}),
     getAll: params => API.get('project/getall'),
     getAllByOwner: params => API.get('project/getAllByOwner/'+params),
+    delete: params => API.delete('/projects/'+params),
 } 
 
 // tickets end point
@@ -44,7 +45,7 @@ const tickets = {
 
 // owners end point
 const owners = {
-    getAll: params => API.get('owner/getall'),
+    getAll: params => API.get('/owner/getall'),
 }
 
 // responsibles end point
