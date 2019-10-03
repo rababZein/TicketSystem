@@ -44,7 +44,7 @@ const tickets = {
 
 // owners end point
 const owners = {
-    getAll: params => API.get('owner/getall'),
+    getAll: params => API.get('/owner/getall'),
 }
 
 // responsibles end point

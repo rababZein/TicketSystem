@@ -24,7 +24,7 @@
           <p>{{ project.name }}</p>
         </div>
         <div class="icon">
-          <i class="fas fa-shopping-cart"></i>
+          <i class="fas fa-briefcase"></i>
         </div>
         <a href="#" class="small-box-footer">
           More info
@@ -80,6 +80,30 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
+                <label for="name">Client</label>
+                <multiselect
+                  v-model="owner_id"
+                  :options="owners"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  return="id"
+                  label="name"
+                  track-by="id"
+                  :preselect-first="true"
+                  @input="opt => form.owner_id = opt.id"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="name"></has-error>
+              </div>
+              <div class="form-group">
                 <label for="task_rate">task rate</label>
                 <input
                   v-model="form.task_rate"
@@ -120,12 +144,14 @@ export default {
       projects: {},
       form: new Form({
         name: "",
-        description: "",
         owner_id: "",
+        description: "",
         task_rate: "",
         budget_hours: "",
         project_assign: []
-      })
+      }),
+      owners: [],
+      owner_id: ""
     };
   },
   methods: {
@@ -135,6 +161,19 @@ export default {
         .get({ page: page })
         .then(response => {
           this.projects = response.data.data;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getOwners() {
+      this.$api.owners
+        .getAll()
+        .then(response => {
+          this.owners = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
           this.$Progress.finish();
         })
         .catch(error => {
@@ -169,7 +208,7 @@ export default {
   },
   mounted() {
     this.getResults();
-    console.log("Component mounted.");
+    this.getOwners();
   }
 };
 </script>
