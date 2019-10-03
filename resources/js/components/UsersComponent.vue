@@ -6,12 +6,7 @@
           <h3 class="card-title">Users Table</h3>
 
           <div class="card-tools">
-            <button
-              type="submit"
-              class="btn btn-success btn-sm"
-              data-toggle="modal"
-              data-target="#newUser"
-            >
+            <button type="submit" class="btn btn-success btn-sm" @click="newModal">
               <i class="fas fa-plus fa-fw"></i>
               <span class="d-none d-lg-inline">New user</span>
             </button>
@@ -25,6 +20,7 @@
                 <th>ID</th>
                 <th>name</th>
                 <th>email</th>
+                <th>Role</th>
                 <th>created at</th>
                 <th>action</th>
               </tr>
@@ -34,12 +30,20 @@
                 <td>{{user.id}}</td>
                 <td>{{user.name}}</td>
                 <td>{{user.email}}</td>
+                <td>
+                  <div
+                    v-show="user.roles"
+                    v-for="role in user.roles"
+                    :key="role"
+                    class="badge badge-primary mr-1"
+                  >{{ role }}</div>
+                </td>
                 <td>{{user.created_at | myDate}}</td>
                 <td>
-                  <a href="#" class="btn btn-info btn-sm">
+                  <a href="#" class="btn btn-primary btn-xs" @click="editModal(user)">
                     <i class="fas fa-edit fa-fw"></i>
                   </a>
-                  <a href="#" class="btn btn-danger btn-sm">
+                  <a href="#" class="btn btn-danger btn-xs" @click="deleteUser(user.id)">
                     <i class="fas fa-trash fa-fw"></i>
                   </a>
                 </td>
@@ -63,7 +67,7 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newUser"
+      id="Modal"
       tabindex="-1"
       role="dialog"
       aria-labelledby="newUserLabel"
@@ -77,7 +81,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createUser" @keydown="form.onKeydown($event)">
+          <form
+            @submit.prevent="editMode ? editUser(form.id) : createUser()"
+            @keydown="form.onKeydown($event)"
+          >
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">Username</label>
@@ -112,6 +119,18 @@
                 />
                 <has-error :form="form" field="password"></has-error>
               </div>
+              <div class="form-group">
+                <label for="role">Role</label>
+                <multiselect
+                  v-model="form.roles"
+                  :multiple="true"
+                  :options="roles"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                ></multiselect>
+                <has-error :form="form" field="role"></has-error>
+              </div>
             </div>
 
             <div class="modal-footer">
@@ -128,11 +147,16 @@
 export default {
   data() {
     return {
+      editMode: false,
       users: {},
       form: new Form({
+        id: "",
         name: "",
-        email: ""
-      })
+        email: "",
+        password: "",
+        roles: []
+      }),
+      roles: []
     };
   },
   methods: {
@@ -148,12 +172,26 @@ export default {
           this.$Progress.fail();
         });
     },
+    newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $("#Modal").modal("show");
+    },
+    editModal(item) {
+      this.editMode = true;
+      this.form.reset();
+      $("#Modal").modal("show");
+      this.form.fill(item);
+      this.form.roles = _.map(this.form.roles, function(value) {
+        return { name: value };
+      });
+    },
     createUser() {
       this.$Progress.start();
       this.form
-        .post("/users")
+        .post("/users/")
         .then(response => {
-          $("#newUser").modal("hide");
+          $("#Modal").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
@@ -168,11 +206,77 @@ export default {
             title: error.response.data.message
           });
         });
+    },
+    editUser(id) {
+      this.$Progress.start();
+      this.form
+        .put("/users/" + id)
+        .then(response => {
+          $("#Modal").modal("hide");
+          this.$Progress.finish();
+          this.getResults();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
+    },
+    getAllRoles() {
+      this.$api.roles
+        .get()
+        .then(response => {
+          this.roles = _.map(response.data.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    deleteUser(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$api.users
+            .delete(id)
+            .then(response => {
+              this.$Progress.finish();
+              this.getResults();
+              Swal.fire("Deleted!", response.data.message, "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: "can't delete the role"
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
     this.getResults();
+    this.getAllRoles();
     console.log("Component mounted.");
   }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

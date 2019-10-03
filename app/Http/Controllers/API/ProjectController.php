@@ -191,7 +191,15 @@ class ProjectController extends BaseController
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
   
   }
+
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function view()
+  {
+    return view('pages.projects.index');
+  }
   
 }
-
-?>

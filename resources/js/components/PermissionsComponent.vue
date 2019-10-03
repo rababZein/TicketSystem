@@ -6,7 +6,7 @@
           <h3 class="card-title">Permissions Table</h3>
 
           <div class="card-tools">
-            <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+            <button type="submit" class="btn btn-success btn-sm" @click="newModal">
               <i class="fas fa-plus fa-fw"></i>
               <span class="d-none d-lg-inline">New Permission</span>
             </button>
@@ -111,7 +111,7 @@ export default {
     };
   },
   methods: {
-    newModel() {
+    newModal() {
       this.editMode = false;
       this.form.reset();
       $("#newRole").modal("show");

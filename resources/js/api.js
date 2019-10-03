@@ -13,6 +13,7 @@ API.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
 const users = {
     get: params => API.get('/users/list', {params}),
     post: params => API.post('/users', { params }),
+    delete: params => API.delete('/users/'+params),
 }
 // roles end point
 const roles = {
@@ -27,6 +28,11 @@ const permissions = {
     getAll: params => API.get('permissions/getall', {params}),
     delete: params => API.delete('/permissions/'+params),
 }
+// projects end point
+const projects = {
+    get: params => API.get('/projects', {params}),
+    post: params => API.post('/projects', {params}),
+} 
 
 // tickets end point
 const tickets = {
