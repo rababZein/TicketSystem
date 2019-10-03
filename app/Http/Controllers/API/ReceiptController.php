@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use Illuminate\Http\Request;
-use App\Models\receipt;
+use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
@@ -25,13 +25,23 @@ class ReceiptController extends BaseController
   }
 
   /**
-   * Display a listing of the resource.
+   * Display a view listing of the resource view.
    *
    * @return Response
    */
   public function index()
   {
-    $receipts = Receipt::all();
+    return view('pages.receipts.index');
+  }
+
+  /**
+   * Display a listing of the resource.
+   *
+   * @return Response
+   */
+  public function getAll()
+  {
+    $receipts = Receipt::with('task')->get();
 
     return $this->sendResponse($receipts->toArray(), 'Receipts retrieved successfully.');
   }
@@ -47,7 +57,7 @@ class ReceiptController extends BaseController
       'name' => 'required|string',
       'description' => 'required|string',
       'task_id' => 'required|integer|exists:tasks,id',
-      'total' => 'float|min:0',
+      'total' => 'numeric|min:0',
       'is_paid' => 'boolean',
     ]);
 
@@ -94,7 +104,7 @@ class ReceiptController extends BaseController
       'name' => 'string',
       'description' => 'string',
       'task_id' => 'integer|exists:tasks,id',
-      'total' => 'float|min:0',
+      'total' => 'numeric|min:0',
       'is_paid' => 'boolean',
     ]);
 

@@ -63,8 +63,8 @@
                     </li>
                 </ul>
             </li>
-            <li class="nav-item has-treeview  {{ (Request::is('ticket', 'task')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('ticket', 'task')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview  {{ (Request::is('ticket', 'task', 'receipt')) ? ' menu-open' : '' }}">
+                <a href="#" class="nav-link {{ (Request::is('ticket', 'task', 'receipt')) ? 'active' : '' }}">
                     <i class="nav-icon fas fa-project-diagram"></i>
                     <p>
                         Projects Management
@@ -89,6 +89,17 @@
                             <i class="nav-icon fas fa-ticket-alt"></i>
                             <p>
                                 Tasks
+                            </p>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav nav-treeview">
+                    <li class="nav-item">
+                        <a href="{{route('receipts.index')}}"
+                            class="nav-link {{ (Request::is('receipt')) ? 'active' : '' }}">
+                            <i class="nav-icon fas fa-ticket-alt"></i>
+                            <p>
+                                Receipts
                             </p>
                         </a>
                     </li>
