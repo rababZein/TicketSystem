@@ -206,9 +206,11 @@ export default {
       this.$api.tickets
         .getAll()
         .then(response => {
-          
           this.tickets = response.data.data;
-          console.log(this.tickets);
+                   
+          // convert array to object for paginate
+          this.tickets = Object.assign({}, this.tickets);
+
           this.$Progress.finish();
         })
         .catch(error => {
