@@ -131,6 +131,18 @@
                 ></multiselect>
                 <has-error :form="form" field="role"></has-error>
               </div>
+              <div class="form-group">
+                <label for="type">type</label>
+                <multiselect
+                  v-model="form.type"
+                  :options="types"
+                  :searchable="false"
+                  :close-on-select="false"
+                  :show-labels="false"
+                  placeholder="Pick a value"
+                ></multiselect>
+                <has-error :form="form" field="type"></has-error>
+              </div>
             </div>
 
             <div class="modal-footer">
@@ -154,9 +166,11 @@ export default {
         name: "",
         email: "",
         password: "",
-        roles: []
+        roles: [],
+        type: ""
       }),
-      roles: []
+      roles: [],
+      types: ["regular-user", "client"]
     };
   },
   methods: {
