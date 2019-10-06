@@ -110,10 +110,10 @@
                 <multiselect
                   v-model="form.task"
                   :options="tasks"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -139,14 +139,18 @@
                 <has-error :form="form" field="total"></has-error>
               </div>
               <div class="form-group">
-                <input
-                  v-model="form.is_paid"
-                  type="checkbox"
-                  name="is_paid"
-                  :class="{ 'is-invalid': form.errors.has('is_paid') }"
-                />
-                <label for="is_paid">Is Paid</label>
-                <has-error :form="form" field="is_paid"></has-error>
+                <div class="custom-control custom-switch">
+                  <input
+                    v-model="form.is_paid"
+                    type="checkbox"
+                    name="is_paid"
+                    class="custom-control-input"
+                    :class="{ 'is-invalid': form.errors.has('is_paid') }"
+                    id="is_paid"
+                  />
+                  <label class="custom-control-label" for="is_paid">Is Paid</label>
+                  <has-error :form="form" field="is_paid"></has-error>
+                </div>
               </div>
             </div>
 
@@ -251,7 +255,7 @@ export default {
       this.$Progress.start();
 
       this.form.task_id = this.form.task.id;
-      
+
       this.form
         .patch("receipt/" + id)
         .then(response => {

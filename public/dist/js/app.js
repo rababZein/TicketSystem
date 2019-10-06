@@ -2238,18 +2238,48 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      editMode: false,
       projects: {},
       form: new Form({
+        id: "",
         name: "",
-        description: "",
         owner_id: "",
+        description: "",
         task_rate: "",
         budget_hours: "",
         project_assign: []
-      })
+      }),
+      owners: [],
+      owner_id: ""
     };
   },
   methods: {
@@ -2268,38 +2298,122 @@ __webpack_require__.r(__webpack_exports__);
         _this.$Progress.fail();
       });
     },
-    newModal: function newModal() {
-      $("#newModal").modal("show");
-      this.form.reset();
-    },
-    createProject: function createProject() {
+    getOwners: function getOwners() {
       var _this2 = this;
 
-      this.form.post("/projects").then(function (response) {
-        $("#newModal").modal("hide");
+      this.$api.owners.getAll().then(function (response) {
+        _this2.owners = _.map(response.data.data, function (key, value) {
+          return {
+            id: key.id,
+            name: key.name
+          };
+        });
 
         _this2.$Progress.finish();
+      })["catch"](function (error) {
+        _this2.$Progress.fail();
+      });
+    },
+    selectOwnerId: function selectOwnerId(opt) {
+      (function (opt) {
+        return form.owner_id = opt.id;
+      });
+    },
+    newModal: function newModal() {
+      this.editMode = false;
+      this.form.reset();
+      $("#Modal").modal("show");
+    },
+    editModal: function editModal(item) {
+      this.editMode = true;
+      this.form.reset();
+      $("#Modal").modal("show");
+      this.form.fill(item);
+    },
+    createProject: function createProject() {
+      var _this3 = this;
 
-        _this2.getResults();
+      this.form.post("/projects").then(function (response) {
+        $("#Modal").modal("hide");
+
+        _this3.$Progress.finish();
+
+        _this3.getResults();
 
         Toast.fire({
           type: "success",
           title: response.data.message
         });
       })["catch"](function (error) {
-        _this2.$Progress.fail();
+        _this3.$Progress.fail();
 
         Toast.fire({
           type: "error",
           title: error.response.data.message
         });
-        _this2.form.errors.errors = error.response.data.data;
+        _this3.form.errors.errors = error.response.data.data;
+      });
+    },
+    editProject: function editProject(id) {
+      var _this4 = this;
+
+      this.$Progress.start();
+      this.form.put("/projects/" + id).then(function (response) {
+        $("#Modal").modal("hide");
+
+        _this4.$Progress.finish();
+
+        _this4.getResults();
+
+        Toast.fire({
+          type: "success",
+          title: response.data.message
+        });
+      })["catch"](function (error) {
+        _this4.$Progress.fail();
+
+        Toast.fire({
+          type: "error",
+          title: error.response.data.message
+        });
+      });
+    },
+    deleteProject: function deleteProject(id) {
+      var _this5 = this;
+
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(function (result) {
+        if (result.value) {
+          _this5.$Progress.start();
+
+          _this5.$api.projects["delete"](id).then(function (response) {
+            _this5.$Progress.finish();
+
+            _this5.getResults();
+
+            Swal.fire("Deleted!", response.data.message, "success");
+          })["catch"](function (error) {
+            _this5.$Progress.fail();
+
+            Toast.fire({
+              type: "error",
+              title: "can't delete the project"
+            });
+          });
+        }
       });
     }
   },
   mounted: function mounted() {
     this.getResults();
-    console.log("Component mounted.");
+    this.getOwners();
   }
 });
 
@@ -2314,6 +2428,10 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
 //
 //
 //
@@ -3885,6 +4003,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -3895,9 +4026,11 @@ __webpack_require__.r(__webpack_exports__);
         name: "",
         email: "",
         password: "",
-        roles: []
+        roles: [],
+        type: ""
       }),
-      roles: []
+      roles: [],
+      types: ["regular-user", "client"]
     };
   },
   methods: {
@@ -63268,7 +63401,35 @@ var render = function() {
               _c("div", { staticClass: "inner" }, [
                 _c("h3", [_vm._v(_vm._s(project.name))]),
                 _vm._v(" "),
-                _c("p", [_vm._v(_vm._s(project.name))])
+                _c("p", [_vm._v(_vm._s(project.name))]),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-light btn-xs",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.editModal(project)
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fas fa-edit fa-fw" })]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "btn btn-xs btn-light",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        return _vm.deleteProject(project.id)
+                      }
+                    }
+                  },
+                  [_c("i", { staticClass: "fas fa-trash fa-fw" })]
+                )
               ]),
               _vm._v(" "),
               _vm._m(1, true),
@@ -63300,7 +63461,7 @@ var render = function() {
         {
           staticClass: "modal fade",
           attrs: {
-            id: "newModal",
+            id: "Modal",
             tabindex: "-1",
             role: "dialog",
             "aria-labelledby": "newModalLabel",
@@ -63313,7 +63474,43 @@ var render = function() {
             { staticClass: "modal-dialog", attrs: { role: "document" } },
             [
               _c("div", { staticClass: "modal-content" }, [
-                _vm._m(3),
+                _c("div", { staticClass: "modal-header" }, [
+                  _c(
+                    "h5",
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: !_vm.editMode,
+                          expression: "!editMode"
+                        }
+                      ],
+                      staticClass: "modal-title",
+                      attrs: { id: "newModalLabel" }
+                    },
+                    [_vm._v("Create New Project")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "h5",
+                    {
+                      directives: [
+                        {
+                          name: "show",
+                          rawName: "v-show",
+                          value: _vm.editMode,
+                          expression: "editMode"
+                        }
+                      ],
+                      staticClass: "modal-title",
+                      attrs: { id: "newModalLabel" }
+                    },
+                    [_vm._v("edit Project")]
+                  ),
+                  _vm._v(" "),
+                  _vm._m(3)
+                ]),
                 _vm._v(" "),
                 _c(
                   "form",
@@ -63321,7 +63518,9 @@ var render = function() {
                     on: {
                       submit: function($event) {
                         $event.preventDefault()
-                        return _vm.createProject($event)
+                        _vm.editMode
+                          ? _vm.editProject(_vm.form.id)
+                          : _vm.createProject()
                       },
                       keydown: function($event) {
                         return _vm.form.onKeydown($event)
@@ -63378,7 +63577,7 @@ var render = function() {
                             _vm._v("description")
                           ]),
                           _vm._v(" "),
-                          _c("input", {
+                          _c("textarea", {
                             directives: [
                               {
                                 name: "model",
@@ -63418,6 +63617,47 @@ var render = function() {
                         "div",
                         { staticClass: "form-group" },
                         [
+                          _c("label", { attrs: { for: "name" } }, [
+                            _vm._v("Client")
+                          ]),
+                          _vm._v(" "),
+                          _c("multiselect", {
+                            attrs: {
+                              options: _vm.owners,
+                              searchable: true,
+                              "close-on-select": true,
+                              "clear-on-select": false,
+                              "preserve-search": true,
+                              placeholder: "Select one",
+                              label: "name",
+                              "track-by": "name",
+                              "preselect-first": true
+                            },
+                            on: {
+                              input: function(opt) {
+                                return (_vm.form.owner_id = opt.id)
+                              }
+                            },
+                            model: {
+                              value: _vm.owner_id,
+                              callback: function($$v) {
+                                _vm.owner_id = $$v
+                              },
+                              expression: "owner_id"
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "name" }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-group" },
+                        [
                           _c("label", { attrs: { for: "task_rate" } }, [
                             _vm._v("task rate")
                           ]),
@@ -63435,7 +63675,12 @@ var render = function() {
                             class: {
                               "is-invalid": _vm.form.errors.has("task_rate")
                             },
-                            attrs: { type: "text", name: "task_rate" },
+                            attrs: {
+                              type: "number",
+                              min: "0",
+                              step: "0.01",
+                              name: "task_rate"
+                            },
                             domProps: { value: _vm.form.task_rate },
                             on: {
                               input: function($event) {
@@ -63479,7 +63724,12 @@ var render = function() {
                             class: {
                               "is-invalid": _vm.form.errors.has("budget_hours")
                             },
-                            attrs: { type: "text", name: "budget_hours" },
+                            attrs: {
+                              type: "number",
+                              min: "0",
+                              step: "0.01",
+                              name: "budget_hours"
+                            },
                             domProps: { value: _vm.form.budget_hours },
                             on: {
                               input: function($event) {
@@ -63546,7 +63796,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "icon" }, [
-      _c("i", { staticClass: "fas fa-shopping-cart" })
+      _c("i", { staticClass: "fas fa-briefcase" })
     ])
   },
   function() {
@@ -63562,24 +63812,18 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "modal-header" }, [
-      _c("h5", { staticClass: "modal-title", attrs: { id: "newModalLabel" } }, [
-        _vm._v("Create New User")
-      ]),
-      _vm._v(" "),
-      _c(
-        "button",
-        {
-          staticClass: "close",
-          attrs: {
-            type: "button",
-            "data-dismiss": "modal",
-            "aria-label": "Close"
-          }
-        },
-        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
-      )
-    ])
+    return _c(
+      "button",
+      {
+        staticClass: "close",
+        attrs: {
+          type: "button",
+          "data-dismiss": "modal",
+          "aria-label": "Close"
+        }
+      },
+      [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+    )
   },
   function() {
     var _vm = this
@@ -63883,10 +64127,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.tasks,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -63969,70 +64213,82 @@ var render = function() {
                       1
                     ),
                     _vm._v(" "),
-                    _c(
-                      "div",
-                      { staticClass: "form-group" },
-                      [
-                        _c("input", {
-                          directives: [
-                            {
-                              name: "model",
-                              rawName: "v-model",
-                              value: _vm.form.is_paid,
-                              expression: "form.is_paid"
-                            }
-                          ],
-                          class: {
-                            "is-invalid": _vm.form.errors.has("is_paid")
-                          },
-                          attrs: { type: "checkbox", name: "is_paid" },
-                          domProps: {
-                            checked: Array.isArray(_vm.form.is_paid)
-                              ? _vm._i(_vm.form.is_paid, null) > -1
-                              : _vm.form.is_paid
-                          },
-                          on: {
-                            change: function($event) {
-                              var $$a = _vm.form.is_paid,
-                                $$el = $event.target,
-                                $$c = $$el.checked ? true : false
-                              if (Array.isArray($$a)) {
-                                var $$v = null,
-                                  $$i = _vm._i($$a, $$v)
-                                if ($$el.checked) {
-                                  $$i < 0 &&
-                                    _vm.$set(
-                                      _vm.form,
-                                      "is_paid",
-                                      $$a.concat([$$v])
-                                    )
+                    _c("div", { staticClass: "form-group" }, [
+                      _c(
+                        "div",
+                        { staticClass: "custom-control custom-switch" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.is_paid,
+                                expression: "form.is_paid"
+                              }
+                            ],
+                            staticClass: "custom-control-input",
+                            class: {
+                              "is-invalid": _vm.form.errors.has("is_paid")
+                            },
+                            attrs: {
+                              type: "checkbox",
+                              name: "is_paid",
+                              id: "is_paid"
+                            },
+                            domProps: {
+                              checked: Array.isArray(_vm.form.is_paid)
+                                ? _vm._i(_vm.form.is_paid, null) > -1
+                                : _vm.form.is_paid
+                            },
+                            on: {
+                              change: function($event) {
+                                var $$a = _vm.form.is_paid,
+                                  $$el = $event.target,
+                                  $$c = $$el.checked ? true : false
+                                if (Array.isArray($$a)) {
+                                  var $$v = null,
+                                    $$i = _vm._i($$a, $$v)
+                                  if ($$el.checked) {
+                                    $$i < 0 &&
+                                      _vm.$set(
+                                        _vm.form,
+                                        "is_paid",
+                                        $$a.concat([$$v])
+                                      )
+                                  } else {
+                                    $$i > -1 &&
+                                      _vm.$set(
+                                        _vm.form,
+                                        "is_paid",
+                                        $$a
+                                          .slice(0, $$i)
+                                          .concat($$a.slice($$i + 1))
+                                      )
+                                  }
                                 } else {
-                                  $$i > -1 &&
-                                    _vm.$set(
-                                      _vm.form,
-                                      "is_paid",
-                                      $$a
-                                        .slice(0, $$i)
-                                        .concat($$a.slice($$i + 1))
-                                    )
+                                  _vm.$set(_vm.form, "is_paid", $$c)
                                 }
-                              } else {
-                                _vm.$set(_vm.form, "is_paid", $$c)
                               }
                             }
-                          }
-                        }),
-                        _vm._v(" "),
-                        _c("label", { attrs: { for: "is_paid" } }, [
-                          _vm._v("Is Paid")
-                        ]),
-                        _vm._v(" "),
-                        _c("has-error", {
-                          attrs: { form: _vm.form, field: "is_paid" }
-                        })
-                      ],
-                      1
-                    )
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "label",
+                            {
+                              staticClass: "custom-control-label",
+                              attrs: { for: "is_paid" }
+                            },
+                            [_vm._v("Is Paid")]
+                          ),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "is_paid" }
+                          })
+                        ],
+                        1
+                      )
+                    ])
                   ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "modal-footer" }, [
@@ -64790,10 +65046,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.owners,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -64854,10 +65110,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.projects,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -64913,10 +65169,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.tickets,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -64972,10 +65228,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.responsibles,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -65443,10 +65699,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.owners,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -65507,10 +65763,10 @@ var render = function() {
                         _c("multiselect", {
                           attrs: {
                             options: _vm.projects,
-                            "close-on-select": false,
+                            "close-on-select": true,
                             "clear-on-select": false,
                             "preserve-search": true,
-                            placeholder: "Pick some",
+                            placeholder: "Select one",
                             label: "name",
                             "track-by": "name",
                             "preselect-first": true
@@ -65950,6 +66206,7 @@ var render = function() {
                           attrs: {
                             multiple: true,
                             options: _vm.roles,
+                            "close-on-select": true,
                             placeholder: "Select one",
                             label: "name",
                             "track-by": "name"
@@ -65965,6 +66222,38 @@ var render = function() {
                         _vm._v(" "),
                         _c("has-error", {
                           attrs: { form: _vm.form, field: "role" }
+                        })
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "div",
+                      { staticClass: "form-group" },
+                      [
+                        _c("label", { attrs: { for: "type" } }, [
+                          _vm._v("type")
+                        ]),
+                        _vm._v(" "),
+                        _c("multiselect", {
+                          attrs: {
+                            options: _vm.types,
+                            searchable: false,
+                            "close-on-select": true,
+                            "show-labels": false,
+                            placeholder: "Pick a value"
+                          },
+                          model: {
+                            value: _vm.form.type,
+                            callback: function($$v) {
+                              _vm.$set(_vm.form, "type", $$v)
+                            },
+                            expression: "form.type"
+                          }
+                        }),
+                        _vm._v(" "),
+                        _c("has-error", {
+                          attrs: { form: _vm.form, field: "type" }
                         })
                       ],
                       1
@@ -81242,6 +81531,9 @@ var projects = {
   },
   getAllByOwner: function getAllByOwner(params) {
     return API.get('project/getAllByOwner/' + params);
+  },
+  "delete": function _delete(params) {
+    return API["delete"]('/projects/' + params);
   }
 }; // tickets end point
 
@@ -81256,7 +81548,7 @@ var tickets = {
 
 var owners = {
   getAll: function getAll(params) {
-    return API.get('owner/getall');
+    return API.get('/owner/getall');
   }
 }; // responsibles end point
 
