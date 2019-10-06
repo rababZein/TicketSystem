@@ -55,7 +55,7 @@
 
     <!-- REQUIRED SCRIPTS -->
 
-    <script src="/dist/js/app.js"></script>
+    <script src="{{ mix('dist/js/app.js') }}"></script>
 </body>
 
 </html>
