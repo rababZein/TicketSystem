@@ -21,22 +21,6 @@ class PermissionTableSeeder extends Seeder
             'permission-create',
             'permission-edit',
             'permission-delete',
-            'project-list',
-            'project-create',
-            'project-edit',
-            'project-delete',
-            'ticket-list',
-            'ticket-create',
-            'ticket-edit',
-            'ticket-delete',
-            'task-list',
-            'task-create',
-            'task-edit',
-            'task-delete',
-            'receipt-list',
-            'receipt-create',
-            'receipt-edit',
-            'receipt-delete'
          ];
  
  
