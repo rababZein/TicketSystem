@@ -20,7 +20,8 @@ class User extends JsonResource
             "name" => $this->name,
             "email" => $this->email,
             "created_at" => $this->created_at,
-            "roles" => $this->roles->pluck('name')
+            "roles" => $this->roles->pluck('name'),
+            "type" => $this->type,
             // "created_at" => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('d-m-Y')
         ];
     }

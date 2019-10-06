@@ -22,9 +22,11 @@
           <h3>{{ project.name }}</h3>
 
           <p>{{ project.name }}</p>
+          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
+          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light"><i class="fas fa-trash fa-fw"></i></a>
         </div>
         <div class="icon">
-          <i class="fas fa-shopping-cart"></i>
+          <i class="fas fa-briefcase"></i>
         </div>
         <a href="#" class="small-box-footer">
           More info
@@ -41,7 +43,7 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newModal"
+      id="Modal"
       tabindex="-1"
       role="dialog"
       aria-labelledby="newModalLabel"
@@ -55,7 +57,7 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="createProject" @keydown="form.onKeydown($event)">
+          <form @submit.prevent="editMode ? editProject(form.id) : createProject()" @keydown="form.onKeydown($event)">
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">name</label>
@@ -80,10 +82,31 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
+                <label for="name">Client</label>
+                <multiselect
+                  v-model="owner_id"
+                  :options="owners"
+                  :searchable="true"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                  :preselect-first="true"
+                  @input="opt => form.owner_id = opt.id"
+                >
+
+                </multiselect>
+                <has-error :form="form" field="name"></has-error>
+              </div>
+              <div class="form-group">
                 <label for="task_rate">task rate</label>
                 <input
                   v-model="form.task_rate"
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   name="task_rate"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('task_rate') }"
@@ -94,7 +117,9 @@
                 <label for="budget_hours">budget hours</label>
                 <input
                   v-model="form.budget_hours"
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="0.01"
                   name="budget_hours"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('budget_hours') }"
@@ -117,15 +142,19 @@
 export default {
   data() {
     return {
+      editMode: false,
       projects: {},
       form: new Form({
+        id: "",
         name: "",
-        description: "",
         owner_id: "",
+        description: "",
         task_rate: "",
         budget_hours: "",
         project_assign: []
-      })
+      }),
+      owners: [],
+      owner_id: ""
     };
   },
   methods: {
@@ -141,15 +170,38 @@ export default {
           this.$Progress.fail();
         });
     },
+    getOwners() {
+      this.$api.owners
+        .getAll()
+        .then(response => {
+          this.owners = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    selectOwnerId(opt) {
+      opt => form.owner_id = opt.id
+    },
     newModal() {
-      $("#newModal").modal("show");
+      this.editMode = false;
       this.form.reset();
+      $("#Modal").modal("show");
+    },
+    editModal(item) {
+      this.editMode = true;
+      this.form.reset();
+      $("#Modal").modal("show");
+      this.form.fill(item);
     },
     createProject() {
       this.form
         .post("/projects")
         .then(response => {
-          $("#newModal").modal("hide");
+          $("#Modal").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
@@ -165,11 +217,61 @@ export default {
           });
           this.form.errors.errors = error.response.data.data;
         });
+    },
+    editProject(id) {
+      this.$Progress.start();
+      this.form
+        .put("/projects/" + id)
+        .then(response => {
+          $("#Modal").modal("hide");
+          this.$Progress.finish();
+          this.getResults();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
+    },
+    deleteProject(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$api.projects
+            .delete(id)
+            .then(response => {
+              this.$Progress.finish();
+              this.getResults();
+              Swal.fire("Deleted!", response.data.message, "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: "can't delete the project"
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
     this.getResults();
-    console.log("Component mounted.");
+    this.getOwners();
   }
 };
 </script>
