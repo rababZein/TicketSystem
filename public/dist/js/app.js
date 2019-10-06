@@ -2030,7 +2030,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.$Progress.start();
-      this.form.post("/permissions").then(function (response) {
+      this.form.post("/v-api/permissions").then(function (response) {
         $("#newRole").modal("hide");
 
         _this2.$Progress.finish();
@@ -2054,7 +2054,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.$Progress.start();
-      this.form.put("/permissions/" + id).then(function (response) {
+      this.form.put("/v-api/permissions/" + id).then(function (response) {
         $("#newRole").modal("hide");
 
         _this3.$Progress.finish();
@@ -2333,7 +2333,7 @@ __webpack_require__.r(__webpack_exports__);
     createProject: function createProject() {
       var _this3 = this;
 
-      this.form.post("/projects").then(function (response) {
+      this.form.post("/v-api/projects").then(function (response) {
         $("#Modal").modal("hide");
 
         _this3.$Progress.finish();
@@ -2358,7 +2358,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       this.$Progress.start();
-      this.form.put("/projects/" + id).then(function (response) {
+      this.form.put("/v-api/projects/" + id).then(function (response) {
         $("#Modal").modal("hide");
 
         _this4.$Progress.finish();
@@ -2664,7 +2664,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$Progress.start(); // need to be enhance
 
       this.form.task_id = this.form.task.id;
-      this.form.post("receipt").then(function (response) {
+      this.form.post("/v-api/receipts").then(function (response) {
         $("#newReceipt").modal("hide");
 
         _this3.$Progress.finish();
@@ -2689,7 +2689,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$Progress.start();
       this.form.task_id = this.form.task.id;
-      this.form.patch("receipt/" + id).then(function (response) {
+      this.form.patch("/v-api/receipts/" + id).then(function (response) {
         $("#newReceipt").modal("hide");
 
         _this4.$Progress.finish();
@@ -2955,7 +2955,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.$Progress.start();
-      this.form.post("/roles/").then(function (response) {
+      this.form.post("/v-api/roles/").then(function (response) {
         $("#newRole").modal("hide");
 
         _this3.$Progress.finish();
@@ -2979,7 +2979,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this4 = this;
 
       this.$Progress.start();
-      this.form.put("/roles/" + id).then(function (response) {
+      this.form.put("/v-api/roles/" + id).then(function (response) {
         $("#newRole").modal("hide");
 
         _this4.$Progress.finish();
@@ -3404,7 +3404,7 @@ __webpack_require__.r(__webpack_exports__);
       this.form.project_id = this.form.project.id;
       this.form.ticket_id = this.form.ticket.id;
       this.form.responsible_id = this.form.responsible.id;
-      this.form.post("task").then(function (response) {
+      this.form.post("/v-api/tasks").then(function (response) {
         $("#newTask").modal("hide");
 
         _this6.$Progress.finish();
@@ -3433,7 +3433,7 @@ __webpack_require__.r(__webpack_exports__);
       this.form.project_id = this.form.project.id;
       this.form.ticket_id = this.form.ticket.id;
       this.form.responsible_id = this.form.responsible.id;
-      this.form.patch("task/" + id).then(function (response) {
+      this.form.patch("/v-api/tasks/" + id).then(function (response) {
         $("#newTask").modal("hide");
 
         _this7.$Progress.finish();
@@ -3761,7 +3761,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$Progress.start(); // need to be enhance
 
       this.form.project_id = this.form.project.id;
-      this.form.post("ticket").then(function (response) {
+      this.form.post("/v-api/tickets").then(function (response) {
         $("#newTicket").modal("hide");
 
         _this4.$Progress.finish();
@@ -3786,7 +3786,7 @@ __webpack_require__.r(__webpack_exports__);
 
       this.$Progress.start();
       this.form.project_id = this.form.project.id;
-      this.form.patch("ticket/" + id).then(function (response) {
+      this.form.patch("/tickets/" + id).then(function (response) {
         $("#newTicket").modal("hide");
 
         _this5.$Progress.finish();
@@ -4069,7 +4069,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this2 = this;
 
       this.$Progress.start();
-      this.form.post("/users/").then(function (response) {
+      this.form.post("/v-api/users/").then(function (response) {
         $("#Modal").modal("hide");
 
         _this2.$Progress.finish();
@@ -4093,7 +4093,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.$Progress.start();
-      this.form.put("/users/" + id).then(function (response) {
+      this.form.put("/v-api/users/" + id).then(function (response) {
         $("#Modal").modal("hide");
 
         _this3.$Progress.finish();
@@ -81457,10 +81457,10 @@ __webpack_require__.r(__webpack_exports__);
  // The Base Route
 
 var API = axios__WEBPACK_IMPORTED_MODULE_0___default.a.create({
-  baseURL: ''
-});
-var token = localStorage.getItem('token');
-API.defaults.headers.common['Authorization'] = token ? "Bearer ".concat(token) : ''; // users end point
+  baseURL: '/v-api'
+}); // const token = localStorage.getItem('token');
+// API.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
+// users end point
 
 var users = {
   get: function get(params) {
@@ -81506,7 +81506,7 @@ var permissions = {
     });
   },
   getAll: function getAll(params) {
-    return API.get('permissions/getall', {
+    return API.get('/permissions/getall', {
       params: params
     });
   },
@@ -81527,10 +81527,10 @@ var projects = {
     });
   },
   getAll: function getAll(params) {
-    return API.get('project/getall');
+    return API.get('/project/getall');
   },
   getAllByOwner: function getAllByOwner(params) {
-    return API.get('project/getAllByOwner/' + params);
+    return API.get('/project/getAllByOwner/' + params);
   },
   "delete": function _delete(params) {
     return API["delete"]('/projects/' + params);
@@ -81539,10 +81539,10 @@ var projects = {
 
 var tickets = {
   getAll: function getAll(params) {
-    return API.get('ticket/getall');
+    return API.get('/tickets/getall');
   },
   "delete": function _delete(params) {
-    return API["delete"]('/ticket/' + params);
+    return API["delete"]('/tickets/' + params);
   }
 }; // owners end point
 
@@ -81554,25 +81554,25 @@ var owners = {
 
 var responsibles = {
   getAll: function getAll(params) {
-    return API.get('user/getAllResponsibles');
+    return API.get('/user/getAllResponsibles');
   }
 }; // tasks end point
 
 var tasks = {
   getAll: function getAll(params) {
-    return API.get('task/getall');
+    return API.get('/tasks/getall');
   },
   "delete": function _delete(params) {
-    return API["delete"]('/task/' + params);
+    return API["delete"]('/tasks/' + params);
   }
 }; // receipts end point
 
 var receipts = {
   getAll: function getAll(params) {
-    return API.get('receipt/getall');
+    return API.get('/receipts/getall');
   },
   "delete": function _delete(params) {
-    return API["delete"]('/receipt/' + params);
+    return API["delete"]('/receipts/' + params);
   }
 };
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -82328,8 +82328,44 @@ var routes = [{
     title: 'Users'
   }
 }, {
+  path: '/projects',
+  component: __webpack_require__(/*! ./components/ProjectsComponent.vue */ "./resources/js/components/ProjectsComponent.vue")["default"],
+  meta: {
+    title: 'Projects'
+  }
+}, {
+  path: '/tickets',
+  component: __webpack_require__(/*! ./components/TicketsComponent.vue */ "./resources/js/components/TicketsComponent.vue")["default"],
+  meta: {
+    title: 'Tickets'
+  }
+}, {
+  path: '/tasks',
+  component: __webpack_require__(/*! ./components/TasksComponent.vue */ "./resources/js/components/TasksComponent.vue")["default"],
+  meta: {
+    title: 'Tasks'
+  }
+}, {
+  path: '/receipts',
+  component: __webpack_require__(/*! ./components/ReceiptsComponent.vue */ "./resources/js/components/ReceiptsComponent.vue")["default"],
+  meta: {
+    title: 'Receipts'
+  }
+}, {
+  path: '/permissions',
+  component: __webpack_require__(/*! ./components/PermissionsComponent.vue */ "./resources/js/components/PermissionsComponent.vue")["default"],
+  meta: {
+    title: 'Permissions'
+  }
+}, {
+  path: '/roles',
+  component: __webpack_require__(/*! ./components/RolesComponent.vue */ "./resources/js/components/RolesComponent.vue")["default"],
+  meta: {
+    title: 'Roles'
+  }
+}, {
   path: '*',
-  component: __webpack_require__(/*! ./components/UsersComponent.vue */ "./resources/js/components/UsersComponent.vue")["default"]
+  component: __webpack_require__(/*! ./components/DashboardComponent.vue */ "./resources/js/components/DashboardComponent.vue")["default"]
 }];
 /* harmony default export */ __webpack_exports__["default"] = (new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
   mode: 'history',

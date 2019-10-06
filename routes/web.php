@@ -12,12 +12,16 @@
 */
 
 
+
 Auth::routes();
 
-Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
-    Route::get('/', 'HomeController@index');
-    Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['middleware' => ['auth'],'namespace' => 'Vue'], function() {
+    Route::get('/', 'VueController@index');
+    Route::get('/home', 'VueController@index')->name('home');
+});
 
+
+Route::group(['middleware' => ['auth'],'namespace' => 'API', 'prefix' => 'v-api'], function() {
     // roles
     Route::get('/roles/list', 'RolesController@list');
     Route::resource('/roles', 'RolesController')->except('show', 'create');
@@ -30,58 +34,31 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
     // users
     Route::get('/users/list', 'UsersController@list');
     Route::resource('/users', 'UsersController')->except('show', 'create');
+    Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
 
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
     Route::resource('/projects', 'ProjectController')->except('create');
+    Route::get('/project/getall', 'ProjectController@getAll');
+    Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
+
+
+    // tickets
+    Route::get('/tickets/getall', 'TicketController@getAll');
+    Route::resource('/tickets', 'TicketController')->except('create');
+    
+    // task
+    Route::get('/tasks/getall', 'TaskController@getAll');
+    Route::resource('/tasks', 'TaskController')->except('create');
+    
+    // owner
+    Route::get('/owner/getall', 'UsersController@getClients');
+
+    // receipt
+    Route::get('/receipts/getall', 'ReceiptController@getAll');
+    Route::resource('/receipts', 'ReceiptController')->except('create');
+
 
 });
 
-
-// Route::get('/{path}','HomeController@index')->where( 'path', '^(?!api).*$' );
-
-Route::group(['prefix' => 'ticket', 'middleware' => ['auth']], function () {
-    Route::get('/',[
-        'as' => 'tickets.index',
-        'uses' =>'API\TicketController@index'
-    ]);
-    Route::get('/getall', 'API\TicketController@getAll');
-    Route::post('/', 'API\TicketController@store');
-    Route::patch('/{ticket_id}', 'API\TicketController@update');
-    Route::delete('/{ticket_id}', 'API\TicketController@destroy');
-});
-
-Route::group(['prefix' => 'project', 'middleware' => ['auth']], function () {
-    Route::get('/getall', 'API\ProjectController@getAll');
-    Route::get('/getAllByOwner/{owner_id}', 'API\ProjectController@getAllByOwner');
-});
-
-Route::group(['prefix' => 'owner', 'middleware' => ['auth']], function () {
-    Route::get('/getall', 'API\UsersController@getClients');
-});
-
-Route::group(['prefix' => 'user', 'middleware' => ['auth']], function () {
-    Route::get('/getAllResponsibles', 'API\UsersController@getAllResponsibles');
-});
-
-Route::group(['prefix' => 'task', 'middleware' => ['auth']], function () {
-    Route::get('/',[
-        'as' => 'tasks.index',
-        'uses' =>'API\TaskController@index'
-    ]);
-    Route::get('/getall', 'API\TaskController@getAll');
-    Route::post('/', 'API\TaskController@store');
-    Route::patch('/{task_id}', 'API\TaskController@update');
-    Route::delete('/{task_id}', 'API\TaskController@destroy');
-});
-
-Route::group(['prefix' => 'receipt', 'middleware' => ['auth']], function () {
-    Route::get('/',[
-        'as' => 'receipts.index',
-        'uses' =>'API\ReceiptController@index'
-    ]);
-    Route::get('/getall', 'API\ReceiptController@getAll');
-    Route::post('/', 'API\ReceiptController@store');
-    Route::patch('/{task_id}', 'API\ReceiptController@update');
-    Route::delete('/{task_id}', 'API\ReceiptController@destroy');
-});
+Route::get('/{path}','Vue\VueController@index')->where( 'path', '^(?!v-api).*$' );

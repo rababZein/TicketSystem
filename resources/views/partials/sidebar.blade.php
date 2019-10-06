@@ -26,16 +26,16 @@
             <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
             <li class="nav-item">
-                <a href="{{route('home')}}" class="nav-link {{ (Request::is('home')) ? 'active' : '' }}">
-                    <i class="nav-icon fas fa-tachometer-alt"></i>
+                <router-link to="/dashboard" class="nav-link">
                     <p>
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         Dashboard
                     </p>
-                </a>
+                </router-link>
             </li>
             @hasanyrole('admin')
-            <li class="nav-item has-treeview  {{ (Request::is('users')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('users')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-users"></i>
                     <p>
                         Users Management
@@ -44,18 +44,17 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('users.index')}}"
-                            class="nav-link {{ (Request::is('users')) ? 'active' : '' }}">
-                            <i class="nav-icon fas fa-list"></i>
+                        <router-link to="/users" class="nav-link">
                             <p>
+                                <i class="nav-icon fas fa-list"></i>
                                 Users
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item has-treeview  {{ (Request::is('projects/*', 'ticket', 'task', 'receipt')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('projects/*', 'ticket', 'task', 'receipt')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-project-diagram"></i>
                     <p>
                         Projects Management
@@ -64,48 +63,41 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('project.view')}}"
-                            class="nav-link {{ (Request::is('projects/*')) ? 'active' : '' }}">
+                        <router-link to="/projects" class="nav-link">
                             <i class="nav-icon fas fa-briefcase"></i>
                             <p>
                                 Projects
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="{{route('tickets.index')}}"
-                            class="nav-link {{ (Request::is('ticket')) ? 'active' : '' }}">
+                        <router-link to="/tickets" class="nav-link">
                             <i class="nav-icon fas fa-ticket-alt"></i>
                             <p>
                                 Tickets
                             </p>
-                        </a>
+                        </router-link>
                     </li>
-                </ul>
-                <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('tasks.index')}}" class="nav-link {{ (Request::is('task')) ? 'active' : '' }}">
+                        <router-link to="/tasks" class="nav-link">
                             <i class="nav-icon fas fa-tasks"></i>
                             <p>
                                 Tasks
                             </p>
-                        </a>
+                        </router-link>
                     </li>
-                </ul>
-                <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('receipts.index')}}"
-                            class="nav-link {{ (Request::is('receipt')) ? 'active' : '' }}">
+                        <router-link to="/receipts" class="nav-link">
                             <i class="nav-icon fas fa-receipt"></i>
                             <p>
                                 Receipts
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                 </ul>
             </li>
-            <li class="nav-item has-treeview  {{ (Request::is('permissions', 'roles')) ? ' menu-open' : '' }}">
-                <a href="#" class="nav-link {{ (Request::is('permissions', 'roles')) ? 'active' : '' }}">
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-cog"></i>
                     <p>
                         System
@@ -114,20 +106,20 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <a href="{{route('permissions.index')}}"
-                            class="nav-link {{ (Request::is('permissions')) ? 'active' : '' }}">
+                        <router-link to="/permissions" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>
                                 Permissions
                             </p>
-                        </a>
-                        <a href="{{route('roles.index')}}"
-                            class="nav-link {{ (Request::is('roles')) ? 'active' : '' }}">
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/roles" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>
                                 Role Management
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                 </ul>
             </li>

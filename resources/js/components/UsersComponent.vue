@@ -204,7 +204,7 @@ export default {
     createUser() {
       this.$Progress.start();
       this.form
-        .post("/users/")
+        .post("/v-api/users/")
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
@@ -225,7 +225,7 @@ export default {
     editUser(id) {
       this.$Progress.start();
       this.form
-        .put("/users/" + id)
+        .put("/v-api/users/" + id)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();

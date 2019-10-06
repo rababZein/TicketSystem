@@ -200,7 +200,7 @@ export default {
     },
     createProject() {
       this.form
-        .post("/projects")
+        .post("/v-api/projects")
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
@@ -222,7 +222,7 @@ export default {
     editProject(id) {
       this.$Progress.start();
       this.form
-        .put("/projects/" + id)
+        .put("/v-api/projects/" + id)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();

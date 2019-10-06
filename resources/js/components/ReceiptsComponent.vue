@@ -233,7 +233,7 @@ export default {
       this.form.task_id = this.form.task.id;
 
       this.form
-        .post("receipt")
+        .post("/v-api/receipts")
         .then(response => {
           $("#newReceipt").modal("hide");
           this.$Progress.finish();
@@ -257,7 +257,7 @@ export default {
       this.form.task_id = this.form.task.id;
 
       this.form
-        .patch("receipt/" + id)
+        .patch("/v-api/receipts/" + id)
         .then(response => {
           $("#newReceipt").modal("hide");
           this.$Progress.finish();
