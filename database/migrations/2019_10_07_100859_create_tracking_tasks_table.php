@@ -9,11 +9,11 @@ class CreateTrackingTasksTable extends Migration {
 	{
 		Schema::create('tracking_tasks', function(Blueprint $table) {
 			$table->increments('id');
-			$table->datetime('create_at');
-			$table->datetime('update_at')->nullable();
-			$table->integer('create_by')->unsigned();
-			$table->integer('update_by')->unsigned()->nullable();
-			$table->longText('description')->nullable();
+			$table->datetime('created_at');
+			$table->datetime('updated_at')->nullable();
+			$table->integer('created_by')->unsigned();
+			$table->integer('updated_by')->unsigned()->nullable();
+			$table->longText('comment')->nullable();
 			$table->integer('task_id')->unsigned();
 			$table->datetime('start_at');
 			$table->datetime('end_at');

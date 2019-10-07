@@ -34,8 +34,7 @@ class Tracking_taskController extends BaseController
       'comment' => 'required|string',
       'start_at' => 'required|date_format:Y-m-d H:i:s',
       'end_at' => 'date_format:Y-m-d H:i:s',
-      'tack_id' => 'integer|exists:tasks,id',
-      'count_time' => 'numeric|min:0'
+      'tack_id' => 'integer|exists:tasks,id'
     ]);
 
     if($validator->fails()){
@@ -48,6 +47,10 @@ class Tracking_taskController extends BaseController
 
     if (! isset($input['start_at'])) {
       $input['start_at'] = Carbon::now();
+    }
+
+    if (isset($input['end_at'])){
+      $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
     }
 
     $tracking_task = Tracking_task::create($input);
@@ -86,7 +89,15 @@ class Tracking_taskController extends BaseController
     $tracking_task->updated_at = Carbon::now();
     $tracking_task->updated_by = auth()->user()->id;
 
-    $updated = $tracking_task->fill($request->all())->save();
+    $input = $request->all();
+    if (isset($input['end_at'])){
+      if (isset($input['start_at']))
+        $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
+      else
+        $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
+    }
+
+    $updated = $tracking_task->fill($input)->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Tracking task could not be updated', 500);
@@ -129,7 +140,7 @@ class Tracking_taskController extends BaseController
      $tracking_model = new Tracking_task();
      $tracking = $tracking_model->tarking($task_id);
 
-     return $this->sendResponse($tracking->toArray(), 'Traking task deleted successfully.');
+     return $this->sendResponse(['tracking' => $tracking], 'Traking task counter retrived successfully.');
 
    }
 

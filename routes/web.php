@@ -36,11 +36,12 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
     Route::resource('/projects', 'ProjectController')->except('create');
 
     // tracking tasks
-    Route::post('/tracking', 'Tracking_taskController@store');
-    Route::patch('/tracking/{task_id}', 'Tracking_taskController@update');
-    Route::delete('/tracking/{task_id}', 'Tracking_taskController@destroy');
-    Route::get('/trackingtask_id}', 'Tracking_taskController@tracking');
-
+    Route::group(['prefix' =>'tracking', 'middleware' => ['auth'],'namespace' => 'API'], function() {
+        Route::post('/', 'Tracking_taskController@store');
+        Route::patch('/{task_id}', 'Tracking_taskController@update');
+        Route::delete('/{task_id}', 'Tracking_taskController@destroy');
+        Route::get('/{task_id}', 'Tracking_taskController@tracking');
+    });
 });
 
 
@@ -92,11 +93,3 @@ Route::group(['prefix' => 'receipt', 'middleware' => ['auth']], function () {
     Route::delete('/{task_id}', 'API\ReceiptController@destroy');
 });
 
-// tracking tasks 
-Route::group(['prefix' => 'track', 'middleware' => ['auth']], function () {
-    Route::get('/', 'API\ProjectController@index');
-    Route::post('/', 'API\ProjectController@store');
-    Route::patch('/{project_id}', 'API\ProjectController@update');
-    Route::delete('/{project_id}', 'API\ProjectController@destroy');
-    Route::get('/{search_key}', 'API\ProjectController@search');
-});
