@@ -9,7 +9,7 @@ class Tracking_task extends Model
 
     protected $table = 'tracking_tasks';
     public $timestamps = false;
-    protected $fillable = array('start_date', 'end_date', 'count_time');
+    protected $fillable = array('comment', 'start_at', 'end_at', 'count_time');
 
     public function task()
     {
