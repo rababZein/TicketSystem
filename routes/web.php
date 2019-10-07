@@ -35,6 +35,10 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
     Route::resource('/projects', 'ProjectController')->except('create');
 
+    // tracking tasks
+    Route::post('/tracking', 'Tracking_taskController@store');
+    Route::patch('/tracking/{project_id}', 'Tracking_taskController@update');
+    Route::delete('/tracking/{project_id}', 'Tracking_taskController@destroy');
 });
 
 
@@ -84,4 +88,13 @@ Route::group(['prefix' => 'receipt', 'middleware' => ['auth']], function () {
     Route::post('/', 'API\ReceiptController@store');
     Route::patch('/{task_id}', 'API\ReceiptController@update');
     Route::delete('/{task_id}', 'API\ReceiptController@destroy');
+});
+
+// tracking tasks 
+Route::group(['prefix' => 'track', 'middleware' => ['auth']], function () {
+    Route::get('/', 'API\ProjectController@index');
+    Route::post('/', 'API\ProjectController@store');
+    Route::patch('/{project_id}', 'API\ProjectController@update');
+    Route::delete('/{project_id}', 'API\ProjectController@destroy');
+    Route::get('/{search_key}', 'API\ProjectController@search');
 });
