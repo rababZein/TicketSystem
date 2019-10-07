@@ -111,10 +111,10 @@
                   v-model="form.project.owner"
                   :options="owners"
                   @input="getProjects(form.project.owner.id)"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -133,10 +133,10 @@
                 <multiselect
                   v-model="form.project"
                   :options="projects"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -249,7 +249,7 @@ export default {
       this.form.project_id = this.form.project.id;
 
       this.form
-        .post("ticket")
+        .post("/v-api/tickets")
         .then(response => {
           $("#newTicket").modal("hide");
           this.$Progress.finish();
@@ -273,7 +273,7 @@ export default {
       this.form.project_id = this.form.project.id;
       
       this.form
-        .patch("ticket/" + id)
+        .patch("/tickets/" + id)
         .then(response => {
           $("#newTicket").modal("hide");
           this.$Progress.finish();

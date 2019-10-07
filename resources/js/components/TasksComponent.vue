@@ -31,7 +31,7 @@
             <tbody>
               <tr v-for="task in tasks" :key="task.id">
                 <td>{{ task.id }}</td>
-                <td>{{ task.name }}</td>
+                <td><router-link :to="'/task/' + task.id">{{ task.name }}</router-link></td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.project.owner.name }}</td>
                 <td>{{ task.project.name }}</td>
@@ -114,10 +114,10 @@
                   v-model="form.project.owner"
                   :options="owners"
                   @input="getProjects(form.project.owner.id)"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -136,10 +136,10 @@
                 <multiselect
                   v-model="form.project"
                   :options="projects"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -158,10 +158,10 @@
                 <multiselect
                   v-model="form.ticket"
                   :options="tickets"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -180,10 +180,10 @@
                 <multiselect
                   v-model="form.responsible"
                   :options="responsibles"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Pick some"
+                  placeholder="Select one"
                   label="name"
                   track-by="name"
                   :preselect-first="true"
@@ -342,7 +342,7 @@ export default {
       this.form.responsible_id = this.form.responsible.id;
 
       this.form
-        .post("task")
+        .post("/v-api/tasks")
         .then(response => {
           $("#newTask").modal("hide");
           this.$Progress.finish();
@@ -369,7 +369,7 @@ export default {
       this.form.responsible_id = this.form.responsible.id;
       
       this.form
-        .patch("task/" + id)
+        .patch("/v-api/tasks/" + id)
         .then(response => {
           $("#newTask").modal("hide");
           this.$Progress.finish();

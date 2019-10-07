@@ -125,6 +125,7 @@
                   v-model="form.roles"
                   :multiple="true"
                   :options="roles"
+                  :close-on-select="true"
                   placeholder="Select one"
                   label="name"
                   track-by="name"
@@ -137,7 +138,7 @@
                   v-model="form.type"
                   :options="types"
                   :searchable="false"
-                  :close-on-select="false"
+                  :close-on-select="true"
                   :show-labels="false"
                   placeholder="Pick a value"
                 ></multiselect>
@@ -203,7 +204,7 @@ export default {
     createUser() {
       this.$Progress.start();
       this.form
-        .post("/users/")
+        .post("/v-api/users/")
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
@@ -224,7 +225,7 @@ export default {
     editUser(id) {
       this.$Progress.start();
       this.form
-        .put("/users/" + id)
+        .put("/v-api/users/" + id)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();

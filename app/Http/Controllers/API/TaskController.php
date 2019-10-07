@@ -84,7 +84,8 @@ class TaskController extends BaseController
    */
   public function show($id)
   {
-    $task = Task::find($id);
+    $task = Task::with('project.owner', 'ticket', 'responsible')->get();
+    $task = $task->find($id);
 
     if (is_null($task)) {
         return $this->sendError('task not found.');
