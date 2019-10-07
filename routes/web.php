@@ -42,6 +42,13 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API', 'prefix' => 'v-api'
     Route::get('/project/getall', 'ProjectController@getAll');
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
 
+    // tracking tasks
+    Route::group(['prefix' =>'tracking', 'middleware' => ['auth'],'namespace' => 'API'], function() {
+        Route::post('/', 'Tracking_taskController@store');
+        Route::patch('/{task_id}', 'Tracking_taskController@update');
+        Route::delete('/{task_id}', 'Tracking_taskController@destroy');
+        Route::get('/{task_id}', 'Tracking_taskController@tracking');
+    });
 
     // tickets
     Route::get('/tickets/getall', 'TicketController@getAll');
@@ -62,3 +69,4 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API', 'prefix' => 'v-api'
 });
 
 Route::get('/{path}','Vue\VueController@index')->where( 'path', '^(?!v-api).*$' );
+

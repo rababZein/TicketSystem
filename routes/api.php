@@ -58,6 +58,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 });
 
+// tracking tasks 
+Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace' => 'API'], function () {
+    Route::post('/', 'Tracking_taskController@store');
+    Route::patch('/{task_id}', 'Tracking_taskController@update');
+    Route::delete('/{task_id}', 'Tracking_taskController@destroy');
+    Route::get('/{task_id}', 'Tracking_taskController@tracking');
+});
+
 
 
 

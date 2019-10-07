@@ -41,4 +41,9 @@ class Task extends Model
         return $this->belongsTo('App\Models\Ticket');
     }
 
+    public function tracking_history()
+    {
+        return $this->hasMany('App\Models\Tracking_task');
+    }
+
 }
