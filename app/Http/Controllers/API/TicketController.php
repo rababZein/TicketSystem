@@ -81,7 +81,8 @@ class TicketController extends BaseController
    */
   public function show($id)
   {
-    $ticket = Ticket::find($id);
+    $ticket = Ticket::with('tasks', 'project')->get();
+    $ticket = $ticket->find($id);
 
     if (is_null($ticket)) {
         return $this->sendError('Ticket not found.');
