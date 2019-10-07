@@ -189,7 +189,7 @@ export default {
     createRole() {
       this.$Progress.start();
       this.form
-        .post("/roles/")
+        .post("/v-api/roles/")
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
@@ -210,7 +210,7 @@ export default {
     editRole(id) {
       this.$Progress.start();
       this.form
-        .put("/roles/" + id)
+        .put("/v-api/roles/" + id)
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();

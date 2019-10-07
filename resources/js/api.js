@@ -2,12 +2,12 @@ import axios from 'axios'
 
 // The Base Route
 const API = axios.create({
-    baseURL: ''
+    baseURL: '/v-api'
 })
 
-const token = localStorage.getItem('token');
+// const token = localStorage.getItem('token');
 
-API.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
+// API.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
 
 // users end point
 const users = {
@@ -25,22 +25,22 @@ const roles = {
 // permissions end point
 const permissions = {
     get: params => API.get('/permissions/list', {params}),
-    getAll: params => API.get('permissions/getall', {params}),
+    getAll: params => API.get('/permissions/getall', {params}),
     delete: params => API.delete('/permissions/'+params),
 }
 // projects end point
 const projects = {
     get: params => API.get('/projects', {params}),
     post: params => API.post('/projects', {params}),
-    getAll: params => API.get('project/getall'),
-    getAllByOwner: params => API.get('project/getAllByOwner/'+params),
+    getAll: params => API.get('/project/getall'),
+    getAllByOwner: params => API.get('/project/getAllByOwner/'+params),
     delete: params => API.delete('/projects/'+params),
 } 
 
 // tickets end point
 const tickets = {
-    getAll: params => API.get('ticket/getall'),
-    delete: params => API.delete('/ticket/'+params),
+    getAll: params => API.get('/tickets/getall'),
+    delete: params => API.delete('/tickets/'+params),
 }
 
 // owners end point
@@ -50,19 +50,20 @@ const owners = {
 
 // responsibles end point
 const responsibles = {
-    getAll: params => API.get('user/getAllResponsibles'),
+    getAll: params => API.get('/user/getAllResponsibles'),
 }
 
 // tasks end point
 const tasks = {
-    getAll: params => API.get('task/getall'),
-    delete: params => API.delete('/task/'+params),
+    get: params => API.get('/tasks/'+params),
+    getAll: params => API.get('/tasks/getall'),
+    delete: params => API.delete('/tasks/'+params),
 }
 
 // receipts end point
 const receipts = {
-    getAll: params => API.get('receipt/getall'),
-    delete: params => API.delete('/receipt/'+params),
+    getAll: params => API.get('/receipts/getall'),
+    delete: params => API.delete('/receipts/'+params),
 }
 
 export default {

@@ -137,7 +137,7 @@ export default {
     createPermission() {
       this.$Progress.start();
       this.form
-        .post("/permissions")
+        .post("/v-api/permissions")
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();
@@ -158,7 +158,7 @@ export default {
     editPermission(id) {
       this.$Progress.start();
       this.form
-        .put("/permissions/" + id)
+        .put("/v-api/permissions/" + id)
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();

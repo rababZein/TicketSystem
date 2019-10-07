@@ -32,8 +32,43 @@ let routes = [
         meta: { title: 'Users' }
     },
     {
+        path: '/projects',
+        component: require('./components/ProjectsComponent.vue').default,
+        meta: { title: 'Projects' }
+    },
+    {
+        path: '/tickets',
+        component: require('./components/TicketsComponent.vue').default,
+        meta: { title: 'Tickets' }
+    },
+    {
+        path: '/tasks',
+        component: require('./components/TasksComponent.vue').default,
+        meta: { title: 'Tasks' }
+    },
+    {
+        path: '/task/:id',
+        component: require('./components/SingleTaskComponent.vue').default,
+        meta: { title: 'Task' }
+    },
+    {
+        path: '/receipts',
+        component: require('./components/ReceiptsComponent.vue').default,
+        meta: { title: 'Receipts' }
+    },
+    {
+        path: '/permissions',
+        component: require('./components/PermissionsComponent.vue').default,
+        meta: { title: 'Permissions' }
+    },
+    {
+        path: '/roles',
+        component: require('./components/RolesComponent.vue').default,
+        meta: { title: 'Roles' }
+    },
+    {
         path: '*',
-        component: require('./components/UsersComponent.vue').default
+        component: require('./components/DashboardComponent.vue').default
     }
 ]
 
