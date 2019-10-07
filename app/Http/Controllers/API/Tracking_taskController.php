@@ -117,6 +117,22 @@ class Tracking_taskController extends BaseController
     return $this->sendResponse($traking_task->toArray(), 'Traking task deleted successfully.');
   }
 
+  /**
+   * Count Duration for a specfic task.
+   *
+   * @param  int  $task_id
+   * @return Response
+   */
+
+   public function tracking($task_id)
+   {
+     $tracking_model = new Tracking_task();
+
+     $tracking = $tracking_model->tarking($task_id);
+
+     return $this->sendResponse($tracking->toArray(), 'Traking task deleted successfully.');
+
+   }
 
   
   

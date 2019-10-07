@@ -37,8 +37,10 @@ Route::group(['middleware' => ['auth'],'namespace' => 'API'], function() {
 
     // tracking tasks
     Route::post('/tracking', 'Tracking_taskController@store');
-    Route::patch('/tracking/{project_id}', 'Tracking_taskController@update');
-    Route::delete('/tracking/{project_id}', 'Tracking_taskController@destroy');
+    Route::patch('/tracking/{task_id}', 'Tracking_taskController@update');
+    Route::delete('/tracking/{task_id}', 'Tracking_taskController@destroy');
+    Route::get('/trackingtask_id}', 'Tracking_taskController@tracking');
+
 });
 
 

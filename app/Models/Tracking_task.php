@@ -16,4 +16,12 @@ class Tracking_task extends Model
         return $this->belongsTo('App\Models\Task');
     }
 
+    public function tarking($task_id)
+    {
+        Tracking_task::with('task')
+                    ->select('count(tracking_tasks.end_at - tracking_task.start_at)')
+                    ->where('tracking_tasks.task_id', $task_id)
+                    ->get();
+    }
+
 }
