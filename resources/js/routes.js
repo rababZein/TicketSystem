@@ -47,6 +47,11 @@ let routes = [
         meta: { title: 'Tasks' }
     },
     {
+        path: '/task/:id',
+        component: require('./components/SingleTaskComponent.vue').default,
+        meta: { title: 'Task' }
+    },
+    {
         path: '/receipts',
         component: require('./components/ReceiptsComponent.vue').default,
         meta: { title: 'Receipts' }
