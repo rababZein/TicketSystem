@@ -94,7 +94,7 @@ class Tracking_taskController extends BaseController
       if (isset($input['start_at']))
         $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
       else
-        $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
+        $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds($tracking_task->start_at);
     }
 
     $updated = $tracking_task->fill($input)->save();
