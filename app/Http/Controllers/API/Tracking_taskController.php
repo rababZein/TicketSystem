@@ -77,21 +77,21 @@ class Tracking_taskController extends BaseController
         return $this->sendError('Validation Error.', $validator->errors());       
     }
 
-    $traking_task = Traking_task::find($id);
+    $tracking_task = Tracking_task::find($id);
     
-    if (!$traking_task) {
+    if (!$tracking_task) {
         return $this->sendError('Not found Error.', 'Sorry, traking task with id ' . $id . ' cannot be found', 400);
     }
 
-    $traking_task->updated_at = Carbon::now();
-    $traking_task->updated_by = auth()->user()->id;
+    $tracking_task->updated_at = Carbon::now();
+    $tracking_task->updated_by = auth()->user()->id;
 
     $updated = $tracking_task->fill($request->all())->save();
 
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Traking task could not be updated', 500);
+      return $this->sendError('Not update!.', 'Sorry, Tracking task could not be updated', 500);
 
-    return $this->sendResponse($traking_task->toArray(), 'Traking task updated successfully.');    
+    return $this->sendResponse($tracking_task->toArray(), 'Tracking task updated successfully.');    
   }
 
   /**
@@ -102,19 +102,19 @@ class Tracking_taskController extends BaseController
    */
   public function destroy($id)
   {
-    $traking_task = Traking_task::find($id);
+    $tracking_task = Tracking_task::find($id);
 
-    if (is_null($traking_task)) {
+    if (is_null($tracking_task)) {
       return $this->sendError('Traking task not found.');
     }
 
-    if($traking_task->task->receipts->isNotEmpty()) {
+    if($tracking_task->task->receipts->isNotEmpty()) {
       return $this->sendError('Can\'t delete!, This task has receipts.');
     }
 
-    $traking_task->delete();
+    $tracking_task->delete();
 
-    return $this->sendResponse($traking_task->toArray(), 'Traking task deleted successfully.');
+    return $this->sendResponse($tracking_task->toArray(), 'Tracking task deleted successfully.');
   }
 
   /**
@@ -127,7 +127,6 @@ class Tracking_taskController extends BaseController
    public function tracking($task_id)
    {
      $tracking_model = new Tracking_task();
-
      $tracking = $tracking_model->tarking($task_id);
 
      return $this->sendResponse($tracking->toArray(), 'Traking task deleted successfully.');
