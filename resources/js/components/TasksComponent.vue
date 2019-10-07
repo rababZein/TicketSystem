@@ -31,7 +31,7 @@
             <tbody>
               <tr v-for="task in tasks" :key="task.id">
                 <td>{{ task.id }}</td>
-                <td>{{ task.name }}</td>
+                <td><router-link :to="'/task/' + task.id">{{ task.name }}</router-link></td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.project.owner.name }}</td>
                 <td>{{ task.project.name }}</td>
