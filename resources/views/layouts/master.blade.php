@@ -13,7 +13,7 @@
             @include('partials.navbar')
         </nav>
         <!-- /.navbar -->
-        
+
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             @include('partials.sidebar')
@@ -30,11 +30,13 @@
 
             <!-- Main content -->
             <div class="content">
-                {{-- <router-view></router-view>
-                <vue-progress-bar></vue-progress-bar> --}}
                 <div class="container-fluid">
-                    @yield('content')
+                    <router-view></router-view>
+                    <vue-progress-bar></vue-progress-bar>
                 </div>
+                {{-- <div class="container-fluid">
+                    @yield('content')
+                </div> --}}
             </div>
             <!-- /.content -->
         </div>
@@ -55,7 +57,7 @@
 
     <!-- REQUIRED SCRIPTS -->
 
-    <script src="/dist/js/app.js"></script>
+    <script src="{{ mix('dist/js/app.js') }}"></script>
 </body>
 
 </html>

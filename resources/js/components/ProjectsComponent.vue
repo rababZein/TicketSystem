@@ -52,7 +52,8 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="newModalLabel">Create New User</h5>
+            <h5 v-show="!editMode" class="modal-title" id="newModalLabel">Create New Project</h5>
+            <h5 v-show="editMode" class="modal-title" id="newModalLabel">edit Project</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -72,13 +73,13 @@
               </div>
               <div class="form-group">
                 <label for="description">description</label>
-                <input
+                <textarea
                   v-model="form.description"
                   type="text"
                   name="description"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('description') }"
-                />
+                ></textarea>
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
@@ -199,7 +200,7 @@ export default {
     },
     createProject() {
       this.form
-        .post("/projects")
+        .post("/v-api/projects")
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
@@ -221,7 +222,7 @@ export default {
     editProject(id) {
       this.$Progress.start();
       this.form
-        .put("/projects/" + id)
+        .put("/v-api/projects/" + id)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();

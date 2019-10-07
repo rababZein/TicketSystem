@@ -7,4 +7,4 @@
 <meta http-equiv="x-ua-compatible" content="ie=edge">
 
 <title>{{ config('app.name', 'alferp') }}</title>
-<link rel="stylesheet" href="/dist/css/app.css">
+<link rel="stylesheet" href="{{ mix('dist/css/app.css') }}">
