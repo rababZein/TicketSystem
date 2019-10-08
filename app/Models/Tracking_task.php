@@ -22,4 +22,9 @@ class Tracking_task extends Model
                     ->sum("tracking_tasks.count_time");
     }
 
+    public function history($task_id)
+    {
+        return Tracking_task::where('task_id', $task_id)
+                    ->get();
+    }
 }

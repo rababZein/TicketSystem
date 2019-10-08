@@ -144,8 +144,19 @@ class Tracking_taskController extends BaseController
 
    }
 
-  
-  
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  int  $id
+   * @return Response
+   */
+  public function getHistory($task_id)
+  {
+    $tracking_model = new Tracking_task();
+    $tracking = $tracking_model->history($task_id);
+
+    return $this->sendResponse($tracking->toArray(), 'Traking History retrieved successfully.');
+  }
 }
 
 ?>
