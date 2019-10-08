@@ -124,7 +124,6 @@ export default {
       vm.counter.ticker = setInterval(() => {
         vm.counted_time = null;
         const time = vm._readableTimeFromSeconds(++vm.counter.seconds);
-        console.log(time);
         vm.activeTimerString = `${time.hours}:${time.minutes}:${time.seconds}`;
       }, 1000);
     },
