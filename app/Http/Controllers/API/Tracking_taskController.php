@@ -141,7 +141,6 @@ class Tracking_taskController extends BaseController
     $tracking = $tracking_model->tarking($task_id);
 
     return $this->sendResponse(['tracking' => $tracking], 'Traking task counter retrived successfully.');
-
   }
 
   /**
@@ -156,7 +155,6 @@ class Tracking_taskController extends BaseController
   $tracking = $tracking_model->inProgressTracking($task_id);
 
   return $this->sendResponse($tracking->toArray(), 'Traking task counter retrived successfully.');
-
 }
   
   
