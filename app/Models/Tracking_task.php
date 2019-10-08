@@ -26,7 +26,8 @@ class Tracking_task extends Model
     {
         return Tracking_task::whereNull('end_at')
                     ->where('task_id', $task_id)
-                    ->get();
+                    ->orderBy('start_at', 'desc')
+                    ->first();
     }
 
     public function history($task_id)
