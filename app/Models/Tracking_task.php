@@ -29,4 +29,9 @@ class Tracking_task extends Model
                     ->get();
     }
 
+    public function history($task_id)
+    {
+        return Tracking_task::where('task_id', $task_id)
+                    ->get();
+    }
 }

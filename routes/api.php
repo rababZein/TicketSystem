@@ -66,6 +66,7 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
     Route::delete('/{task_id}', 'Tracking_taskController@destroy');
     Route::get('/{task_id}', 'Tracking_taskController@tracking');
     Route::get('/checkTrackingInProgress/{task_id}', 'Tracking_taskController@checkTrackingInProgress');
+    Route::get('/history/{task_id}', 'Tracking_taskController@getHistory');
 });
 
 
