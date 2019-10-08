@@ -41,13 +41,30 @@
               />
             </div>
           </div>
-          <div class="form-group row">
+          <div class="form-group row" v-show="duration">
             <label for="Project" class="col-sm-2 col-form-label">Total duration:</label>
-            <div class="col-sm-10">{{ task.count_hours }}</div>
+            <div class="col-sm-10">
+              <input
+                v-if="duration"
+                v-model="duration"
+                type="text"
+                class="form-control"
+                id="Project"
+                disabled
+              />
+            </div>
           </div>
           <center>
-            <div id="duration-text" v-if="activeTimerString" v-bind:class="{'text-success': activeTimerString}">{{ activeTimerString }}</div>
-            <div id="duration-text" v-if="counted_time" v-bind:class="{'text-danger': counted_time}">{{ counted_time }}</div>
+            <div
+              id="duration-text"
+              v-if="activeTimerString"
+              v-bind:class="{'text-success': activeTimerString}"
+            >{{ activeTimerString }}</div>
+            <div
+              id="duration-text"
+              v-if="counted_time"
+              v-bind:class="{'text-danger': counted_time}"
+            >{{ counted_time }}</div>
           </center>
         </div>
       </div>
@@ -91,9 +108,10 @@ export default {
       task_id: this.$route.params.id,
       task: {},
       tracking_task: null,
-      counter: { seconds: 0},
+      counter: { seconds: 0 },
       activeTimerString: null,
-      counted_time: null
+      counted_time: null,
+      duration: null
     };
   },
   methods: {
@@ -136,13 +154,17 @@ export default {
         })
         .then(response => {
           this.tracking_task = response.data.data;
+          // count duration for this task
+          this.countTaskDuration(this.task_id);
           this.$Progress.finish();
           // Stop the ticker
           clearInterval(this.counter.ticker);
           // Reset the counter and timer string
-          this.counter = { seconds: 0, timer: null };
+          this.counter = { seconds: 0 };
           this.activeTimerString = null;
-          const trackTime = this._readableTimeFromSeconds(this.tracking_task.count_time);
+          const trackTime = this._readableTimeFromSeconds(
+            this.tracking_task.count_time
+          );
           this.counted_time = `${trackTime.hours}:${trackTime.minutes}:${trackTime.seconds}`;
         })
         .catch(error => {
@@ -167,8 +189,32 @@ export default {
     /**
      * Conditionally pads a number with "0"
      */
-    _padNumber: number => (number > 9 ? number : (number === 0 ? "00" : "0" + number))
+    _padNumber: number =>
+      number > 9 ? number : number === 0 ? "00" : "0" + number,
+
+    // Count Duration for a specfic task.
+    countTaskDuration(task_id) {
+      this.$api.track
+        .countDuration(task_id)
+        .then(response => {
+          const totalDuration = this._readableTimeFromSeconds(
+            response.data.data.tracking
+          );
+          this.duration = `${totalDuration.hours}:${totalDuration.minutes}`;
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
+    }
   },
+
   created() {
     this.$api.tasks
       .get(this.task_id)
@@ -179,6 +225,7 @@ export default {
       .catch(error => {
         this.$Progress.fail();
       });
+    this.countTaskDuration(this.task_id);
   },
   mounted() {}
 };

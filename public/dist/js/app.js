@@ -3135,6 +3135,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3147,7 +3164,8 @@ __webpack_require__.r(__webpack_exports__);
         seconds: 0
       },
       activeTimerString: null,
-      counted_time: null
+      counted_time: null,
+      duration: null
     };
   },
   methods: {
@@ -3178,7 +3196,6 @@ __webpack_require__.r(__webpack_exports__);
 
         var time = vm._readableTimeFromSeconds(++vm.counter.seconds);
 
-        console.log(time);
         vm.activeTimerString = "".concat(time.hours, ":").concat(time.minutes, ":").concat(time.seconds);
       }, 1000);
     },
@@ -3190,7 +3207,9 @@ __webpack_require__.r(__webpack_exports__);
         end_at: moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD HH:mm:ss"),
         task_id: this.task_id
       }).then(function (response) {
-        _this2.tracking_task = response.data.data;
+        _this2.tracking_task = response.data.data; // count duration for this task
+
+        _this2.countTaskDuration(_this2.task_id);
 
         _this2.$Progress.finish(); // Stop the ticker
 
@@ -3198,8 +3217,7 @@ __webpack_require__.r(__webpack_exports__);
         clearInterval(_this2.counter.ticker); // Reset the counter and timer string
 
         _this2.counter = {
-          seconds: 0,
-          timer: null
+          seconds: 0
         };
         _this2.activeTimerString = null;
 
@@ -3233,18 +3251,38 @@ __webpack_require__.r(__webpack_exports__);
      */
     _padNumber: function _padNumber(number) {
       return number > 9 ? number : number === 0 ? "00" : "0" + number;
+    },
+    // Count Duration for a specfic task.
+    countTaskDuration: function countTaskDuration(task_id) {
+      var _this3 = this;
+
+      this.$api.track.countDuration(task_id).then(function (response) {
+        var totalDuration = _this3._readableTimeFromSeconds(response.data.data.tracking);
+
+        _this3.duration = "".concat(totalDuration.hours, ":").concat(totalDuration.minutes);
+        Toast.fire({
+          type: "success",
+          title: response.data.message
+        });
+      })["catch"](function (error) {
+        Toast.fire({
+          type: "error",
+          title: error.response.data.message
+        });
+      });
     }
   },
   created: function created() {
-    var _this3 = this;
+    var _this4 = this;
 
     this.$api.tasks.get(this.task_id).then(function (response) {
-      _this3.task = response.data.data;
+      _this4.task = response.data.data;
 
-      _this3.$Progress.finish();
+      _this4.$Progress.finish();
     })["catch"](function (error) {
-      _this3.$Progress.fail();
+      _this4.$Progress.fail();
     });
+    this.countTaskDuration(this.task_id);
   },
   mounted: function mounted() {}
 });
@@ -65172,20 +65210,56 @@ var render = function() {
                 ])
               ]),
               _vm._v(" "),
-              _c("div", { staticClass: "form-group row" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "col-sm-2 col-form-label",
-                    attrs: { for: "Project" }
-                  },
-                  [_vm._v("Total duration:")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-sm-10" }, [
-                  _vm._v(_vm._s(_vm.task.count_hours))
-                ])
-              ]),
+              _c(
+                "div",
+                {
+                  directives: [
+                    {
+                      name: "show",
+                      rawName: "v-show",
+                      value: _vm.duration,
+                      expression: "duration"
+                    }
+                  ],
+                  staticClass: "form-group row"
+                },
+                [
+                  _c(
+                    "label",
+                    {
+                      staticClass: "col-sm-2 col-form-label",
+                      attrs: { for: "Project" }
+                    },
+                    [_vm._v("Total duration:")]
+                  ),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "col-sm-10" }, [
+                    _vm.duration
+                      ? _c("input", {
+                          directives: [
+                            {
+                              name: "model",
+                              rawName: "v-model",
+                              value: _vm.duration,
+                              expression: "duration"
+                            }
+                          ],
+                          staticClass: "form-control",
+                          attrs: { type: "text", id: "Project", disabled: "" },
+                          domProps: { value: _vm.duration },
+                          on: {
+                            input: function($event) {
+                              if ($event.target.composing) {
+                                return
+                              }
+                              _vm.duration = $event.target.value
+                            }
+                          }
+                        })
+                      : _vm._e()
+                  ])
+                ]
+              ),
               _vm._v(" "),
               _c("center", [
                 _vm.activeTimerString
@@ -82132,6 +82206,9 @@ var track = {
       end_at: params.end_at,
       task_id: params.task_id
     });
+  },
+  countDuration: function countDuration(params) {
+    return API.get('/tracking/' + params);
   }
 }; // receipts end point
 

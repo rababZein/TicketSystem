@@ -71,7 +71,8 @@ const track = {
     put: params => API.patch('/tracking/' + params.track_id, { 
         end_at: params.end_at,
         task_id: params.task_id
-     })
+    }),
+    countDuration: params => API.get('/tracking/' + params)
 }
 
 // receipts end point
