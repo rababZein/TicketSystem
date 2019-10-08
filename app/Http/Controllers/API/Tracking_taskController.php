@@ -143,7 +143,7 @@ class Tracking_taskController extends BaseController
     return $this->sendResponse(['tracking' => $tracking], 'Traking task counter retrived successfully.');
   }
 
-  /**
+/**
  * Check there is a tracking in-progress
  *
  * @param  int  $task_id
