@@ -16,7 +16,7 @@ class CreateTrackingTasksTable extends Migration {
 			$table->longText('comment')->nullable();
 			$table->integer('task_id')->unsigned();
 			$table->datetime('start_at');
-			$table->datetime('end_at');
+			$table->datetime('end_at')->nullable();
 			$table->float('count_time')->default('0');
 		});
 	}

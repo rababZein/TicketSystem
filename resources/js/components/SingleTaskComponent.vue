@@ -16,21 +16,29 @@
             </div>
           </div>
           <div class="form-group row">
-            <label for="Client" class="col-sm-2 col-form-label">Client:</label>
+            <label for="Client" class="col-sm-2 col-form-label">Client name:</label>
             <div class="col-sm-10">
-              <input v-model="task.client" type="text" class="form-control" id="Client" disabled />
+              <input
+                v-if="task.project"
+                v-model="task.project.owner.name"
+                type="text"
+                class="form-control"
+                id="Client"
+                disabled
+              />
             </div>
           </div>
           <div class="form-group row">
-            <label for="Project" class="col-sm-2 col-form-label">Project:</label>
+            <label for="Project" class="col-sm-2 col-form-label">Project name:</label>
             <div class="col-sm-10">
-              <input v-model="task.Project" type="text" class="form-control" id="Project" disabled />
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="Project" class="col-sm-2 col-form-label">Project:</label>
-            <div class="col-sm-10">
-              <input v-model="task.Project" type="text" class="form-control" id="Project" disabled />
+              <input
+                v-if="task.project"
+                v-model="task.project.name"
+                type="text"
+                class="form-control"
+                id="Project"
+                disabled
+              />
             </div>
           </div>
           <div class="form-group row">
@@ -38,20 +46,32 @@
             <div class="col-sm-10">{{ task.count_hours }}</div>
           </div>
           <center>
-            <div id="duration-text">4 minutes, 35 seconds</div>
+            <div id="duration-text">{{ activeTimerString }}</div>
           </center>
         </div>
       </div>
       <center class="buttons mb-3">
-        <button type="button" class="btn btn-success btn-lg" id="save-button">
+        <button v-show="editMode" type="button" class="btn btn-success btn-lg" id="save-button">
           save
           <i class="fas fa-save fa-fw"></i>
         </button>
-        <button type="button" class="btn btn-primary btn-lg" id="start-button">
+        <button
+          @click="startTracking()"
+          type="button"
+          class="btn btn-primary btn-lg"
+          id="start-button"
+          v-show="!activeTimerString"
+        >
           Start
           <i class="fas fa-play fa-fw"></i>
         </button>
-        <button type="button" class="btn btn-info btn-lg" id="stop-button">
+        <button
+          @click="stopTracking()"
+          v-show="activeTimerString"
+          type="button"
+          class="btn btn-info btn-lg"
+          id="stop-button"
+        >
           stop
           <i class="fas fa-stop fa-fw"></i>
         </button>
@@ -61,12 +81,90 @@
 </template>
 
 <script>
+import moment from "moment";
+
 export default {
   data() {
     return {
+      editMode: false,
       task_id: this.$route.params.id,
-      task: {}
+      task: {},
+      tracking_task: null,
+      counter: { seconds: 0, timer: null },
+      activeTimerString: null
     };
+  },
+  methods: {
+    startTracking() {
+      this.$api.track
+        .post({
+          comment: "new tracking",
+          start_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+          task_id: this.task_id
+        })
+        .then(response => {
+          this.tracking_task = response.data.data;
+          this.$Progress.finish();
+          this.startTimer();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
+    },
+    startTimer() {
+      let vm = this;
+      let started = moment(this.tracking_task.start_at);
+      vm.counter.seconds = parseInt(
+        moment.duration(moment().diff(started)).asSeconds()
+      );
+      vm.counter.ticker = setInterval(() => {
+        const time = vm._readableTimeFromSeconds(++vm.counter.seconds);
+        vm.activeTimerString = `${time.hours}:${time.minutes}:${time.seconds}`;
+      }, 1000);
+    },
+    stopTracking() {
+      this.$api.track
+        .put({
+          track_id: this.tracking_task.id,
+          end_at: moment().format("YYYY-MM-DD HH:mm:ss"),
+          task_id: this.task_id
+        })
+        .then(response => {
+          this.tracking_task = response.data.data;
+          this.$Progress.finish();
+          // Stop the ticker
+          clearInterval(this.counter.ticker);
+          // Reset the counter and timer string
+          this.counter = { seconds: 0, timer: null };
+          this.activeTimerString = null;
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
+    },
+    /**
+     * Splits seconds into hours, minutes, and seconds.
+     */
+    _readableTimeFromSeconds: function(seconds) {
+      const hours = 3600 > seconds ? 0 : parseInt(seconds / 3600, 10);
+      return {
+        hours: this._padNumber(hours),
+        seconds: this._padNumber(seconds % 60),
+        minutes: this._padNumber(parseInt(seconds / 60, 10) % 60)
+      };
+    },
+    /**
+     * Conditionally pads a number with "0"
+     */
+    _padNumber: number => (number > 9 || number === 0 ? number : "0" + number)
   },
   created() {
     this.$api.tasks
@@ -79,9 +177,7 @@ export default {
         this.$Progress.fail();
       });
   },
-  mounted() {
-    console.log("Component mounted.");
-  }
+  mounted() {}
 };
 </script>
 
