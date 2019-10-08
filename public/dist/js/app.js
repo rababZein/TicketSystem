@@ -3134,6 +3134,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3143,10 +3144,10 @@ __webpack_require__.r(__webpack_exports__);
       task: {},
       tracking_task: null,
       counter: {
-        seconds: 0,
-        timer: null
+        seconds: 0
       },
-      activeTimerString: null
+      activeTimerString: null,
+      counted_time: null
     };
   },
   methods: {
@@ -3160,12 +3161,8 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         _this.tracking_task = response.data.data;
 
-        _this.$Progress.finish();
-
         _this.startTimer();
       })["catch"](function (error) {
-        _this.$Progress.fail();
-
         Toast.fire({
           type: "error",
           title: error.response.data.message
@@ -3177,8 +3174,11 @@ __webpack_require__.r(__webpack_exports__);
       var started = moment__WEBPACK_IMPORTED_MODULE_0___default()(this.tracking_task.start_at);
       vm.counter.seconds = parseInt(moment__WEBPACK_IMPORTED_MODULE_0___default.a.duration(moment__WEBPACK_IMPORTED_MODULE_0___default()().diff(started)).asSeconds());
       vm.counter.ticker = setInterval(function () {
+        vm.counted_time = null;
+
         var time = vm._readableTimeFromSeconds(++vm.counter.seconds);
 
+        console.log(time);
         vm.activeTimerString = "".concat(time.hours, ":").concat(time.minutes, ":").concat(time.seconds);
       }, 1000);
     },
@@ -3202,6 +3202,10 @@ __webpack_require__.r(__webpack_exports__);
           timer: null
         };
         _this2.activeTimerString = null;
+
+        var trackTime = _this2._readableTimeFromSeconds(_this2.tracking_task.count_time);
+
+        _this2.counted_time = "".concat(trackTime.hours, ":").concat(trackTime.minutes, ":").concat(trackTime.seconds);
       })["catch"](function (error) {
         _this2.$Progress.fail();
 
@@ -3228,7 +3232,7 @@ __webpack_require__.r(__webpack_exports__);
      * Conditionally pads a number with "0"
      */
     _padNumber: function _padNumber(number) {
-      return number > 9 || number === 0 ? number : "0" + number;
+      return number > 9 ? number : number === 0 ? "00" : "0" + number;
     }
   },
   created: function created() {
@@ -65184,9 +65188,27 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("center", [
-                _c("div", { attrs: { id: "duration-text" } }, [
-                  _vm._v(_vm._s(_vm.activeTimerString))
-                ])
+                _vm.activeTimerString
+                  ? _c(
+                      "div",
+                      {
+                        class: { "text-success": _vm.activeTimerString },
+                        attrs: { id: "duration-text" }
+                      },
+                      [_vm._v(_vm._s(_vm.activeTimerString))]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.counted_time
+                  ? _c(
+                      "div",
+                      {
+                        class: { "text-danger": _vm.counted_time },
+                        attrs: { id: "duration-text" }
+                      },
+                      [_vm._v(_vm._s(_vm.counted_time))]
+                    )
+                  : _vm._e()
               ])
             ],
             1

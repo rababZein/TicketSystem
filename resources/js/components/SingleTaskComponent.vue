@@ -46,7 +46,8 @@
             <div class="col-sm-10">{{ task.count_hours }}</div>
           </div>
           <center>
-            <div id="duration-text">{{ activeTimerString }}</div>
+            <div id="duration-text" v-if="activeTimerString" v-bind:class="{'text-success': activeTimerString}">{{ activeTimerString }}</div>
+            <div id="duration-text" v-if="counted_time" v-bind:class="{'text-danger': counted_time}">{{ counted_time }}</div>
           </center>
         </div>
       </div>
@@ -90,8 +91,9 @@ export default {
       task_id: this.$route.params.id,
       task: {},
       tracking_task: null,
-      counter: { seconds: 0, timer: null },
-      activeTimerString: null
+      counter: { seconds: 0},
+      activeTimerString: null,
+      counted_time: null
     };
   },
   methods: {
@@ -104,11 +106,9 @@ export default {
         })
         .then(response => {
           this.tracking_task = response.data.data;
-          this.$Progress.finish();
           this.startTimer();
         })
         .catch(error => {
-          this.$Progress.fail();
           Toast.fire({
             type: "error",
             title: error.response.data.message
@@ -122,7 +122,9 @@ export default {
         moment.duration(moment().diff(started)).asSeconds()
       );
       vm.counter.ticker = setInterval(() => {
+        vm.counted_time = null;
         const time = vm._readableTimeFromSeconds(++vm.counter.seconds);
+        console.log(time);
         vm.activeTimerString = `${time.hours}:${time.minutes}:${time.seconds}`;
       }, 1000);
     },
@@ -141,6 +143,8 @@ export default {
           // Reset the counter and timer string
           this.counter = { seconds: 0, timer: null };
           this.activeTimerString = null;
+          const trackTime = this._readableTimeFromSeconds(this.tracking_task.count_time);
+          this.counted_time = `${trackTime.hours}:${trackTime.minutes}:${trackTime.seconds}`;
         })
         .catch(error => {
           this.$Progress.fail();
@@ -164,7 +168,7 @@ export default {
     /**
      * Conditionally pads a number with "0"
      */
-    _padNumber: number => (number > 9 || number === 0 ? number : "0" + number)
+    _padNumber: number => (number > 9 ? number : (number === 0 ? "00" : "0" + number))
   },
   created() {
     this.$api.tasks
