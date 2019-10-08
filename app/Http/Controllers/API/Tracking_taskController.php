@@ -135,13 +135,13 @@ class Tracking_taskController extends BaseController
  * @return Response
  */
 
-  public function tracking($task_id)
-  {
-    $tracking_model = new Tracking_task();
-    $tracking = $tracking_model->tarking($task_id);
+public function tracking($task_id)
+{
+  $tracking_model = new Tracking_task();
+  $tracking = $tracking_model->tarking($task_id);
 
-    return $this->sendResponse(['tracking' => $tracking], 'Traking task counter retrived successfully.');
-  }
+  return $this->sendResponse(['tracking' => $tracking], 'Traking task counter retrived successfully.');
+}
 
 /**
  * Check there is a tracking in-progress
@@ -149,7 +149,7 @@ class Tracking_taskController extends BaseController
  * @param  int  $task_id
  * @return Response
  */
- public function checkTrackingInProgress($task_id)
+public function checkTrackingInProgress($task_id)
 {
   $tracking_model = new Tracking_task();
   $tracking = $tracking_model->inProgressTracking($task_id);
