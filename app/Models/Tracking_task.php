@@ -22,6 +22,14 @@ class Tracking_task extends Model
                     ->sum("tracking_tasks.count_time");
     }
 
+    public function inProgressTracking($task_id)
+    {
+        return Tracking_task::whereNull('end_at')
+                    ->where('task_id', $task_id)
+                    ->orderBy('start_at', 'desc')
+                    ->first();
+    }
+
     public function history($task_id)
     {
         return Tracking_task::where('task_id', $task_id)
