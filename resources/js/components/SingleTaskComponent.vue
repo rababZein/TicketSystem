@@ -111,7 +111,7 @@ export default {
       counter: { seconds: 0 },
       activeTimerString: null,
       counted_time: null,
-      duration: null
+      duration: null,
     };
   },
   methods: {
@@ -212,10 +212,28 @@ export default {
             title: error.response.data.message
           });
         });
+    },
+    // fun to check if this track is in progress
+    checkTrackingInProgress(task_id) {
+      this.$api.track
+        .checkTrackingInProgress(task_id)
+        .then(response => {
+          this.tracking_task = response.data.data;
+          this.startTimer();
+        })
+        .catch(error => {
+          Toast.fire({
+            type: "error",
+            title: error.response.data.message
+          });
+        });
     }
   },
 
   created() {
+    // check if this track is in progress
+    this.checkTrackingInProgress(this.task_id);
+
     this.$api.tasks
       .get(this.task_id)
       .then(response => {
@@ -225,6 +243,7 @@ export default {
       .catch(error => {
         this.$Progress.fail();
       });
+    // count total duration
     this.countTaskDuration(this.task_id);
   },
   mounted() {}

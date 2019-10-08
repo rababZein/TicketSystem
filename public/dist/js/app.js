@@ -3270,18 +3270,35 @@ __webpack_require__.r(__webpack_exports__);
           title: error.response.data.message
         });
       });
+    },
+    checkTrackingInProgress: function checkTrackingInProgress(task_id) {
+      var _this4 = this;
+
+      this.$api.track.checkTrackingInProgress(task_id).then(function (response) {
+        _this4.tracking_task = response.data.data;
+
+        _this4.startTimer();
+      })["catch"](function (error) {
+        Toast.fire({
+          type: "error",
+          title: error.response.data.message
+        });
+      });
     }
   },
   created: function created() {
-    var _this4 = this;
+    var _this5 = this;
 
+    // check if this track is in progress
+    this.checkTrackingInProgress(this.task_id);
     this.$api.tasks.get(this.task_id).then(function (response) {
-      _this4.task = response.data.data;
+      _this5.task = response.data.data;
 
-      _this4.$Progress.finish();
+      _this5.$Progress.finish();
     })["catch"](function (error) {
-      _this4.$Progress.fail();
-    });
+      _this5.$Progress.fail();
+    }); // count total duration
+
     this.countTaskDuration(this.task_id);
   },
   mounted: function mounted() {}
@@ -82209,6 +82226,9 @@ var track = {
   },
   countDuration: function countDuration(params) {
     return API.get('/tracking/' + params);
+  },
+  checkTrackingInProgress: function checkTrackingInProgress(params) {
+    return API.get('/tracking/checkTrackingInProgress/' + params);
   }
 }; // receipts end point
 
