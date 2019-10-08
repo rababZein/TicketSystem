@@ -42,7 +42,7 @@
             </div>
           </div>
           <div class="form-group row" v-show="duration">
-            <label for="Project" class="col-sm-2 col-form-label">Total duration:</label>
+            <label for="Project" class="col-sm-2 col-form-label">Total duration:<p><small>(hours:minutes)</small></p></label>
             <div class="col-sm-10">
               <input
                 v-if="duration"
@@ -111,11 +111,15 @@ export default {
       counter: { seconds: 0 },
       activeTimerString: null,
       counted_time: null,
-      duration: null,
+      duration: null
     };
   },
   methods: {
     startTracking() {
+      // Reset the counter and timer string
+      this.counted_time = null;
+      // show timer before send request
+      this.activeTimerString = "00:00:00";
       this.$api.track
         .post({
           comment: "new tracking",

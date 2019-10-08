@@ -3172,6 +3172,10 @@ __webpack_require__.r(__webpack_exports__);
     startTracking: function startTracking() {
       var _this = this;
 
+      // Reset the counter and timer string
+      this.counted_time = null; // show timer before send request
+
+      this.activeTimerString = "00:00:00";
       this.$api.track.post({
         comment: "new tracking",
         start_at: moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD HH:mm:ss"),
@@ -3271,6 +3275,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
+    // fun to check if this track is in progress
     checkTrackingInProgress: function checkTrackingInProgress(task_id) {
       var _this4 = this;
 
@@ -65241,14 +65246,7 @@ var render = function() {
                   staticClass: "form-group row"
                 },
                 [
-                  _c(
-                    "label",
-                    {
-                      staticClass: "col-sm-2 col-form-label",
-                      attrs: { for: "Project" }
-                    },
-                    [_vm._v("Total duration:")]
-                  ),
+                  _vm._m(0),
                   _vm._v(" "),
                   _c("div", { staticClass: "col-sm-10" }, [
                     _vm.duration
@@ -65382,7 +65380,21 @@ var render = function() {
     )
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "label",
+      { staticClass: "col-sm-2 col-form-label", attrs: { for: "Project" } },
+      [
+        _vm._v("Total duration:"),
+        _c("p", [_c("small", [_vm._v("(hours:minutes)")])])
+      ]
+    )
+  }
+]
 render._withStripped = true
 
 
