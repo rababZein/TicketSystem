@@ -47,6 +47,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::patch('/tracking/{task_id}', 'Tracking_taskController@update');
     Route::delete('/tracking/{task_id}', 'Tracking_taskController@destroy');
     Route::get('/tracking/{task_id}', 'Tracking_taskController@tracking');
+    Route::get('/tracking/history/{task_id}', 'Tracking_taskController@getHistory');
 
     // tickets
     Route::get('/tickets/getall', 'TicketController@getAll');
