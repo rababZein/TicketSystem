@@ -34,7 +34,7 @@ class Tracking_taskController extends BaseController
       'comment' => 'required|string',
       'start_at' => 'required|date_format:Y-m-d H:i:s',
       'end_at' => 'date_format:Y-m-d H:i:s',
-      'tack_id' => 'integer|exists:tasks,id'
+      'task_id' => 'integer|exists:tasks,id'
     ]);
 
     if($validator->fails()){
@@ -72,7 +72,7 @@ class Tracking_taskController extends BaseController
       'comment' => 'string',
       'start_at' => 'date_format:Y-m-d H:i:s',
       'end_at' => 'date_format:Y-m-d H:i:s',
-      'tack_id' => 'integer|exists:tasks,id',
+      'task_id' => 'integer|exists:tasks,id',
       'count_time' => 'numeric|min:0'
     ]);
 
@@ -81,7 +81,7 @@ class Tracking_taskController extends BaseController
     }
 
     $tracking_task = Tracking_task::find($id);
-    
+
     if (!$tracking_task) {
         return $this->sendError('Not found Error.', 'Sorry, traking task with id ' . $id . ' cannot be found', 400);
     }

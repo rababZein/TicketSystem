@@ -3050,6 +3050,8 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 //
 //
 //
@@ -3112,27 +3114,135 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
+      editMode: false,
       task_id: this.$route.params.id,
-      task: {}
+      task: {},
+      tracking_task: null,
+      counter: {
+        seconds: 0,
+        timer: null
+      },
+      activeTimerString: null
     };
   },
+  methods: {
+    startTracking: function startTracking() {
+      var _this = this;
+
+      this.$api.track.post({
+        comment: "new tracking",
+        start_at: moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD HH:mm:ss"),
+        task_id: this.task_id
+      }).then(function (response) {
+        _this.tracking_task = response.data.data;
+
+        _this.$Progress.finish();
+
+        _this.startTimer();
+      })["catch"](function (error) {
+        _this.$Progress.fail();
+
+        Toast.fire({
+          type: "error",
+          title: error.response.data.message
+        });
+      });
+    },
+    startTimer: function startTimer() {
+      var vm = this;
+      var started = moment__WEBPACK_IMPORTED_MODULE_0___default()(this.tracking_task.start_at);
+      vm.counter.seconds = parseInt(moment__WEBPACK_IMPORTED_MODULE_0___default.a.duration(moment__WEBPACK_IMPORTED_MODULE_0___default()().diff(started)).asSeconds());
+      vm.counter.ticker = setInterval(function () {
+        var time = vm._readableTimeFromSeconds(++vm.counter.seconds);
+
+        vm.activeTimerString = "".concat(time.hours, ":").concat(time.minutes, ":").concat(time.seconds);
+      }, 1000);
+    },
+    stopTracking: function stopTracking() {
+      var _this2 = this;
+
+      this.$api.track.put({
+        track_id: this.tracking_task.id,
+        end_at: moment__WEBPACK_IMPORTED_MODULE_0___default()().format("YYYY-MM-DD HH:mm:ss"),
+        task_id: this.task_id
+      }).then(function (response) {
+        _this2.tracking_task = response.data.data;
+
+        _this2.$Progress.finish(); // Stop the ticker
+
+
+        clearInterval(_this2.counter.ticker); // Reset the counter and timer string
+
+        _this2.counter = {
+          seconds: 0,
+          timer: null
+        };
+        _this2.activeTimerString = null;
+      })["catch"](function (error) {
+        _this2.$Progress.fail();
+
+        Toast.fire({
+          type: "error",
+          title: error.response.data.message
+        });
+      });
+    },
+
+    /**
+     * Splits seconds into hours, minutes, and seconds.
+     */
+    _readableTimeFromSeconds: function _readableTimeFromSeconds(seconds) {
+      var hours = 3600 > seconds ? 0 : parseInt(seconds / 3600, 10);
+      return {
+        hours: this._padNumber(hours),
+        seconds: this._padNumber(seconds % 60),
+        minutes: this._padNumber(parseInt(seconds / 60, 10) % 60)
+      };
+    },
+
+    /**
+     * Conditionally pads a number with "0"
+     */
+    _padNumber: function _padNumber(number) {
+      return number > 9 || number === 0 ? number : "0" + number;
+    }
+  },
   created: function created() {
-    var _this = this;
+    var _this3 = this;
 
     this.$api.tasks.get(this.task_id).then(function (response) {
-      _this.task = response.data.data;
+      _this3.task = response.data.data;
 
-      _this.$Progress.finish();
+      _this3.$Progress.finish();
     })["catch"](function (error) {
-      _this.$Progress.fail();
+      _this3.$Progress.fail();
     });
   },
-  mounted: function mounted() {
-    console.log("Component mounted.");
-  }
+  mounted: function mounted() {}
 });
 
 /***/ }),
@@ -8724,7 +8834,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n#duration-text[data-v-0f6b6375] {\n  font-size: 36px;\n  font-weight: 300;\n}\n", ""]);
+exports.push([module.i, "\n#duration-text[data-v-0f6b6375] {\r\n  font-size: 36px;\r\n  font-weight: 300;\n}\r\n", ""]);
 
 // exports
 
@@ -64983,31 +65093,37 @@ var render = function() {
                     staticClass: "col-sm-2 col-form-label",
                     attrs: { for: "Client" }
                   },
-                  [_vm._v("Client:")]
+                  [_vm._v("Client name:")]
                 ),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-sm-10" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.task.client,
-                        expression: "task.client"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", id: "Client", disabled: "" },
-                    domProps: { value: _vm.task.client },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                  _vm.task.project
+                    ? _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.task.project.owner.name,
+                            expression: "task.project.owner.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", id: "Client", disabled: "" },
+                        domProps: { value: _vm.task.project.owner.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.task.project.owner,
+                              "name",
+                              $event.target.value
+                            )
+                          }
                         }
-                        _vm.$set(_vm.task, "client", $event.target.value)
-                      }
-                    }
-                  })
+                      })
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -65018,66 +65134,37 @@ var render = function() {
                     staticClass: "col-sm-2 col-form-label",
                     attrs: { for: "Project" }
                   },
-                  [_vm._v("Project:")]
+                  [_vm._v("Project name:")]
                 ),
                 _vm._v(" "),
                 _c("div", { staticClass: "col-sm-10" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.task.Project,
-                        expression: "task.Project"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", id: "Project", disabled: "" },
-                    domProps: { value: _vm.task.Project },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
+                  _vm.task.project
+                    ? _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.task.project.name,
+                            expression: "task.project.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: { type: "text", id: "Project", disabled: "" },
+                        domProps: { value: _vm.task.project.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.task.project,
+                              "name",
+                              $event.target.value
+                            )
+                          }
                         }
-                        _vm.$set(_vm.task, "Project", $event.target.value)
-                      }
-                    }
-                  })
-                ])
-              ]),
-              _vm._v(" "),
-              _c("div", { staticClass: "form-group row" }, [
-                _c(
-                  "label",
-                  {
-                    staticClass: "col-sm-2 col-form-label",
-                    attrs: { for: "Project" }
-                  },
-                  [_vm._v("Project:")]
-                ),
-                _vm._v(" "),
-                _c("div", { staticClass: "col-sm-10" }, [
-                  _c("input", {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.task.Project,
-                        expression: "task.Project"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    attrs: { type: "text", id: "Project", disabled: "" },
-                    domProps: { value: _vm.task.Project },
-                    on: {
-                      input: function($event) {
-                        if ($event.target.composing) {
-                          return
-                        }
-                        _vm.$set(_vm.task, "Project", $event.target.value)
-                      }
-                    }
-                  })
+                      })
+                    : _vm._e()
                 ])
               ]),
               _vm._v(" "),
@@ -65098,7 +65185,7 @@ var render = function() {
               _vm._v(" "),
               _c("center", [
                 _c("div", { attrs: { id: "duration-text" } }, [
-                  _vm._v("4 minutes, 35 seconds")
+                  _vm._v(_vm._s(_vm.activeTimerString))
                 ])
               ])
             ],
@@ -65110,6 +65197,14 @@ var render = function() {
           _c(
             "button",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.editMode,
+                  expression: "editMode"
+                }
+              ],
               staticClass: "btn btn-success btn-lg",
               attrs: { type: "button", id: "save-button" }
             },
@@ -65122,8 +65217,21 @@ var render = function() {
           _c(
             "button",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.activeTimerString,
+                  expression: "!activeTimerString"
+                }
+              ],
               staticClass: "btn btn-primary btn-lg",
-              attrs: { type: "button", id: "start-button" }
+              attrs: { type: "button", id: "start-button" },
+              on: {
+                click: function($event) {
+                  return _vm.startTracking()
+                }
+              }
             },
             [
               _vm._v("\n        Start\n        "),
@@ -65134,8 +65242,21 @@ var render = function() {
           _c(
             "button",
             {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.activeTimerString,
+                  expression: "activeTimerString"
+                }
+              ],
               staticClass: "btn btn-info btn-lg",
-              attrs: { type: "button", id: "stop-button" }
+              attrs: { type: "button", id: "stop-button" },
+              on: {
+                click: function($event) {
+                  return _vm.stopTracking()
+                }
+              }
             },
             [
               _vm._v("\n        stop\n        "),
@@ -81971,6 +82092,25 @@ var tasks = {
   "delete": function _delete(params) {
     return API["delete"]('/tasks/' + params);
   }
+}; // tracking tasks
+
+var track = {
+  get: function get(params) {
+    return API.get('/tracking/' + params);
+  },
+  post: function post(params) {
+    return API.post('/tracking/', {
+      comment: params.comment,
+      start_at: params.start_at,
+      task_id: params.task_id
+    });
+  },
+  put: function put(params) {
+    return API.patch('/tracking/' + params.track_id, {
+      end_at: params.end_at,
+      task_id: params.task_id
+    });
+  }
 }; // receipts end point
 
 var receipts = {
@@ -81990,7 +82130,8 @@ var receipts = {
   projects: projects,
   tasks: tasks,
   responsibles: responsibles,
-  receipts: receipts
+  receipts: receipts,
+  track: track
 });
 
 /***/ }),

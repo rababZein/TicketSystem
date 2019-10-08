@@ -9,12 +9,12 @@ class CreateForeignKeysTrack extends Migration {
 	public function up()
 	{
 		Schema::table('tracking_tasks', function(Blueprint $table) {
-			$table->foreign('create_by')->references('id')->on('users')
+			$table->foreign('created_by')->references('id')->on('users')
 						->onDelete('restrict')
 						->onUpdate('restrict');
 		});
 		Schema::table('tracking_tasks', function(Blueprint $table) {
-			$table->foreign('update_by')->references('id')->on('users')
+			$table->foreign('updated_by')->references('id')->on('users')
 						->onDelete('restrict')
 						->onUpdate('restrict');
 		});
@@ -28,10 +28,10 @@ class CreateForeignKeysTrack extends Migration {
 	public function down()
 	{
 		Schema::table('tracking_tasks', function(Blueprint $table) {
-			$table->dropForeign('tracking_tasks_create_by_foreign');
+			$table->dropForeign('tracking_tasks_created_by_foreign');
 		});
 		Schema::table('tracking_tasks', function(Blueprint $table) {
-			$table->dropForeign('tracking_tasks_update_by_foreign');
+			$table->dropForeign('tracking_tasks_updated_by_foreign');
 		});
 		Schema::table('tracking_tasks', function(Blueprint $table) {
 			$table->dropForeign('tracking_tasks_task_id_foreign');

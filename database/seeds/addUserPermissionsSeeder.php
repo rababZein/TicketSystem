@@ -24,7 +24,7 @@ class addUserPermissionsSeeder extends Seeder
             Permission::create(['name' => $permission]);
         }
 
-        // add Permission to admin role
+        // add Permissions to admin role
         $role = Role::where('name', 'admin')->firstOrFail();
         $role->givePermissionTo($permissions);
     }

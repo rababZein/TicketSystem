@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use App\Models\User;
 
 class RolesAndPermissionsSeeder extends Seeder
@@ -16,6 +17,21 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()['cache']->forget('spatie.permission.cache');
 
+        $permissions = [
+            'role-list',
+            'role-create',
+            'role-edit',
+            'role-delete',
+            'permission-list',
+            'permission-create',
+            'permission-edit',
+            'permission-delete',
+        ];
+
+
+        foreach ($permissions as $permission) {
+            Permission::create(['name' => $permission]);
+        }
 
         Role::create(['name' => 'user']);
         /** @var User $user */
@@ -25,14 +41,14 @@ class RolesAndPermissionsSeeder extends Seeder
         $role = Role::create(['name' => 'admin']);
 
         $role->givePermissionTo([
-        'role-list',
-        'role-create',
-        'role-edit',
-        'role-delete',
-        'permission-list',
-        'permission-create',
-        'permission-edit',
-        'permission-delete'
+            'role-list',
+            'role-create',
+            'role-edit',
+            'role-delete',
+            'permission-list',
+            'permission-create',
+            'permission-edit',
+            'permission-delete'
         ]);
 
         /** @var User $user */
