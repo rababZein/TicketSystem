@@ -33,6 +33,14 @@ class Tracking_taskController extends BaseController
   public function store(TrackingRequest $request)
   {
     $input = $request->validated();
+    
+    $tracking_model = new Tracking_task();
+    $inprogressTask = $tracking_model->inProgressTracking($input['task_id']);
+
+    if ($inprogressTask){
+      return $this->sendError('There is a tracking task in-progress', $inprogressTask->toArray()); 
+    }
+
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
