@@ -63,12 +63,12 @@ const tasks = {
 // tracking tasks
 const track = {
     get: params => API.get('/tracking/' + params),
-    post: params => API.post('/tracking/', {
+    post: params => API.post('/tracking/' + params.task_id, {
         comment: params.comment,
         start_at: params.start_at,
         task_id: params.task_id
     }),
-    put: params => API.patch('/tracking/' + params.track_id, { 
+    put: params => API.patch('/tracking/' + params.task_id + '/' + params.track_id, { 
         end_at: params.end_at,
         task_id: params.task_id
      })
