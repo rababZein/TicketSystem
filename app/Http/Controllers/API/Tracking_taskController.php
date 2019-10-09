@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\TrackingRequest\AddTrackingRequest;
-use App\Http\Requests\TrackingRequest\EditrackingRequest;
+use App\Http\Requests\TrackingRequest\EditTrackingRequest;
 use App\Http\Requests\TrackingRequest\DeleteTrackingRequest;
 use App\Models\Tracking_task;
 use App\Models\Task;
@@ -79,12 +79,12 @@ class Tracking_taskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(EditTrackingRequest $request, $id)
+  public function update(EditTrackingRequest $request, $task_id, $tracking_id)
   {
-    $tracking_task = Tracking_task::find($id);
+    $tracking_task = Tracking_task::find($tracking_id);
 
     if (!$tracking_task) {
-      throw new ItemNotFoundException($id);
+      throw new ItemNotFoundException($tracking_id);
     }
 
     $tracking_task->updated_at = Carbon::now();
