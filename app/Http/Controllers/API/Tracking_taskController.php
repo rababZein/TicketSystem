@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-// use Illuminate\Http\Request;
 use App\Http\Requests\TrackingRequest;
 use App\Models\Tracking_task;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
 use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemsNotFoundException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class Tracking_taskController extends BaseController 
 {
@@ -21,9 +24,10 @@ class Tracking_taskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:tracking_task-create', ['only' => ['store']]);
+      $this->middleware('permission:tracking_task-create', ['only' => ['store', 'checkTrackingInProgress', 'tracking']]);
       $this->middleware('permission:tracking_task-edit', ['only' => ['update']]);
       $this->middleware('permission:tracking_task-delete', ['only' => ['destroy']]);
+      $this->middleware('permission:tracking_task-list', ['only' => ['getHistory']]);
   }
 
   /**
@@ -89,7 +93,7 @@ class Tracking_taskController extends BaseController
     $tracking_task = Tracking_task::find($id);
 
     if (!$tracking_task) {
-        return $this->sendError('Not found Error.', 'Sorry, traking task with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $tracking_task->updated_at = Carbon::now();
@@ -103,11 +107,15 @@ class Tracking_taskController extends BaseController
         $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds($tracking_task->start_at);
     }
 
-    $updated = $tracking_task->fill($input)->save();
+    try {
+      $updated = $tracking_task->fill($input)->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Tracking_task');
+    }
 
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Tracking task could not be updated', 500);
-
+      throw new ItemNotUpdatedException('Tracking_task');
+      
     return $this->sendResponse($tracking_task->toArray(), 'Tracking task updated successfully.');    
   }
 
@@ -122,14 +130,21 @@ class Tracking_taskController extends BaseController
     $tracking_task = Tracking_task::find($id);
 
     if (is_null($tracking_task)) {
-      return $this->sendError('Traking task not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($tracking_task->task->receipts->isNotEmpty()) {
-      return $this->sendError('Can\'t delete!, This task has receipts.');
+      throw new InvalidDataException([
+        'task' => $tracking_task->task->toArray()
+      ],
+      'Can\'t delete!, This task has receipts.');
     }
 
-    $tracking_task->delete();
+    try {
+      $tracking_task->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Tracking_task');
+    }
 
     return $this->sendResponse($tracking_task->toArray(), 'Tracking task deleted successfully.');
   }
@@ -143,6 +158,10 @@ class Tracking_taskController extends BaseController
 
 public function tracking($task_id)
 {
+  $task = Task::find($task_id);
+  if (!$task)
+    throw new ItemNotFoundException($task_id);
+
   $tracking_model = new Tracking_task();
   $tracking = $tracking_model->tarking($task_id);
 
@@ -171,8 +190,14 @@ public function checkTrackingInProgress($task_id)
    */
   public function getHistory($task_id)
   {
+    $task = Task::find($task_id);
+    if (!$task)
+      throw new ItemNotFoundException($task_id);
+
     $tracking_model = new Tracking_task();
     $tracking = $tracking_model->history($task_id);
+    if (! $tracking)
+      throw new ItemsNotFoundException();
 
     return $this->sendResponse($tracking->toArray(), 'Traking History retrieved successfully.');
   }
