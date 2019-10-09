@@ -9,6 +9,7 @@ use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
 use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\InvalidDataException;
 
 class Tracking_taskController extends BaseController 
 {
@@ -38,7 +39,10 @@ class Tracking_taskController extends BaseController
     $inprogressTask = $tracking_model->inProgressTracking($input['task_id']);
 
     if ($inprogressTask){
-      return $this->sendError('There is a tracking task in-progress', $inprogressTask->toArray()); 
+      throw new InvalidDataException([
+        'task' => $inprogressTask->toArray()
+      ],
+      'There is a tracking task in-progress');
     }
 
     $input['created_at'] = Carbon::now();
