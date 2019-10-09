@@ -24,7 +24,7 @@ class ItemNotFoundException extends Exception
             'status' => false,
             'message' => 'Item not found',
             'type' => 'ItemNotFoundException',
-            'data' => $this->id]
+            'data' =>['id' => $this->id]]
             , 404); // not found
     }
 }
