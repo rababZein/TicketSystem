@@ -42,7 +42,12 @@
             </div>
           </div>
           <div class="form-group row" v-show="duration">
-            <label for="Project" class="col-sm-2 col-form-label">Total duration:<p><small>(hours:minutes)</small></p></label>
+            <label for="Project" class="col-sm-2 col-form-label">
+              Total duration:
+              <p>
+                <small>(hours:minutes)</small>
+              </p>
+            </label>
             <div class="col-sm-10">
               <input
                 v-if="duration"
@@ -74,7 +79,17 @@
           <i class="fas fa-save fa-fw"></i>
         </button>
         <button
-          @click="startTracking()"
+          @click="listTrackingTask(task_id)"
+          type="button"
+          class="btn btn-dark btn-lg"
+          id="start-button"
+          v-show="!activeTimerString"
+        >
+          Edit Time
+          <i class="fas fa-edit fa-fw"></i>
+        </button>
+        <button
+          @click="startTracking"
           type="button"
           class="btn btn-primary btn-lg"
           id="start-button"
@@ -84,7 +99,7 @@
           <i class="fas fa-play fa-fw"></i>
         </button>
         <button
-          @click="stopTracking()"
+          @click="stopTracking"
           v-show="activeTimerString"
           type="button"
           class="btn btn-info btn-lg"
@@ -94,6 +109,33 @@
           <i class="fas fa-stop fa-fw"></i>
         </button>
       </center>
+      <div class="card" v-show="listTracking_Task.length > 0">
+        <div class="card-header">
+          <h5 class="card-title m-0">History</h5>
+        </div>
+        <div class="card-body">
+          <div
+            class="callout callout-info"
+            v-for="item in orderedTrack"
+            :key="item.id"
+          >
+            <div class="row">
+              <div class="col-sm-4">
+                <label for="started_at" class="col-form-label">started at:</label>
+                <strong>{{ item.start_at | DateWithTime }}</strong>
+              </div>
+              <div class="col-sm-4">
+                <label for="end_at" class="col-form-label">end at:</label>
+                <strong>{{ item.end_at | DateWithTime }}</strong>
+              </div>
+              <div class="col-sm-4">
+                <label for="duration" class="col-form-label">duration:</label>
+                <strong>{{ humanReadableFromSecounds(item.count_time) }}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -111,7 +153,8 @@ export default {
       counter: { seconds: 0 },
       activeTimerString: null,
       counted_time: null,
-      duration: null
+      duration: null,
+      listTracking_Task: []
     };
   },
   methods: {
@@ -231,7 +274,28 @@ export default {
             title: error.response.data.message
           });
         });
-    }
+    },
+    // list all Tracking_Task for this task
+    listTrackingTask(task_id) {
+      this.$Progress.start();
+      this.$api.track
+        .getHistory(task_id)
+        .then(response => {
+          this.listTracking_Task = response.data.data;
+
+          // // convert array to object for paginate
+          // this.tasks = Object.assign({}, this.tasks);
+
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    humanReadableFromSecounds(seconds) {
+      let duration = this._readableTimeFromSeconds(seconds);
+      return `${duration.hours}:${duration.minutes}:${duration.seconds}`;
+    },
   },
 
   created() {
@@ -250,7 +314,17 @@ export default {
     // count total duration
     this.countTaskDuration(this.task_id);
   },
-  mounted() {}
+  mounted() {},
+  computed: {
+    orderedTrack: function() {
+      return this.listTracking_Task.reverse();
+    }
+  },
+  filters: {
+    DateWithTime(data) {
+      return moment(data).format(' DD/MM/YYYY HH:mm:ss')
+    }
+  }
 };
 </script>
 

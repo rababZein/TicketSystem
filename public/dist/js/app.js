@@ -3152,6 +3152,48 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -3165,7 +3207,8 @@ __webpack_require__.r(__webpack_exports__);
       },
       activeTimerString: null,
       counted_time: null,
-      duration: null
+      duration: null,
+      listTracking_Task: []
     };
   },
   methods: {
@@ -3289,24 +3332,53 @@ __webpack_require__.r(__webpack_exports__);
           title: error.response.data.message
         });
       });
+    },
+    // list all Tracking_Task for this task
+    listTrackingTask: function listTrackingTask(task_id) {
+      var _this5 = this;
+
+      this.$Progress.start();
+      this.$api.track.getHistory(task_id).then(function (response) {
+        _this5.listTracking_Task = response.data.data; // // convert array to object for paginate
+        // this.tasks = Object.assign({}, this.tasks);
+
+        _this5.$Progress.finish();
+      })["catch"](function (error) {
+        _this5.$Progress.fail();
+      });
+    },
+    humanReadableFromSecounds: function humanReadableFromSecounds(seconds) {
+      var duration = this._readableTimeFromSeconds(seconds);
+
+      return "".concat(duration.hours, ":").concat(duration.minutes, ":").concat(duration.seconds);
     }
   },
   created: function created() {
-    var _this5 = this;
+    var _this6 = this;
 
     // check if this track is in progress
     this.checkTrackingInProgress(this.task_id);
     this.$api.tasks.get(this.task_id).then(function (response) {
-      _this5.task = response.data.data;
+      _this6.task = response.data.data;
 
-      _this5.$Progress.finish();
+      _this6.$Progress.finish();
     })["catch"](function (error) {
-      _this5.$Progress.fail();
+      _this6.$Progress.fail();
     }); // count total duration
 
     this.countTaskDuration(this.task_id);
   },
-  mounted: function mounted() {}
+  mounted: function mounted() {},
+  computed: {
+    orderedTrack: function orderedTrack() {
+      return this.listTracking_Task.reverse();
+    }
+  },
+  filters: {
+    DateWithTime: function DateWithTime(data) {
+      return moment__WEBPACK_IMPORTED_MODULE_0___default()(data).format(' DD/MM/YYYY HH:mm:ss');
+    }
+  }
 });
 
 /***/ }),
@@ -65336,13 +65408,34 @@ var render = function() {
                   expression: "!activeTimerString"
                 }
               ],
-              staticClass: "btn btn-primary btn-lg",
+              staticClass: "btn btn-dark btn-lg",
               attrs: { type: "button", id: "start-button" },
               on: {
                 click: function($event) {
-                  return _vm.startTracking()
+                  return _vm.listTrackingTask(_vm.task_id)
                 }
               }
+            },
+            [
+              _vm._v("\n        Edit Time\n        "),
+              _c("i", { staticClass: "fas fa-edit fa-fw" })
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.activeTimerString,
+                  expression: "!activeTimerString"
+                }
+              ],
+              staticClass: "btn btn-primary btn-lg",
+              attrs: { type: "button", id: "start-button" },
+              on: { click: _vm.startTracking }
             },
             [
               _vm._v("\n        Start\n        "),
@@ -65363,18 +65456,96 @@ var render = function() {
               ],
               staticClass: "btn btn-info btn-lg",
               attrs: { type: "button", id: "stop-button" },
-              on: {
-                click: function($event) {
-                  return _vm.stopTracking()
-                }
-              }
+              on: { click: _vm.stopTracking }
             },
             [
               _vm._v("\n        stop\n        "),
               _c("i", { staticClass: "fas fa-stop fa-fw" })
             ]
           )
-        ])
+        ]),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            directives: [
+              {
+                name: "show",
+                rawName: "v-show",
+                value: _vm.listTracking_Task.length > 0,
+                expression: "listTracking_Task.length > 0"
+              }
+            ],
+            staticClass: "card"
+          },
+          [
+            _vm._m(1),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "card-body" },
+              _vm._l(_vm.orderedTrack, function(item) {
+                return _c(
+                  "div",
+                  { key: item.id, staticClass: "callout callout-info" },
+                  [
+                    _c("div", { staticClass: "row" }, [
+                      _c("div", { staticClass: "col-sm-4" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass: "col-form-label",
+                            attrs: { for: "started_at" }
+                          },
+                          [_vm._v("started at:")]
+                        ),
+                        _vm._v(" "),
+                        _c("strong", [
+                          _vm._v(_vm._s(_vm._f("DateWithTime")(item.start_at)))
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-sm-4" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass: "col-form-label",
+                            attrs: { for: "end_at" }
+                          },
+                          [_vm._v("end at:")]
+                        ),
+                        _vm._v(" "),
+                        _c("strong", [
+                          _vm._v(_vm._s(_vm._f("DateWithTime")(item.end_at)))
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-sm-4" }, [
+                        _c(
+                          "label",
+                          {
+                            staticClass: "col-form-label",
+                            attrs: { for: "duration" }
+                          },
+                          [_vm._v("duration:")]
+                        ),
+                        _vm._v(" "),
+                        _c("strong", [
+                          _vm._v(
+                            _vm._s(
+                              _vm.humanReadableFromSecounds(item.count_time)
+                            )
+                          )
+                        ])
+                      ])
+                    ])
+                  ]
+                )
+              }),
+              0
+            )
+          ]
+        )
       ],
       1
     )
@@ -65389,10 +65560,18 @@ var staticRenderFns = [
       "label",
       { staticClass: "col-sm-2 col-form-label", attrs: { for: "Project" } },
       [
-        _vm._v("Total duration:"),
+        _vm._v("\n            Total duration:\n            "),
         _c("p", [_c("small", [_vm._v("(hours:minutes)")])])
       ]
     )
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "card-header" }, [
+      _c("h5", { staticClass: "card-title m-0" }, [_vm._v("History")])
+    ])
   }
 ]
 render._withStripped = true
@@ -82241,6 +82420,9 @@ var track = {
   },
   checkTrackingInProgress: function checkTrackingInProgress(params) {
     return API.get('/tracking/checkTrackingInProgress/' + params);
+  },
+  getHistory: function getHistory(params) {
+    return API.get('/tracking/history/' + params);
   }
 }; // receipts end point
 
