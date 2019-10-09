@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Requests\TrackingRequest;
+use App\Http\Requests\TrackingRequest\AddTrackingRequest;
+use App\Http\Requests\TrackingRequest\EditrackingRequest;
+use App\Http\Requests\TrackingRequest\DeleteTrackingRequest;
 use App\Models\Tracking_task;
 use App\Models\Task;
 use Validator;
@@ -36,7 +38,7 @@ class Tracking_taskController extends BaseController
    *
    * @return Response
    */
-  public function store(TrackingRequest $request)
+  public function store(AddTrackingRequest $request)
   {
     $input = $request->validated();
     
@@ -77,20 +79,8 @@ class Tracking_taskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(EditTrackingRequest $request, $id)
   {
-    $validator = Validator::make($request->all(), [
-      'comment' => 'string',
-      'start_at' => 'date_format:Y-m-d H:i:s',
-      'end_at' => 'date_format:Y-m-d H:i:s',
-      'task_id' => 'integer|exists:tasks,id',
-      'count_time' => 'numeric|min:0'
-    ]);
-
-    if($validator->fails()){
-        return $this->sendError('Validation Error.', $validator->errors());       
-    }
-
     $tracking_task = Tracking_task::find($id);
 
     if (!$tracking_task) {
@@ -100,7 +90,7 @@ class Tracking_taskController extends BaseController
     $tracking_task->updated_at = Carbon::now();
     $tracking_task->updated_by = auth()->user()->id;
 
-    $input = $request->all();
+    $input = $request->validated();
     if (isset($input['end_at'])){
       if (isset($input['start_at']))
         $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
@@ -126,7 +116,7 @@ class Tracking_taskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteTrackingRequest $request)
   {
     $tracking_task = Tracking_task::find($id);
 

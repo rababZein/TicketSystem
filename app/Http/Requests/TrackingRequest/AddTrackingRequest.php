@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\TrackingRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Http\Request;
 use App\Models\Task;
 use App\Exceptions\ItemNotFoundException;
 
-class TrackingRequest extends FormRequest
+class AddTrackingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +22,7 @@ class TrackingRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
-        if ($task->responsible->id == auth()->user()->id || auth()->user()->isAdmin()) {
+        if ($task->responsible->id == auth()->user()->id) {
             return true;
         }
 
@@ -44,18 +43,6 @@ class TrackingRequest extends FormRequest
             'start_at' => 'required|date_format:Y-m-d H:i:s',
             'end_at' => 'date_format:Y-m-d H:i:s',
             'task_id' => 'required|integer|exists:tasks,id|in:'.$task_id
-        ];
-    }
-
-    /**
-     * Custome valiation error messages
-     *
-     * @return array
-     */
-    public function messages()
-    {
-        return [
-            //'task_id.different' => 'The task id is not correct'
         ];
     }
 }
