@@ -109,31 +109,92 @@
           <i class="fas fa-stop fa-fw"></i>
         </button>
       </center>
-      <div class="card" v-show="listTracking_Task.length > 0">
+      <div class="card" id="listTracking" v-show="listTracking_Task.length > 0">
         <div class="card-header">
           <h5 class="card-title m-0">History</h5>
         </div>
         <div class="card-body">
-          <div
-            class="callout callout-info"
-            v-for="item in orderedTrack"
-            :key="item.id"
-          >
+          <div class="callout callout-info" v-for="item in orderedTrack" :key="item.id">
             <div class="row">
               <div class="col-sm-4">
                 <label for="started_at" class="col-form-label">started at:</label>
-                <strong>{{ item.start_at | DateWithTime }}</strong>
+                <span class="font-weight-light">{{ item.start_at | DateWithTime }}</span>
               </div>
               <div class="col-sm-4">
-                <label for="end_at" class="col-form-label">end at:</label>
-                <strong>{{ item.end_at | DateWithTime }}</strong>
+                <label for="end_at" class="col-form-label strong">end at:</label>
+                <span class="font-weight-light">{{ item.end_at | DateWithTime }}</span>
               </div>
-              <div class="col-sm-4">
+              <div class="col-sm-2">
                 <label for="duration" class="col-form-label">duration:</label>
-                <strong>{{ humanReadableFromSecounds(item.count_time) }}</strong>
+                <span class="font-weight-light">{{ humanReadableFromSecounds(item.count_time) }}</span>
+              </div>
+              <div class="col-sm-2 text-right" id="action-buttons">
+                <button @click="editModel(item)" class="btn btn-primary btn-sm">
+                  <div class="fa fa-edit fa-fw"></div>
+                </button>
+                <button @click="deleteTrack(task.id, item.id)" class="btn btn-danger btn-sm">
+                  <div class="fa fa-trash fa-fw"></div>
+                </button>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="Modal"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="Modal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="newRoleLabel">Edit Track</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form
+            @submit.prevent="editTrackingTime(task_id,form.id)"
+            @keydown="form.onKeydown($event)"
+          >
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="start_at">started at</label>
+                <date-picker
+                  v-model="form.start_at"
+                  lang="en"
+                  type="datetime"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  :minute-step="1"
+                  value-type="format"
+                  input-class="form-control"
+                ></date-picker>
+                <has-error :form="form" field="start_at"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="end_at">end at</label>
+                <date-picker
+                  v-model="form.end_at"
+                  lang="en"
+                  type="datetime"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  :minute-step="1"
+                  input-class="form-control"
+                  value-type="format"
+                ></date-picker>
+                <has-error :form="form" field="end_at"></has-error>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success">Update</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -142,8 +203,10 @@
 
 <script>
 import moment from "moment";
+import DatePicker from "vue2-datepicker";
 
 export default {
+  components: { DatePicker },
   data() {
     return {
       editMode: false,
@@ -154,7 +217,12 @@ export default {
       activeTimerString: null,
       counted_time: null,
       duration: null,
-      listTracking_Task: []
+      listTracking_Task: [],
+      form: new Form({
+        id: "",
+        start_at: "",
+        end_at: ""
+      })
     };
   },
   methods: {
@@ -188,8 +256,9 @@ export default {
       );
       vm.counter.ticker = setInterval(() => {
         vm.counted_time = null;
-        const time = vm._readableTimeFromSeconds(++vm.counter.seconds);
-        vm.activeTimerString = `${time.hours}:${time.minutes}:${time.seconds}`;
+        vm.activeTimerString = vm.humanReadableFromSecounds(
+          ++vm.counter.seconds
+        );
       }, 1000);
     },
     stopTracking() {
@@ -209,10 +278,9 @@ export default {
           // Reset the counter and timer string
           this.counter = { seconds: 0 };
           this.activeTimerString = null;
-          const trackTime = this._readableTimeFromSeconds(
+          this.counted_time = this.humanReadableFromSecounds(
             this.tracking_task.count_time
           );
-          this.counted_time = `${trackTime.hours}:${trackTime.minutes}:${trackTime.seconds}`;
         })
         .catch(error => {
           this.$Progress.fail();
@@ -248,10 +316,6 @@ export default {
             response.data.data.tracking
           );
           this.duration = `${totalDuration.hours}:${totalDuration.minutes}`;
-          Toast.fire({
-            type: "success",
-            title: response.data.message
-          });
         })
         .catch(error => {
           Toast.fire({
@@ -269,10 +333,7 @@ export default {
           this.startTimer();
         })
         .catch(error => {
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
+          console.log(error);
         });
     },
     // list all Tracking_Task for this task
@@ -282,9 +343,6 @@ export default {
         .getHistory(task_id)
         .then(response => {
           this.listTracking_Task = response.data.data;
-
-          // // convert array to object for paginate
-          // this.tasks = Object.assign({}, this.tasks);
 
           this.$Progress.finish();
         })
@@ -296,6 +354,59 @@ export default {
       let duration = this._readableTimeFromSeconds(seconds);
       return `${duration.hours}:${duration.minutes}:${duration.seconds}`;
     },
+    editModel(track) {
+      this.form.reset();
+      $("#Modal").modal("show");
+      this.form.fill(track);
+    },
+    editTrackingTime(task_id, track_id) {
+      this.$Progress.start();
+      this.form
+        .patch("/v-api/tracking/" + task_id + "/" + track_id)
+        .then(response => {
+          $("#Modal").modal("hide");
+          this.$Progress.finish();
+          this.listTrackingTask(task_id);
+          this.countTaskDuration(task_id);
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    deleteTrack(task_id, track_id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$api.track
+            .delete({task_id, track_id})
+            .then(response => {
+              this.$Progress.finish();
+              this.listTrackingTask(task_id);
+              this.countTaskDuration(task_id);
+              Swal.fire("Deleted!", response.data.message, "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
+    }
   },
 
   created() {
@@ -322,7 +433,7 @@ export default {
   },
   filters: {
     DateWithTime(data) {
-      return moment(data).format(' DD/MM/YYYY HH:mm:ss')
+      return moment(data).format(" DD/MM/YYYY - hh:mm:ss a");
     }
   }
 };
@@ -333,4 +444,12 @@ export default {
   font-size: 36px;
   font-weight: 300;
 }
+.mx-datepicker {
+  display: block;
+  width: 100%;
+}
+.invalid-feedback {
+  display: inline;
+}
+
 </style>
