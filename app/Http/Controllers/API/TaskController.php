@@ -108,7 +108,7 @@ class TaskController extends BaseController
       'project_id' => 'integer|exists:projects,id',
       'ticket_id' => 'integer|exists:tickets,id',
       'responsible_id' => 'integer|exists:users,id',
-      'count_hours' => 'numeric|min:0'
+      'count_hours' => 'nullable|numeric|min:0'
     ]);
 
     if($validator->fails()){

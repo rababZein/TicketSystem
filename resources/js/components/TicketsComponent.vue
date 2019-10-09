@@ -273,7 +273,7 @@ export default {
       this.form.project_id = this.form.project.id;
       
       this.form
-        .patch("/tickets/" + id)
+        .patch("/v-api/tickets/" + id)
         .then(response => {
           $("#newTicket").modal("hide");
           this.$Progress.finish();

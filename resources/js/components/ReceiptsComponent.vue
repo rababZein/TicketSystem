@@ -175,7 +175,7 @@ export default {
         name: "",
         description: "",
         total: "",
-        is_paid: "",
+        is_paid: false,
         task: {
           id: "",
           name: ""
@@ -229,6 +229,7 @@ export default {
     },
     createReceipt() {
       this.$Progress.start();
+
       // need to be enhance
       this.form.task_id = this.form.task.id;
 
