@@ -46,6 +46,19 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany('App\Models\Project');
     }
 
+    public function isAdmin()
+    {
+        foreach ($this->roles()->get() as $role)
+        {
+            if ($role->name == 'admin')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
