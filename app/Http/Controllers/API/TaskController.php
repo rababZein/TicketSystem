@@ -53,7 +53,7 @@ class TaskController extends BaseController
    */
   public function store(Request $request)
   {
-    $validator = Validator::make($request->all(), [
+    $this->validate($request, [
       'name' => 'required|string',
       'description' => 'required|string',
       'project_id' => 'required|integer|exists:projects,id',
@@ -61,10 +61,6 @@ class TaskController extends BaseController
       'responsible_id' => 'integer|exists:users,id',
       'count_hours' => 'nullable|numeric|min:0'
     ]);
-
-    if($validator->fails()){
-       return $this->sendError('Validation Error.', $validator->errors());      
-    }
 
     $input = $request->all();
     $input['created_at'] = Carbon::now();
@@ -102,7 +98,7 @@ class TaskController extends BaseController
    */
   public function update(Request $request, $id)
   {
-    $validator = Validator::make($request->all(), [
+    $this->validate($request, [
       'name' => 'string',
       'description' => 'string',
       'project_id' => 'integer|exists:projects,id',
@@ -110,10 +106,6 @@ class TaskController extends BaseController
       'responsible_id' => 'integer|exists:users,id',
       'count_hours' => 'nullable|numeric|min:0'
     ]);
-
-    if($validator->fails()){
-        return $this->sendError('Validation Error.', $validator->errors());       
-    }
 
     $task = Task::find($id);
     

@@ -53,17 +53,13 @@ class ReceiptController extends BaseController
    */
   public function store(Request $request)
   {
-    $validator = Validator::make($request->all(), [
+    $this->validate($request, [
       'name' => 'required|string',
       'description' => 'required|string',
       'task_id' => 'required|integer|exists:tasks,id',
       'total' => 'numeric|min:0',
       'is_paid' => 'boolean',
     ]);
-
-    if($validator->fails()){
-       return $this->sendError('Validation Error.', $validator->errors());      
-    }
 
     $input = $request->all();
     $input['created_at'] = Carbon::now();
@@ -100,17 +96,13 @@ class ReceiptController extends BaseController
    */
   public function update(Request $request, $id)
   {
-    $validator = Validator::make($request->all(), [
+    $this->validate($request, [
       'name' => 'string',
       'description' => 'string',
       'task_id' => 'integer|exists:tasks,id',
       'total' => 'numeric|min:0',
       'is_paid' => 'boolean',
     ]);
-
-    if($validator->fails()){
-        return $this->sendError('Validation Error.', $validator->errors());       
-    }
 
     $receipt = Receipt::find($id);
     
