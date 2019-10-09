@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 
 class Handler extends ExceptionHandler
@@ -51,6 +53,20 @@ class Handler extends ExceptionHandler
         // override the API error handling to return a proper JSON.
         if ($exception instanceof NotFoundHttpException && $request->wantsJson()) {
             return response()->json(['error' => 'Not Found'], 404);
+        } elseif ($exception instanceof ValidationException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validation Errors',
+                'type' => 'ValidationException',
+                'data' => $exception->errors()]
+                , 400); //bad request
+        } elseif ($exception instanceof AuthorizationException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This action is unauthorized',
+                'type' => 'AuthorizationException',
+                'data' => auth()->user()]
+                , 403); //unauthoized
         }
         return parent::render($request, $exception);
     }

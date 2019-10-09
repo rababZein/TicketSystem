@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
+use App\Http\Requests\TrackingRequest;
 use App\Models\Tracking_task;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
 
 class Tracking_taskController extends BaseController 
 {
@@ -28,20 +30,9 @@ class Tracking_taskController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(TrackingRequest $request)
   {
-    $validator = Validator::make($request->all(), [
-      'comment' => 'required|string',
-      'start_at' => 'required|date_format:Y-m-d H:i:s',
-      'end_at' => 'date_format:Y-m-d H:i:s',
-      'task_id' => 'integer|exists:tasks,id'
-    ]);
-
-    if($validator->fails()){
-       return $this->sendError('Validation Error.', $validator->errors());      
-    }
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
@@ -53,10 +44,13 @@ class Tracking_taskController extends BaseController
       $input['count_time'] = Carbon::parse($input['end_at'])->diffInSeconds(Carbon::parse($input['start_at']));
     }
 
-    $tracking_task = Tracking_task::create($input);
+    try {
+      $tracking_task = Tracking_task::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Tracking_task');
+    }
 
     return $this->sendResponse($tracking_task->toArray(), 'Tracking task created successfully.');
-    
   }
 
 

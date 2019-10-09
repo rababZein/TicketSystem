@@ -43,7 +43,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
 
     // tracking tasks
-    Route::post('/tracking', 'Tracking_taskController@store');
+    Route::post('/tracking/{task_id}', 'Tracking_taskController@store');
     Route::patch('/tracking/{task_id}', 'Tracking_taskController@update');
     Route::delete('/tracking/{task_id}', 'Tracking_taskController@destroy');
     Route::get('/tracking/{task_id}', 'Tracking_taskController@tracking');
