@@ -58,7 +58,7 @@ class Handler extends ExceptionHandler
                 'status' => false,
                 'message' => 'Validation Errors',
                 'type' => 'ValidationException',
-                'data' => $exception->errors()]
+                'errors' => $exception->errors()]
                 , 400); //bad request
         } elseif ($exception instanceof AuthorizationException) {
             return response()->json([
