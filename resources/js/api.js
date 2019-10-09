@@ -73,7 +73,8 @@ const track = {
         task_id: params.task_id
     }),
     countDuration: params => API.get('/tracking/' + params),
-    checkTrackingInProgress: params => API.get('/tracking/checkTrackingInProgress/' + params)
+    checkTrackingInProgress: params => API.get('/tracking/checkTrackingInProgress/' + params),
+    getHistory: params => API.get('/tracking/history/' + params),
 }
 
 // receipts end point
