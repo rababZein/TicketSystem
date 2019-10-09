@@ -177,8 +177,14 @@ public function tracking($task_id)
  */
 public function checkTrackingInProgress($task_id)
 {
+  $task = Task::find($task_id);
+    if (!$task)
+      throw new ItemNotFoundException($task_id);
+  
   $tracking_model = new Tracking_task();
   $tracking = $tracking_model->inProgressTracking($task_id);
+  if (! $tracking)
+    throw new ItemsNotFoundException();
 
   return $this->sendResponse($tracking->toArray(), 'Traking task counter retrived successfully.');
 }
