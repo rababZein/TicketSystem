@@ -33,14 +33,14 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // users
     Route::get('/users/list', 'UsersController@list');
-    Route::resource('/users', 'UsersController')->except('show', 'create');
     Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
+    Route::resource('/users', 'UsersController')->except('show', 'create');
 
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
-    Route::resource('/projects', 'ProjectController')->except('create');
     Route::get('/project/getall', 'ProjectController@getAll');
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
+    Route::resource('/projects', 'ProjectController')->except('create');
 
     // tracking tasks
     Route::post('/tracking', 'Tracking_taskController@store');
