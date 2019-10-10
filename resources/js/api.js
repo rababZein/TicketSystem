@@ -72,7 +72,7 @@ const track = {
         end_at: params.end_at,
         task_id: params.task_id
     }),
-    delete: params => API.delete('/tracking/' + params.track_id),
+    delete: params => API.delete('/tracking/' + params.task_id + '/' + params.track_id),
     countDuration: params => API.get('/tracking/' + params),
     checkTrackingInProgress: params => API.get('/tracking/checkTrackingInProgress/' + params),
     getHistory: params => API.get('/tracking/history/' + params),
