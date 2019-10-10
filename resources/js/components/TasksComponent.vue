@@ -24,7 +24,6 @@
                 <th width="20%">Project</th>
                 <th width="10%">Ticket</th>
                 <th width="10%">Responsible</th>
-                <th width="10%">Count Hours</th>
                 <th>action</th>
               </tr>
             </thead>
@@ -35,9 +34,8 @@
                 <td>{{ task.description }}</td>
                 <td>{{ task.project.owner.name }}</td>
                 <td>{{ task.project.name }}</td>
-                <td>{{ task.ticket.name }}</td>
-                <td>{{ task.responsible.name }}</td>
-                <td>{{ task.count_hours }}</td>
+                <td><p v-if="task.ticket">{{ task.ticket.name }}</p></td>
+                <td><p v-if="task.ticket">{{ task.responsible.name }}</p></td>
                 <td>
                   <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
                     <i class="fas fa-edit fa-fw"></i>
@@ -129,7 +127,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="client_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Project</label>
@@ -151,7 +149,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="project_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Ticket</label>
@@ -173,7 +171,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="ticket_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Responsible</label>
@@ -195,18 +193,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
-              </div>
-              <div class="form-group">
-                <label for="name">Count Hours</label>
-                <input
-                  v-model="form.count_hours"
-                  type="text"
-                  name="count_hours"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('count_hours') }"
-                />
-                <has-error :form="form" field="count_hours"></has-error>
+                <has-error :form="form" field="responsible_id"></has-error>
               </div>
             </div>
 
@@ -233,14 +220,22 @@ export default {
         project: {
           id: "",
           name: "",
-          owner: ""
+          owner: {
+            id: "",
+            name: ""
+          }
         },
         project_id: "",
-        ticket: "",
+        ticket: {
+          id: "",
+          name: ""
+        },
         ticket_id: "",
-        responsible: "",
+        responsible: {
+          id: "",
+          name: ""
+        },
         responsible_id: "",
-        count_hours: ""
       }),
       tasks: {},
       responsibles: [],
@@ -427,3 +422,8 @@ export default {
 };
 </script>
 
+<style scoped>
+.invalid-feedback {
+  display: inline;
+}
+</style>

@@ -57,8 +57,8 @@ class TaskController extends BaseController
       'name' => 'required|string',
       'description' => 'required|string',
       'project_id' => 'required|integer|exists:projects,id',
-      'ticket_id' => 'integer|exists:tickets,id',
-      'responsible_id' => 'integer|exists:users,id',
+      'ticket_id' => 'nullable|integer|exists:tickets,id',
+      'responsible_id' => 'required|integer|exists:users,id',
       'count_hours' => 'nullable|numeric|min:0'
     ]);
 
@@ -102,7 +102,7 @@ class TaskController extends BaseController
       'name' => 'string',
       'description' => 'string',
       'project_id' => 'integer|exists:projects,id',
-      'ticket_id' => 'integer|exists:tickets,id',
+      'ticket_id' => 'nullable|integer|exists:tickets,id',
       'responsible_id' => 'integer|exists:users,id',
       'count_hours' => 'nullable|numeric|min:0'
     ]);
@@ -138,7 +138,7 @@ class TaskController extends BaseController
       return $this->sendError('task not found.');
     }
 
-    if($task->count_hours == 0) {
+    if($task->tracking_history->isNotEmpty()) {
       return $this->sendError('Can\'t delete!, someone work in this task.');
     }
 

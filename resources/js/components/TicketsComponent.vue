@@ -126,7 +126,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="client_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Project</label>
@@ -148,7 +148,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="project_id"></has-error>
               </div>
             </div>
 
@@ -329,4 +329,9 @@ export default {
   }
 };
 </script>
+<style scoped>
+.invalid-feedback {
+  display: inline;
+}
+</style>
 
