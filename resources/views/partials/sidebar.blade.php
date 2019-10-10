@@ -33,26 +33,7 @@
                     </p>
                 </router-link>
             </li>
-            @hasanyrole('admin')
-            <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>
-                        Users Management
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <router-link to="/users" class="nav-link">
-                            <p>
-                                <i class="nav-icon fas fa-list"></i>
-                                Users
-                            </p>
-                        </router-link>
-                    </li>
-                </ul>
-            </li>
+            @can('project-list')
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-project-diagram"></i>
@@ -96,6 +77,8 @@
                     </li>
                 </ul>
             </li>
+            @endcan
+            @can('permission-list')
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-cog"></i>
@@ -121,9 +104,17 @@
                             </p>
                         </router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link to="/users" class="nav-link">
+                            <p>
+                                <i class="nav-icon fas fa-list"></i>
+                                Users
+                            </p>
+                        </router-link>
+                    </li>
                 </ul>
             </li>
-            @endhasanyrole
+            @endcan
         </ul>
     </nav>
     <!-- /.sidebar-menu -->
