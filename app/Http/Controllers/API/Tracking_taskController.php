@@ -116,12 +116,12 @@ class Tracking_taskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy(DeleteTrackingRequest $request)
+  public function destroy(DeleteTrackingRequest $request, $task_id, $tracking_id)
   {
-    $tracking_task = Tracking_task::find($id);
+    $tracking_task = Tracking_task::find($tracking_id);
 
     if (is_null($tracking_task)) {
-      throw new ItemNotFoundException($id);
+      throw new ItemNotFoundException($tracking_id);
     }
 
     if($tracking_task->task->receipts->isNotEmpty()) {

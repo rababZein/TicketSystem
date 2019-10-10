@@ -125,7 +125,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="name"></has-error>
+                <has-error :form="form" field="task_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="total">Total</label>
@@ -313,3 +313,8 @@ export default {
 };
 </script>
 
+<style scoped>
+.invalid-feedback {
+  display: inline;
+}
+</style>

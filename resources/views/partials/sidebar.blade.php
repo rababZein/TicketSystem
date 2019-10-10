@@ -1,6 +1,6 @@
 <!-- Brand Logo -->
 <a href="/" class="brand-link">
-    <img src="/dist/img/ALFerp.png" alt="ALFerp Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <img src="{{ asset('assets/img/ALFerp.png') }}" alt="ALFerp Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
     <span class="brand-text font-weight-light">{{ config('app.name', 'ALFerp') }}</span>
 </a>
 
@@ -9,7 +9,7 @@
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-            <img src="/dist/img/profile.png" class="img-circle elevation-2" alt="User Image">
+            <img src="{{ asset('assets/img/profile.png') }}" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
             <a href="#" class="d-block">
@@ -33,26 +33,7 @@
                     </p>
                 </router-link>
             </li>
-            @hasanyrole('admin')
-            <li class="nav-item has-treeview">
-                <a href="#" class="nav-link">
-                    <i class="nav-icon fas fa-users"></i>
-                    <p>
-                        Users Management
-                        <i class="fas fa-angle-left right"></i>
-                    </p>
-                </a>
-                <ul class="nav nav-treeview">
-                    <li class="nav-item">
-                        <router-link to="/users" class="nav-link">
-                            <p>
-                                <i class="nav-icon fas fa-list"></i>
-                                Users
-                            </p>
-                        </router-link>
-                    </li>
-                </ul>
-            </li>
+            @can('project-list')
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-project-diagram"></i>
@@ -96,6 +77,8 @@
                     </li>
                 </ul>
             </li>
+            @endcan
+            @can('permission-list')
             <li class="nav-item has-treeview">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-cog"></i>
@@ -121,9 +104,17 @@
                             </p>
                         </router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link to="/users" class="nav-link">
+                            <p>
+                                <i class="nav-icon fas fa-list"></i>
+                                Users
+                            </p>
+                        </router-link>
+                    </li>
                 </ul>
             </li>
-            @endhasanyrole
+            @endcan
         </ul>
     </nav>
     <!-- /.sidebar-menu -->
