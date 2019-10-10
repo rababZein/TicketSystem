@@ -116,7 +116,7 @@ class Tracking_taskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy(DeleteTrackingRequest $request, $task_id, $tracking_id)
+  public function destroy(DeleteTrackingRequest $request, $tracking_id)
   {
     $tracking_task = Tracking_task::find($tracking_id);
 
