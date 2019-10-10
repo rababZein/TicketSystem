@@ -1,11 +1,11 @@
 <template>
   <div class="row justify-content-center">
-    <div class="col-md-12">
+    <div class="col-md-12" v-show="task.id">
       <div class="card">
         <div class="card-header">
           <span>Title:</span>
-          <strong>{{ task.name }}</strong>
-          <div class="float-right">{{ task.created_at | myDate }}</div>
+          <span class="font-weight-light">{{ task.name }}</span>
+          <div class="float-right font-weight-light">{{ task.created_at | myDate }}</div>
         </div>
 
         <div class="card-body">
