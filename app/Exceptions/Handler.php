@@ -53,7 +53,7 @@ class Handler extends ExceptionHandler
         // override the API error handling to return a proper JSON.
         if ($exception instanceof NotFoundHttpException && $request->wantsJson()) {
             return response()->json(['error' => 'Not Found'], 404);
-        } elseif ($exception instanceof ValidationException) {
+        } elseif ($exception instanceof ValidationException && $request->wantsJson()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation Errors',
