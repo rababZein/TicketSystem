@@ -8,6 +8,7 @@ use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Notifications\Project\ProjectAssign;
 
 class ProjectController extends BaseController 
 {
@@ -84,6 +85,8 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
+    Notification::send($employees, new ProjectAssign($project));
+
     return $this->sendResponse($project->toArray(), 'Project created successfully.');
     
   }
@@ -144,6 +147,8 @@ class ProjectController extends BaseController
       $employees = User::find($input['project_assign']);
       $project->assigns()->sync($employees);
       $project->assigns;
+
+      Notification::send($employees, new ProjectAssign($project));
     }
 
     if (!$updated)
