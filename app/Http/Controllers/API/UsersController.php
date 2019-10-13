@@ -9,6 +9,10 @@ use App\Http\Resources\User as UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class UsersController extends BaseController
 {
@@ -49,6 +53,7 @@ class UsersController extends BaseController
     public function getClients()
     {
         $clients = User::where('type', 'client')->get();
+
         return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
     }
 
@@ -65,7 +70,11 @@ class UsersController extends BaseController
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
 
-        $user = User::create($input);
+        try {
+            $user = User::create($input);
+        } catch (\Throwable $th) {
+            throw new ItemNotCreatedException('User');
+        }
 
         // add role to user
         $user->assignRole($request->roles);
@@ -85,7 +94,10 @@ class UsersController extends BaseController
      */
     public function update(UpdateUserRequest $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if (is_null($user)) {
+            throw new ItemNotFoundException($id);
+        }
 
         $input = $request->validated();
 
@@ -100,8 +112,13 @@ class UsersController extends BaseController
         if (isset($input['roles'])) {
             // add role to user
             $user->syncRoles($input['roles']);
-            // save User
+        }
+
+        // save User
+        try {
             $user->save();
+        } catch (\Throwable $th) {
+            throw new ItemNotUpdatedException('Role');
         }
         
         return $this->sendResponse($user->toArray(), 'users updated successfully.');
@@ -116,10 +133,19 @@ class UsersController extends BaseController
     public function destroy($id)
     {
         // delete user
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if (is_null($user)) {
+            throw new ItemNotFoundException($id);
+        }
+
         $user->roles()->detach();
 
-        $user->delete();
+        // delete role
+        try {
+            $user->delete();
+        } catch (\Throwable $th) {
+            throw new ItemNotDeletedException('Role');
+        }
 
         return $this->sendResponse($user, 'users deleted successfully.');
 

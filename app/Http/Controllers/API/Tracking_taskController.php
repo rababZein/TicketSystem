@@ -103,9 +103,6 @@ class Tracking_taskController extends BaseController
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Tracking_task');
     }
-
-    if (!$updated)
-      throw new ItemNotUpdatedException('Tracking_task');
       
     return $this->sendResponse($tracking_task->toArray(), 'Tracking task updated successfully.');    
   }

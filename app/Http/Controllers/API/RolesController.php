@@ -6,6 +6,11 @@ use App\Http\Controllers\API\BaseController;
 use App\Http\Requests\UserRequest\AddRoleRequest;
 use App\Http\Requests\UserRequest\UpdateRoleRequest;
 use Spatie\Permission\Models\Role;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class RolesController extends BaseController
 {
@@ -35,6 +40,7 @@ class RolesController extends BaseController
     public function list()
     {
         $roles = Role::with('permissions')->paginate(10);
+
         return $this->sendResponse($roles->toArray(), 'roles retrieved successfully.');
     }
 
@@ -51,7 +57,11 @@ class RolesController extends BaseController
         $input['created_by'] = auth()->user()->id;
 
         // creating new role
-        $role = Role::create($input);
+        try {
+            $role = Role::create($input);
+        } catch (\Throwable $th) {
+            throw new ItemNotCreatedException('Role');
+        }
 
         // insert permissions for role
         $permissionsArray = [];
@@ -76,7 +86,10 @@ class RolesController extends BaseController
     public function update(UpdateRoleRequest $request, $id)
     {
         // edit role by id
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
+        if (is_null($role)) {
+            throw new ItemNotFoundException($id);
+        }
 
         $input = $request->validated();
 
@@ -93,7 +106,11 @@ class RolesController extends BaseController
         $role->syncPermissions($permissionsArray);
 
         // save role
-        $role->save();
+        try {
+            $role->save();
+        } catch (\Throwable $th) {
+            throw new ItemNotUpdatedException('Role');
+        }
 
         return $this->sendResponse($role->toArray(), 'role updated successfully.');
     }
@@ -107,7 +124,10 @@ class RolesController extends BaseController
     public function destroy($id)
     {
         // find the role
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
+        if (is_null($role)) {
+            throw new ItemNotFoundException($id);
+        }
 
         // get permission of this role
         $permissions = $role->permissions->pluck('name', 'id');
@@ -118,7 +138,12 @@ class RolesController extends BaseController
         }
 
         // delete role
-        $role->delete();
+        try {
+            $role->delete();
+        } catch (\Throwable $th) {
+            throw new ItemNotDeletedException('Role');
+        }
+
         return $this->sendResponse($role->toArray(), 'role deleted successfully.');
     }
 }

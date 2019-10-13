@@ -8,6 +8,11 @@ use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class ReceiptController extends BaseController 
 {
@@ -58,7 +63,11 @@ class ReceiptController extends BaseController
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $receipt = Receipt::create($input);
+    try {
+      $receipt = Receipt::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Receipt');
+    }
 
     return $this->sendResponse($receipt->toArray(), 'Receipt created successfully.');
     
@@ -75,7 +84,7 @@ class ReceiptController extends BaseController
     $receipt = Receipt::find($id);
 
     if (is_null($receipt)) {
-        return $this->sendError('Receipt not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse($receipt->toArray(), 'Receipt retrieved successfully.');    
@@ -92,17 +101,18 @@ class ReceiptController extends BaseController
     $receipt = Receipt::find($id);
     
     if (!$receipt) {
-        return $this->sendError('Not found Error.', 'Sorry, Receipt with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $receipt->updated_at = Carbon::now();
     $receipt->updated_by = auth()->user()->id;
 
-    $updated = $receipt->fill($request->validated())->save();
-
-    if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Receipt could not be updated', 500);
-
+    try {
+      $updated = $receipt->fill($request->validated())->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Receipt');
+    }
+    
     return $this->sendResponse($receipt->toArray(), 'Receipt updated successfully.');    
   }
 
@@ -117,18 +127,24 @@ class ReceiptController extends BaseController
     $receipt = Receipt::find($id);
 
     if (is_null($receipt)) {
-      return $this->sendError('Receipt not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($receipt->is_paid) {
-      return $this->sendError('Can\'t delete!, Receipt is paid.');
+      throw new InvalidDataException([
+        'receipt' => $receipt->toArray()
+      ],
+      'Can\'t delete!, Receipt is paid.');
     }
 
-    $receipt->delete();
+    try {
+      $receipt->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Receipt');
+    }
 
     return $this->sendResponse($receipt->toArray(), 'Receipt deleted successfully.');
-  }
-  
+  } 
 }
 
 ?>

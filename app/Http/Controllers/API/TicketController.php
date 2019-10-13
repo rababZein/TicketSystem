@@ -8,6 +8,11 @@ use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class TicketController extends BaseController 
 {
@@ -58,7 +63,11 @@ class TicketController extends BaseController
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $ticket = Ticket::create($input);
+    try {
+      $ticket = Ticket::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Ticket');
+    }
 
     return $this->sendResponse($ticket->toArray(), 'Ticket created successfully.');
     
@@ -76,7 +85,7 @@ class TicketController extends BaseController
     $ticket = $ticket->find($id);
 
     if (is_null($ticket)) {
-        return $this->sendError('Ticket not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse($ticket->toArray(), 'Ticket retrieved successfully.');    
@@ -93,17 +102,17 @@ class TicketController extends BaseController
     $ticket = Ticket::find($id);
     
     if (!$ticket) {
-        return $this->sendError('Not found Error.', 'Sorry, ticket with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $ticket->updated_at = Carbon::now();
     $ticket->updated_by = auth()->user()->id;
 
-    $updated = $ticket->fill($request->validated())->save();
-
-    if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Ticket could not be updated', 500);
-
+    try {
+      $updated = $ticket->fill($request->validated())->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Tracking_task');
+    }
     return $this->sendResponse($ticket->toArray(), 'Ticket updated successfully.');    
   }
 
@@ -118,14 +127,21 @@ class TicketController extends BaseController
     $ticket = Ticket::find($id);
 
     if (is_null($ticket)) {
-      return $this->sendError('ticket not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($ticket->tasks->isNotEmpty()) {
-      return $this->sendError('Can\'t delete!, Ticket has tasks.');
+      throw new InvalidDataException([
+        'tasks' => $ticket->tasks->toArray()
+      ],
+      'Can\'t delete!, Ticket has tasks.');
     }
 
-    $ticket->delete();
+    try {
+      $ticket->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Tracking_task');
+    }
 
     return $this->sendResponse($ticket->toArray(), 'Ticket deleted successfully.');
   }

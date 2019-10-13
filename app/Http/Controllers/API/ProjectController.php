@@ -9,6 +9,11 @@ use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class ProjectController extends BaseController 
 {
@@ -60,15 +65,15 @@ class ProjectController extends BaseController
    */
   public function store(AddProjectRequest $request)
   {
-    if($validator->fails()){
-       return $this->sendError('Validation Error.', $validator->errors());      
-    }
-
     $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $project = Project::create($input);
+    try {
+      $project = Project::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Project');
+    }
 
     // assign people to project
     $employees = User::find($input['project_assign']);
@@ -89,7 +94,7 @@ class ProjectController extends BaseController
     $project = Project::find($id);
 
     if (is_null($project)) {
-        return $this->sendError('Project not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse($project->toArray(), 'Project retrieved successfully.');    
@@ -103,14 +108,10 @@ class ProjectController extends BaseController
    */
   public function update(UpdateProjectRequest $request, $id)
   {
-    if($validator->fails()){
-        return $this->sendError('Validation Error.', $validator->errors());       
-    }
-
     $project = Project::find($id);
     
     if (!$project) {
-        return $this->sendError('Not found Error.', 'Sorry, project with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $input = $request->validated();
@@ -118,7 +119,11 @@ class ProjectController extends BaseController
     $project->updated_at = Carbon::now();
     $project->updated_by = auth()->user()->id;
 
-    $updated = $project->fill($input)->save();
+    try {
+      $project = $project->fill($input)->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Project');
+    }
 
     // update assign people
     if (isset($input['project_assign'])) {
@@ -126,9 +131,6 @@ class ProjectController extends BaseController
       $project->assigns()->sync($employees);
       $project->assigns;
     }
-
-    if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
 
     return $this->sendResponse($project->toArray(), 'Project updated successfully.');    
   }
@@ -144,14 +146,28 @@ class ProjectController extends BaseController
     $project = Project::find($id);
 
     if (is_null($project)) {
-      return $this->sendError('Project not found.');
+      throw new ItemNotFoundException($id);
     }
 
-    if($project->tasks->isNotEmpty() && $project->tickets->isNotEmpty()) {
-      return $this->sendError('Can\'t delete!, Project has tasks/ticket.');
+    if($project->tickets->isNotEmpty()) {
+      throw new InvalidDataException([
+        'tickets' => $project->tickets->toArray()
+      ],
+      'Can\'t delete!, Project has ticket.');
     }
 
-    $project->delete();
+    if($project->tasks->isNotEmpty()) {
+      throw new InvalidDataException([
+        'tasks' => $project->tasks->toArray()
+      ],
+      'Can\'t delete!, Project has tasks.');
+    }
+
+    try {
+      $project->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Project');
+    }
 
     return $this->sendResponse($project->toArray(), 'Project deleted successfully.');
   }
