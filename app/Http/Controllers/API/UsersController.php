@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest\AddUserRequest;
+use App\Http\Requests\UserRequest\UpdateUserRequest;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\User as UserResource;
 use App\Models\User;
@@ -57,18 +58,14 @@ class UsersController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddUserRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191',
-            'email' => 'required|string|email|max:191|unique:users',
-            'password' => 'required|string|min:6'
-        ]);
+        $input = $request->validated();
+        $input['password'] = Hash::make($request->password);
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+        $user = User::create($input);
 
         // add role to user
         $user->assignRole($request->roles);
@@ -86,32 +83,28 @@ class UsersController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
         $user = User::findOrFail($id);
 
-        $this->validate($request, [
-            'name' => 'required|string|max:191',
-            'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
-            'password' => 'sometimes|string|min:6',
-            'type' => 'string|min:6'
-        ]);
+        $input = $request->validated();
 
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if (!empty($request->password)) {
-            $user->password = Hash::make($request->password);
+        $user->updated_at = Carbon::now();
+        $user->updated_by = auth()->user()->id;
+        if (isset($input['password'])) {
+            $user->password = Hash::make($input['password']);
         }
-        $user->type = $request->type;
 
-        // add role to user
-        $user->syncRoles($request->roles);
+        $user = $user->fill($input);
 
-        // save User
-        $user->save();
-
+        if (isset($input['roles'])) {
+            // add role to user
+            $user->syncRoles($input['roles']);
+            // save User
+            $user->save();
+        }
+        
         return $this->sendResponse($user->toArray(), 'users updated successfully.');
-
     }
 
     /**

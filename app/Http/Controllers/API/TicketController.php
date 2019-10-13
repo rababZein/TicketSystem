@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\TicketRequest\AddTicketRequest;
+use App\Http\Requests\TicketRequest\UpdateTicketRequest;
 use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
@@ -51,15 +52,9 @@ class TicketController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddTicketRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'project_id' => 'required|integer|exists:projects,id',
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
@@ -93,14 +88,8 @@ class TicketController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateTicketRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'project_id' => 'integer|exists:projects,id',
-    ]);
-
     $ticket = Ticket::find($id);
     
     if (!$ticket) {
@@ -110,7 +99,7 @@ class TicketController extends BaseController
     $ticket->updated_at = Carbon::now();
     $ticket->updated_by = auth()->user()->id;
 
-    $updated = $ticket->fill($request->all())->save();
+    $updated = $ticket->fill($request->validated())->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Ticket could not be updated', 500);

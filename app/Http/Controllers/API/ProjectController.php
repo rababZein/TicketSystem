@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ProjectRequest\AddProjectRequest;
+use App\Http\Requests\ProjectRequest\UpdateProjectRequest;
 use App\Models\Project;
 use App\Models\User;
 use Validator;
@@ -57,23 +58,13 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddProjectRequest $request)
   {
-    $validator = Validator::make($request->all(), [
-      'name' => 'required|string|unique:projects',
-      'description' => 'required|string',
-      'owner_id' => 'required|integer|exists:users,id',
-      'task_rate' => 'required|integer',
-      'budget_hours' => 'required|integer',
-      'project_assign' => 'array',
-      'project_assign.*' => 'integer|exists:users,id',
-    ]);
-
     if($validator->fails()){
        return $this->sendError('Validation Error.', $validator->errors());      
     }
 
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
@@ -85,7 +76,6 @@ class ProjectController extends BaseController
     $project->assigns;
 
     return $this->sendResponse($project->toArray(), 'Project created successfully.');
-    
   }
 
   /**
@@ -111,18 +101,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateProjectRequest $request, $id)
   {
-    $validator = Validator::make($request->all(), [
-      'name' => 'string',
-      'description' => 'string',
-      'owner_id' => 'integer|exists:users,id',
-      'task_rate' => 'integer',
-      'budget_hours' => 'integer',
-      'project_assign' => 'array',
-      'project_assign.*' => 'integer|exists:users,id',
-    ]);
-
     if($validator->fails()){
         return $this->sendError('Validation Error.', $validator->errors());       
     }
@@ -133,13 +113,14 @@ class ProjectController extends BaseController
         return $this->sendError('Not found Error.', 'Sorry, project with id ' . $id . ' cannot be found', 400);
     }
 
+    $input = $request->validated();
+
     $project->updated_at = Carbon::now();
     $project->updated_by = auth()->user()->id;
 
-    $updated = $project->fill($request->all())->save();
+    $updated = $project->fill($input)->save();
 
     // update assign people
-    $input = $request->all();
     if (isset($input['project_assign'])) {
       $employees = User::find($input['project_assign']);
       $project->assigns()->sync($employees);
@@ -188,7 +169,6 @@ class ProjectController extends BaseController
     $projects = $project_model->search($searchKey);
     
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
-  
   }
 
   /**

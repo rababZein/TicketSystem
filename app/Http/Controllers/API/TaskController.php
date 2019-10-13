@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest\AddTaskRequest;
+use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
@@ -51,18 +52,9 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddTaskRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'project_id' => 'required|integer|exists:projects,id',
-      'ticket_id' => 'nullable|integer|exists:tickets,id',
-      'responsible_id' => 'required|integer|exists:users,id',
-      'count_hours' => 'nullable|numeric|min:0'
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
@@ -96,17 +88,8 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateTaskRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'project_id' => 'integer|exists:projects,id',
-      'ticket_id' => 'nullable|integer|exists:tickets,id',
-      'responsible_id' => 'integer|exists:users,id',
-      'count_hours' => 'nullable|numeric|min:0'
-    ]);
-
     $task = Task::find($id);
     
     if (!$task) {
@@ -116,7 +99,7 @@ class TaskController extends BaseController
     $task->updated_at = Carbon::now();
     $task->updated_by = auth()->user()->id;
 
-    $updated = $task->fill($request->all())->save();
+    $updated = $task->fill($request->validated())->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, task could not be updated', 500);

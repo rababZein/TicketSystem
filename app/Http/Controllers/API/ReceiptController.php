@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ReceiptRequest\AddReceiptRequest;
+use App\Http\Requests\ReceiptRequest\UpdateReceiptRequest;
 use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
@@ -51,17 +52,9 @@ class ReceiptController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddReceiptRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'task_id' => 'required|integer|exists:tasks,id',
-      'total' => 'numeric|min:0',
-      'is_paid' => 'boolean',
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
@@ -94,16 +87,8 @@ class ReceiptController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateReceiptRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'task_id' => 'integer|exists:tasks,id',
-      'total' => 'numeric|min:0',
-      'is_paid' => 'boolean',
-    ]);
-
     $receipt = Receipt::find($id);
     
     if (!$receipt) {
@@ -113,7 +98,7 @@ class ReceiptController extends BaseController
     $receipt->updated_at = Carbon::now();
     $receipt->updated_by = auth()->user()->id;
 
-    $updated = $receipt->fill($request->all())->save();
+    $updated = $receipt->fill($request->validated())->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Receipt could not be updated', 500);

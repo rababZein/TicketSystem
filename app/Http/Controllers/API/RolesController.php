@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest\AddRoleRequest;
+use App\Http\Requests\UserRequest\UpdateRoleRequest;
 use Spatie\Permission\Models\Role;
 
 class RolesController extends BaseController
@@ -43,19 +44,18 @@ class RolesController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddRoleRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
+        $input = $request->validated();
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
         // creating new role
-        $role = new Role;
-        $role->name = $request->name;
+        $role = Role::create($input);
 
         // insert permissions for role
         $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
+        foreach ($input['permissions'] as $permission) {
             $permissionsArray[] = $permission['name'];
         }
         $role->syncPermissions($permissionsArray);
@@ -73,15 +73,21 @@ class RolesController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRoleRequest $request, $id)
     {
         // edit role by id
         $role = Role::findOrFail($id);
-        $role->name = $request->name;
+
+        $input = $request->validated();
+
+        $role->updated_at = Carbon::now();
+        $role->updated_by = auth()->user()->id;
+
+        $role = $role->fill($input);
         
         // insert permissions for role
         $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
+        foreach ($input['permissions'] as $permission) {
             $permissionsArray[] = $permission['name'];
         }
         $role->syncPermissions($permissionsArray);
@@ -90,7 +96,6 @@ class RolesController extends BaseController
         $role->save();
 
         return $this->sendResponse($role->toArray(), 'role updated successfully.');
-
     }
 
     /**

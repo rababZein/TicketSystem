@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use Illuminate\Http\Request;
+use App\Http\Requests\PermissionRequest\AddPermissionRequest;
+use App\Http\Requests\PermissionRequest\UpdatePermissionRequest;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -36,6 +37,7 @@ class PermissionsController extends BaseController
     public function list()
     {
         $permissions = Permission::paginate(10);
+
         return $this->sendResponse($permissions->toArray(), 'Permissions retrieved successfully.');
     }
 
@@ -45,18 +47,15 @@ class PermissionsController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddPermissionRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
+        $input = $request->validated();
 
         // creating new permission
-        $permission = new Permission;
-        $permission->name = $request->name;
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
-        // save permission
-        $permission->save();
+        $permission = Permission::create($input);
 
         return $this->sendResponse($permission->toArray(), 'permission created successfully.');
     }
@@ -68,18 +67,17 @@ class PermissionsController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePermissionRequest $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
-
         // update permission
         $permission = Permission::findOrFail($id);
-        $permission->name = $request->name;
+        
+        $input = $request->validated();
 
-        // save permission
-        $permission->save();
+        $permission->updated_at = Carbon::now();
+        $permission->updated_by = auth()->user()->id;
+
+        $permission = $permission->fill($input)->save();
 
         return $this->sendResponse($permission->toArray(), 'permission updated successfully.');
     }
@@ -106,7 +104,6 @@ class PermissionsController extends BaseController
         $permission->delete();
 
         return $this->sendResponse($permission->toArray(), 'permission deleted successfully.');
-
     }
 
     public function getAllPermissions() {
