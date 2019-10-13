@@ -68,6 +68,10 @@ class ReceiptController extends BaseController
 
     $receipt = Receipt::create($input);
 
+    if ($input['is_paid']) {
+      auth()->user()->notify(new ReceiptPaid($receipt));
+    }
+
     return $this->sendResponse($receipt->toArray(), 'Receipt created successfully.');
     
   }
@@ -116,12 +120,12 @@ class ReceiptController extends BaseController
 
     $input = $request->all();
 
-    $receipt = $receipt->fill($input)->save();
+    $updated = $receipt->fill($input)->save();
 
-    if (!$receipt)
+    if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Receipt could not be updated', 500);
 
-    if (isset($input['is_paid'])) {
+    if (isset($input['is_paid']) && $input['is_paid']) {
       auth()->user()->notify(new ReceiptPaid($receipt));
     }
 
