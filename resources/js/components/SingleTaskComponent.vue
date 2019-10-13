@@ -49,14 +49,7 @@
               </p>
             </label>
             <div class="col-sm-10">
-              <input
-                v-if="duration"
-                v-model="duration"
-                type="text"
-                class="form-control"
-                id="Project"
-                disabled
-              />
+              <p class="font-weight-light mt-3">{{ humanReadableFromSecounds(duration).slice(0, -3) }}</p>
             </div>
           </div>
           <center>
@@ -67,7 +60,7 @@
             >{{ activeTimerString }}</div>
             <div
               id="duration-text"
-              v-if="counted_time"
+              v-else
               v-bind:class="{'text-danger': counted_time}"
             >{{ counted_time }}</div>
           </center>
@@ -78,16 +71,26 @@
           save
           <i class="fas fa-save fa-fw"></i>
         </button>
-        <button
-          @click="listTrackingTask(task_id)"
-          type="button"
-          class="btn btn-dark btn-lg"
-          id="start-button"
-          v-show="!activeTimerString"
-        >
-          Edit Time
-          <i class="fas fa-edit fa-fw"></i>
-        </button>
+        <div class="btn-group dropup">
+          <button
+            class="btn btn-dark dropdown-toggle btn-lg"
+            data-toggle="dropdown"
+            type="button"
+            aria-expanded="false"
+          >
+            More Actions
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+            <li v-show="!activeTimerString">
+              <a @click="listTrackingTask(task_id)" class="dropdown-item">
+                <i class="fas fa-edit fa-fw mr-2"></i>
+                Edit History
+              </a>
+            </li>
+          </ul>
+        </div>
+
         <button
           @click="startTracking"
           type="button"
@@ -216,7 +219,7 @@ export default {
       counter: { seconds: 0 },
       activeTimerString: null,
       counted_time: null,
-      duration: null,
+      duration: "0",
       listTracking_Task: [],
       form: new Form({
         id: "",
@@ -230,7 +233,7 @@ export default {
       // Reset the counter and timer string
       this.counted_time = null;
       // show timer before send request
-      this.activeTimerString = "00:00:00";
+      this.activeTimerString = this.humanReadableFromSecounds(this.duration);
       this.$api.track
         .post({
           comment: "new tracking",
@@ -256,12 +259,11 @@ export default {
       );
       vm.counter.ticker = setInterval(() => {
         vm.counted_time = null;
-        vm.activeTimerString = vm.humanReadableFromSecounds(
-          ++vm.counter.seconds
-        );
+        vm.activeTimerString = vm.humanReadableFromSecounds(++vm.duration);
       }, 1000);
     },
     stopTracking() {
+      this.$Progress.start();
       this.$api.track
         .put({
           track_id: this.tracking_task.id,
@@ -275,12 +277,7 @@ export default {
           this.$Progress.finish();
           // Stop the ticker
           clearInterval(this.counter.ticker);
-          // Reset the counter and timer string
-          this.counter = { seconds: 0 };
           this.activeTimerString = null;
-          this.counted_time = this.humanReadableFromSecounds(
-            this.tracking_task.count_time
-          );
         })
         .catch(error => {
           this.$Progress.fail();
@@ -312,10 +309,8 @@ export default {
       this.$api.track
         .countDuration(task_id)
         .then(response => {
-          const totalDuration = this._readableTimeFromSeconds(
-            response.data.data.tracking
-          );
-          this.duration = `${totalDuration.hours}:${totalDuration.minutes}`;
+          this.duration = response.data.data.tracking;
+          this.counted_time = this.humanReadableFromSecounds(this.duration);
         })
         .catch(error => {
           Toast.fire({
@@ -390,7 +385,7 @@ export default {
         if (result.value) {
           this.$Progress.start();
           this.$api.track
-            .delete({task_id, track_id})
+            .delete({ task_id, track_id })
             .then(response => {
               this.$Progress.finish();
               this.listTrackingTask(task_id);
@@ -451,5 +446,4 @@ export default {
 .invalid-feedback {
   display: inline;
 }
-
 </style>
