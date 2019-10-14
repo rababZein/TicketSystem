@@ -23,9 +23,9 @@ class TrackingResource extends JsonResource
             "end_at" => $this->end_at,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "created_by" => UserResource::collection($this->created_by),
-            "updated_by" => UserResource::collection($this->whenLoaded('updateted_by')),
-            "task" => TaskResource::collection($this->task),
+            "created_by" => UserResource::collection($this->whenLoaded('creator')),
+            "updated_by" => UserResource::collection($this->whenLoaded('updater')),
+            "task" => TaskResource::collection($this->whenLoaded('task')),
         ];
     }
 }

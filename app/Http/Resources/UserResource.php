@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             "updated_at" => $this->updated_at,
             "roles" => RoleResource::collection($this->whenLoaded('roles')),
             "type" => $this->type,
+            "projects" => ProjectResource::collection($this->whenLoaded('projects')),
             // "created_at" => Carbon::createFromFormat('Y-m-d H:i:s', $this->created_at)->format('d-m-Y')
         ];
     }

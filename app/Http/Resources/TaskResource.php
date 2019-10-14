@@ -25,7 +25,9 @@ class TaskResource extends JsonResource
             "updated_by" => new UserResource($this->whenLoaded('updater')),
             "ticket" => new TicketResource($this->whenLoaded('ticket')),
             "project" => new ProjectResource($this->whenLoaded('project')),
-            "responsible" => new UserResource($this->whenLoaded('responsible'))
+            "responsible" => new UserResource($this->whenLoaded('responsible')),
+            "receipts" => ReceiptResource::collection($this->whenLoaded('receipts')),
+            "tracking_history" => TrackingResource::collection($this->whenLoaded('tracking_history'))
         ];
     }
 }

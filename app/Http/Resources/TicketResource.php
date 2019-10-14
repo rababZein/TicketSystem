@@ -21,9 +21,10 @@ class TicketResource extends JsonResource
             "read" => $this->read,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "created_by" => new UserResource($this->creator),
-            "updated_by" => new UserResource($this->updater),
-            "project" => new ProjectResource($this->project),
+            "created_by" => new UserResource($this->whenLoaded('creator')),
+            "updated_by" => new UserResource($this->whenLoaded('updater')),
+            "project" => new ProjectResource($this->whenLoaded('project')),
+            "tasks" => TaskResource::collection($this->whenLoaded('tasks'))
         ];
     }
 }
