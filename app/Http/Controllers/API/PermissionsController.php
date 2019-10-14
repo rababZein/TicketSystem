@@ -6,6 +6,7 @@ use App\Http\Controllers\API\BaseController;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Http\Resources\PermissionResource;
 
 class PermissionsController extends BaseController
 {
@@ -36,7 +37,7 @@ class PermissionsController extends BaseController
     public function list()
     {
         $permissions = Permission::paginate(10);
-        return $this->sendResponse($permissions->toArray(), 'Permissions retrieved successfully.');
+        return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully.');
     }
 
     /**
@@ -58,7 +59,7 @@ class PermissionsController extends BaseController
         // save permission
         $permission->save();
 
-        return $this->sendResponse($permission->toArray(), 'permission created successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission created successfully.');
     }
 
     /**
@@ -81,7 +82,7 @@ class PermissionsController extends BaseController
         // save permission
         $permission->save();
 
-        return $this->sendResponse($permission->toArray(), 'permission updated successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission updated successfully.');
     }
 
     /**
@@ -105,12 +106,12 @@ class PermissionsController extends BaseController
         // delete role
         $permission->delete();
 
-        return $this->sendResponse($permission->toArray(), 'permission deleted successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission deleted successfully.');
 
     }
 
     public function getAllPermissions() {
         $permissions = Permission::all();
-        return $this->sendResponse($permissions->toArray(), 'permission listed successfully.');
+        return $this->sendResponse(PermissionResource::collection($permissions), 'permission listed successfully.');
     }
 }

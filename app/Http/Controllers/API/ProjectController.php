@@ -8,6 +8,7 @@ use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Http\Resources\ProjectResource;
 
 class ProjectController extends BaseController 
 {
@@ -34,7 +35,7 @@ class ProjectController extends BaseController
   {
     $projects = Project::all();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
 
@@ -49,7 +50,7 @@ class ProjectController extends BaseController
       $query->where('owner_id','=', $owner_id);
     })->with('owner')->get();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
   /**
@@ -84,7 +85,7 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
-    return $this->sendResponse($project->toArray(), 'Project created successfully.');
+    return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
     
   }
 
@@ -102,7 +103,7 @@ class ProjectController extends BaseController
         return $this->sendError('Project not found.');
     }
 
-    return $this->sendResponse($project->toArray(), 'Project retrieved successfully.');    
+    return $this->sendResponse(new ProjectResource($project), 'Project retrieved successfully.');    
   }
 
   /**
@@ -149,7 +150,7 @@ class ProjectController extends BaseController
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
 
-    return $this->sendResponse($project->toArray(), 'Project updated successfully.');    
+    return $this->sendResponse(new ProjectResource($project), 'Project updated successfully.');    
   }
 
   /**
@@ -172,7 +173,7 @@ class ProjectController extends BaseController
 
     $project->delete();
 
-    return $this->sendResponse($project->toArray(), 'Project deleted successfully.');
+    return $this->sendResponse(new ProjectResource($project), 'Project deleted successfully.');
   }
 
 

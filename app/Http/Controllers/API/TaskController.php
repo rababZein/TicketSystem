@@ -7,6 +7,7 @@ use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Http\Resources\TaskResource;
 
 class TaskController extends BaseController 
 {
@@ -43,7 +44,7 @@ class TaskController extends BaseController
   {
     $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
 
-    return $this->sendResponse($tasks->toArray(), 'Tasks retrieved successfully.');
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**
@@ -68,7 +69,7 @@ class TaskController extends BaseController
 
     $task = Task::create($input);
 
-    return $this->sendResponse($task->toArray(), 'Task created successfully.');
+    return $this->sendResponse(new TaskResource($task), 'Task created successfully.');
     
   }
 
@@ -87,7 +88,7 @@ class TaskController extends BaseController
         return $this->sendError('task not found.');
     }
 
-    return $this->sendResponse($task->toArray(), 'Task retrieved successfully.');    
+    return $this->sendResponse(new TaskResource($task), 'Task retrieved successfully.');    
   }
 
   /**
@@ -121,7 +122,7 @@ class TaskController extends BaseController
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, task could not be updated', 500);
 
-    return $this->sendResponse($task->toArray(), 'task updated successfully.');    
+    return $this->sendResponse(new TaskResource($task), 'task updated successfully.');    
   }
 
   /**
@@ -144,7 +145,7 @@ class TaskController extends BaseController
 
     $task->delete();
 
-    return $this->sendResponse($task->toArray(), 'Task deleted successfully.');
+    return $this->sendResponse(new TaskResource($task), 'Task deleted successfully.');
   }
   
 }
