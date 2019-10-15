@@ -56,7 +56,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // task
     Route::get('/tasks/getall', 'TaskController@getAll');
-    Route::resource('/tasks', 'TaskController')->except('create');
+    Route::resource('/tasks', 'TaskController')->except('create', 'store');
+    Route::post('/tasks/{project_id}', 'TaskController@store');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');

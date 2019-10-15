@@ -13,7 +13,21 @@ class AddTaskRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (! auth()->user()->isAdmin()) {
+            $project_id =$this->route('project_id');
+            $project = Project::find($project_id);
+
+            if (!$project) {
+                throw new ItemNotFoundException($project_id);
+            }
+
+            foreach ($project->assigns as $assign) {
+                if ($assign->id == auth()->user()->id) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
