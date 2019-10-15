@@ -5,7 +5,7 @@ namespace App\Http\Requests\ProjectRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Project;
 
-class UpdateProjectRequest extends FormRequest
+class ViewProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -29,6 +29,12 @@ class UpdateProjectRequest extends FormRequest
             return true;
         }
 
+        foreach ($project->assigns as $assign) {
+            if ($assign->id == auth()->user()->id) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -40,13 +46,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'description' => 'string',
-            'owner_id' => 'integer|exists:users,id',
-            'task_rate' => 'integer',
-            'budget_hours' => 'integer',
-            'project_assign' => 'array',
-            'project_assign.*' => 'integer|exists:users,id',
+            //
         ];
     }
 }
