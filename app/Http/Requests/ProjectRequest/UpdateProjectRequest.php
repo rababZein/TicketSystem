@@ -13,7 +13,22 @@ class UpdateProjectRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
+
+        $project_id =$this->route('project_id');
+        $project = Project::find($project_id);
+
+        if (!$project) {
+            throw new ItemNotFoundException($project_id);
+        }
+
+        if ($project->created_by == auth()->user()->id) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
