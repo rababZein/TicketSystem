@@ -34,12 +34,12 @@ class RolesController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ViewRoleRequest $request)
+    public function index()
     {
         return view('pages.roles.index');
     }
 
-    public function list(ViewRoleRequest $request)
+    public function list()
     {
         $roles = Role::with('permissions')->paginate(10);
 

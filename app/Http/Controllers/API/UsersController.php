@@ -36,12 +36,12 @@ class UsersController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ViewUserRequest $request)
+    public function index()
     {
         return view('pages.users.index');
     }
 
-    public function list(ViewUserRequest $request)
+    public function list()
     {
         $users = UserResource::collection(User::paginate(10));
         return $this->sendResponse($users, 'users retrieved successfully.');

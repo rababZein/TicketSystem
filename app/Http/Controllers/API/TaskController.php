@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
+use App\Http\Requests\TaskRequest\ViewTaskRequest;
+use App\Http\Requests\TaskRequest\DeleteTaskRequest;
 use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
@@ -78,7 +80,7 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewTaskRequest $request, $id)
   {
     $task = Task::with('project.owner', 'ticket', 'responsible')->get();
     $task = $task->find($id);
@@ -122,7 +124,7 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteTaskRequest $request, $id)
   {
     $task = Task::find($id);
 

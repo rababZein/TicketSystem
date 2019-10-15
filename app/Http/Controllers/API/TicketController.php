@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\TicketRequest\AddTicketRequest;
 use App\Http\Requests\TicketRequest\UpdateTicketRequest;
+use App\Http\Requests\TicketRequest\DeleteTicketRequest;
+use App\Http\Requests\TicketRequest\ViewTicketRequest;
 use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
@@ -79,7 +81,7 @@ class TicketController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewTicketRequest $request, $id)
   {
     $ticket = Ticket::with('tasks', 'project')->get();
     $ticket = $ticket->find($id);
@@ -122,7 +124,7 @@ class TicketController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteTicketRequest $request, $id)
   {
     $ticket = Ticket::find($id);
 

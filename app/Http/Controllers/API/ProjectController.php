@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\ProjectRequest\AddProjectRequest;
 use App\Http\Requests\ProjectRequest\UpdateProjectRequest;
+use App\Http\Requests\ProjectRequest\ViewProjectRequest;
+use App\Http\Requests\ProjectRequest\DeleteProjectRequest;
 use App\Models\Project;
 use App\Models\User;
 use Validator;
@@ -89,7 +91,7 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewProjectRequest $request, $id)
   {
     $project = Project::find($id);
 
@@ -141,7 +143,7 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteProjectRequest $request, $id)
   {
     $project = Project::find($id);
 

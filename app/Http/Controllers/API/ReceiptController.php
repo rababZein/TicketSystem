@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\ReceiptRequest\AddReceiptRequest;
 use App\Http\Requests\ReceiptRequest\UpdateReceiptRequest;
+use App\Http\Requests\ReceiptRequest\ViewReceiptRequest;
+use App\Http\Requests\ReceiptRequest\DeleteReceiptRequest;
 use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
@@ -79,7 +81,7 @@ class ReceiptController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewReceiptRequest $request, $id)
   {
     $receipt = Receipt::find($id);
 
@@ -122,7 +124,7 @@ class ReceiptController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteReceiptRequest $request, $id)
   {
     $receipt = Receipt::find($id);
 

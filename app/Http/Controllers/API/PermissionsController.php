@@ -36,12 +36,12 @@ class PermissionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ViewPermissionRequest $request)
+    public function index()
     {
         return view('pages.permissions.index');
     }
 
-    public function list(ViewPermissionRequest $request)
+    public function list()
     {
         $permissions = Permission::paginate(10);
 
