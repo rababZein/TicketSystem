@@ -3,6 +3,7 @@
 namespace App\Http\Requests\TaskRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Project;
 
 class AddTaskRequest extends FormRequest
 {
@@ -13,20 +14,23 @@ class AddTaskRequest extends FormRequest
      */
     public function authorize()
     {
-        if (! auth()->user()->isAdmin()) {
-            $project_id =$this->route('project_id');
-            $project = Project::find($project_id);
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
 
-            if (!$project) {
-                throw new ItemNotFoundException($project_id);
-            }
+        $project_id =$this->route('project_id');
+        $project = Project::find($project_id);
 
-            foreach ($project->assigns as $assign) {
-                if ($assign->id == auth()->user()->id) {
-                    return true;
-                }
+        if (!$project) {
+            throw new ItemNotFoundException($project_id);
+        }
+
+        foreach ($project->assigns as $assign) {
+            if ($assign->id == auth()->user()->id) {
+                return true;
             }
         }
+        
         return false;
     }
 
