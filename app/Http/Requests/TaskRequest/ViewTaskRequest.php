@@ -28,6 +28,12 @@ class ViewTaskRequest extends FormRequest
         if ($task->responsible->id == auth()->user()->id) {
             return true;
         }
+
+        foreach ($task->project->assigns as $assign) {
+            if ($assign->id == auth()->user()->id) {
+                return true;
+            }
+        }        
         
         return false;
     }
