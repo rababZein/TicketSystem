@@ -5,7 +5,7 @@ namespace App\Http\Requests\ReceiptRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Receipt;
 
-class UpdateReceiptRequest extends FormRequest
+class DeleteReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -40,11 +40,7 @@ class UpdateReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'description' => 'string',
-            'task_id' => 'integer|exists:tasks,id',
-            'total' => 'numeric|min:0',
-            'is_paid' => 'boolean',
+            //
         ];
     }
 }

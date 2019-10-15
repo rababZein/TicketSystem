@@ -53,7 +53,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
 
     Route::group(['prefix' => 'receipt'], function () {
         Route::get('/', 'API\ReceiptController@index');
-        Route::post('/', 'API\ReceiptController@store');
+        Route::post('/{project_id}', 'API\ReceiptController@store');
         Route::patch('/{receipt_id}', 'API\ReceiptController@update');
         Route::delete('/{receipt_id}', 'API\ReceiptController@destroy');
     });

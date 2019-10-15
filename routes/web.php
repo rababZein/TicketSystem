@@ -64,7 +64,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // receipt
     Route::get('/receipts/getall', 'ReceiptController@getAll');
-    Route::resource('/receipts', 'ReceiptController')->except('create');
+    Route::resource('/receipts', 'ReceiptController')->except('create'. 'store');
+    Route::post('/receipts/{project_id}', 'ReceiptController@store');
 });
 
 Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');
