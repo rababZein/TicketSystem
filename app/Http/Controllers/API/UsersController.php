@@ -4,6 +4,8 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\UserRequest\AddUserRequest;
 use App\Http\Requests\UserRequest\UpdateUserRequest;
+use App\Http\Requests\UserRequest\ViewUserRequest;
+use App\Http\Requests\UserRequest\DeleteUserRequest;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\User as UserResource;
 use App\Models\User;
@@ -34,12 +36,12 @@ class UsersController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ViewUserRequest $request)
     {
         return view('pages.users.index');
     }
 
-    public function list()
+    public function list(ViewUserRequest $request)
     {
         $users = UserResource::collection(User::paginate(10));
         return $this->sendResponse($users, 'users retrieved successfully.');
@@ -130,7 +132,7 @@ class UsersController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteUserRequest $request, $id)
     {
         // delete user
         $user = User::find($id);

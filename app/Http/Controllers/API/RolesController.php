@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use App\Http\Requests\UserRequest\AddRoleRequest;
-use App\Http\Requests\UserRequest\UpdateRoleRequest;
+use App\Http\Requests\RoleRequest\AddRoleRequest;
+use App\Http\Requests\RoleRequest\UpdateRoleRequest;
+use App\Http\Requests\RoleRequest\DeleteRoleRequest;
+use App\Http\Requests\RoleRequest\ViewRoleRequest;
 use Spatie\Permission\Models\Role;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
@@ -32,12 +34,12 @@ class RolesController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ViewRoleRequest $request)
     {
         return view('pages.roles.index');
     }
 
-    public function list()
+    public function list(ViewRoleRequest $request)
     {
         $roles = Role::with('permissions')->paginate(10);
 
@@ -121,7 +123,7 @@ class RolesController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteRoleRequest $request, $id)
     {
         // find the role
         $role = Role::find($id);

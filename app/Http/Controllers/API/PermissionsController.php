@@ -5,12 +5,15 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Requests\PermissionRequest\AddPermissionRequest;
 use App\Http\Requests\PermissionRequest\UpdatePermissionRequest;
+use App\Http\Requests\PermissionRequest\DeletePermissionRequest;
+use App\Http\Requests\PermissionRequest\ViewPermissionRequest;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+
 
 class PermissionsController extends BaseController
 {
@@ -33,12 +36,12 @@ class PermissionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ViewPermissionRequest $request)
     {
         return view('pages.permissions.index');
     }
 
-    public function list()
+    public function list(ViewPermissionRequest $request)
     {
         $permissions = Permission::paginate(10);
 
@@ -103,7 +106,7 @@ class PermissionsController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeletePermissionRequest $request, $id)
     {
         // delete permission
         $permission = Permission::find($id);
