@@ -14,6 +14,9 @@ class UpdateTicketRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can update ticket??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class UpdateTicketRequest extends FormRequest
             throw new ItemNotFoundException($ticket_id);
         }
 
+        // 2- creator
         if ($ticket->created_by == auth()->user()->id) {
             return true;
         }

@@ -14,6 +14,9 @@ class ViewTicketRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can view ticket ??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,10 +28,12 @@ class ViewTicketRequest extends FormRequest
             throw new ItemNotFoundException($ticket_id);
         }
 
+        // 2- creator, project owner
         if ($ticket->created_by == auth()->user()->id || $ticket->project->owner->id == auth()->user()->id) {
             return true;
         }
         
+        // 3- assigns 
         foreach ($ticket->project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;

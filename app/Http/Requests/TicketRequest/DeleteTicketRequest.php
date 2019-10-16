@@ -14,6 +14,9 @@ class DeleteTicketRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can delete ticket ??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class DeleteTicketRequest extends FormRequest
             throw new ItemNotFoundException($ticket_id);
         }
 
+        // 2- creator
         if ($ticket->created_by == auth()->user()->id) {
             return true;
         }

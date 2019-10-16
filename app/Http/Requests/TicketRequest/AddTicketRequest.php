@@ -14,6 +14,9 @@ class AddTicketRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can add ticket ??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,10 +28,12 @@ class AddTicketRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
+        // 2- project owner
         if ($project->owner->id == auth()->user()->id) {
             return true;
         }
 
+        // 3- people who are assign to project
         foreach ($project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;
