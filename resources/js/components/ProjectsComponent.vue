@@ -22,8 +22,12 @@
           <h3>{{ project.name }}</h3>
 
           <p>{{ project.name }}</p>
-          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
-          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light"><i class="fas fa-trash fa-fw"></i></a>
+          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
+            <i class="fas fa-edit fa-fw"></i>
+          </a>
+          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+            <i class="fas fa-trash fa-fw"></i>
+          </a>
         </div>
         <div class="icon">
           <i class="fas fa-briefcase"></i>
@@ -58,7 +62,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="editMode ? editProject(form.id) : createProject()" @keydown="form.onKeydown($event)">
+          <form
+            @submit.prevent="editMode ? editProject(form.id) : createProject()"
+            @keydown="form.onKeydown($event)"
+          >
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">name</label>
@@ -83,7 +90,7 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Client</label>
+                <label for="client">Client</label>
                 <multiselect
                   v-model="owner_id"
                   :options="owners"
@@ -96,9 +103,7 @@
                   track-by="name"
                   :preselect-first="true"
                   @input="opt => form.owner_id = opt.id"
-                >
-
-                </multiselect>
+                ></multiselect>
                 <has-error :form="form" field="owner_id"></has-error>
               </div>
               <div class="form-group">
@@ -140,11 +145,13 @@
 </template>
 
 <script>
+import store from "../store/index";
+import { mapGetters, mapState } from "vuex";
+
 export default {
   data() {
     return {
       editMode: false,
-      projects: {},
       form: new Form({
         id: "",
         name: "",
@@ -159,16 +166,16 @@ export default {
     };
   },
   methods: {
-    getResults(page = 1) {
-      this.$Progress.start();
-      this.$api.projects
-        .get({ page: page })
-        .then(response => {
-          this.projects = response.data.data;
-          this.$Progress.finish();
+    getResults() {
+      store
+        .dispatch("getProjects")
+        .then(() => {
+          // this.projects = store.projects;
         })
         .catch(error => {
-          this.$Progress.fail();
+          if (error.response) {
+            this.checkResponse(error.response.status);
+          }
         });
     },
     getOwners() {
@@ -185,7 +192,7 @@ export default {
         });
     },
     selectOwnerId(opt) {
-      opt => form.owner_id = opt.id
+      opt => (form.owner_id = opt.id);
     },
     newModal() {
       this.editMode = false;
@@ -195,20 +202,17 @@ export default {
     editModal(item) {
       this.editMode = true;
       this.form.reset();
+      this.form.clear();
+      this.owner_id = "";
       $("#Modal").modal("show");
       this.form.fill(item);
     },
     createProject() {
-      this.form
-        .post("/v-api/projects")
-        .then(response => {
+      store
+        .dispatch("createProject", this.form)
+        .then(() => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
-          Toast.fire({
-            type: "success",
-            title: response.data.message
-          });
         })
         .catch(error => {
           this.$Progress.fail();
@@ -268,11 +272,27 @@ export default {
             });
         }
       });
+    },
+    checkResponse(status) {
+      if (status == 500) {
+        Toast.fire({
+          type: "error",
+          title: "Server error!"
+        });
+      }
+      if (status == 403 || status == 401) {
+        console.log("error 403 or 401")
+      }
     }
   },
   mounted() {
     this.getResults();
     this.getOwners();
+  },
+  computed: {
+    ...mapGetters({
+      projects: "activeProjects",
+    })
   }
 };
 </script>

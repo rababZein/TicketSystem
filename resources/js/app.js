@@ -8,6 +8,7 @@ require('./bootstrap');
 require('admin-lte');
 
 window.Vue = require('vue');
+import store from './store';
 import {Form, HasError, AlertError} from 'vform';
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar';
@@ -71,5 +72,6 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 
 const app = new Vue({
     el: '#app',
+    store,
     router,
 });
