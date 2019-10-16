@@ -37,7 +37,7 @@ class UsersController extends BaseController
     public function list()
     {
         $users = UserResource::collection(User::paginate(10));
-        return $this->sendResponse($users, 'users retrieved successfully.');
+        return $this->sendResponse(UserResource::collection($users), 'users retrieved successfully.');
     }
 
      /**
@@ -48,7 +48,7 @@ class UsersController extends BaseController
     public function getClients()
     {
         $clients = User::where('type', 'client')->get();
-        return $this->sendResponse($clients->toArray(), 'Clients retrieved successfully.');
+        return $this->sendResponse(UserResource::collection($clients), 'Clients retrieved successfully.');
     }
 
     /**
@@ -76,7 +76,7 @@ class UsersController extends BaseController
         // save User
         $user->save();
 
-        return $this->sendResponse($user->toArray(), 'users created successfully.');
+        return $this->sendResponse(new UserResource($user), 'users created successfully.');
     }
 
     /**
@@ -110,7 +110,7 @@ class UsersController extends BaseController
         // save User
         $user->save();
 
-        return $this->sendResponse($user->toArray(), 'users updated successfully.');
+        return $this->sendResponse(new UserResource($user), 'users updated successfully.');
 
     }
 
@@ -128,7 +128,7 @@ class UsersController extends BaseController
 
         $user->delete();
 
-        return $this->sendResponse($user, 'users deleted successfully.');
+        return $this->sendResponse(new UserResource($user), 'users deleted successfully.');
 
     }
 
@@ -136,6 +136,6 @@ class UsersController extends BaseController
     {
         $users = User::where('type','regular-user')->get();
 
-        return $this->sendResponse($users->toArray(), 'Users retrieved successfully.');
+        return $this->sendResponse(UserResource::collection($users), 'Users retrieved successfully.');
     }
 }

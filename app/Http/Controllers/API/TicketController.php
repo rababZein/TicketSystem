@@ -7,6 +7,7 @@ use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Http\Resources\TicketResource;
 
 class TicketController extends BaseController 
 {
@@ -43,7 +44,7 @@ class TicketController extends BaseController
   {
     $tickets = Ticket::with('project.owner')->get();
  
-    return $this->sendResponse($tickets->toArray(), 'Tickets retrieved successfully.');
+    return $this->sendResponse(TicketResource::collection($tickets), 'Tickets retrieved successfully.');
   }
 
   /**
@@ -65,7 +66,7 @@ class TicketController extends BaseController
 
     $ticket = Ticket::create($input);
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket created successfully.');
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
     
   }
 
@@ -84,7 +85,7 @@ class TicketController extends BaseController
         return $this->sendError('Ticket not found.');
     }
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket retrieved successfully.');    
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket retrieved successfully.');    
   }
 
   /**
@@ -115,7 +116,7 @@ class TicketController extends BaseController
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Ticket could not be updated', 500);
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket updated successfully.');    
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');    
   }
 
   /**
@@ -138,7 +139,7 @@ class TicketController extends BaseController
 
     $ticket->delete();
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket deleted successfully.');
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket deleted successfully.');
   }
   
 }

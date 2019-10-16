@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
+use App\Http\Resources\RoleResource;
 
 class RolesController extends BaseController
 {
@@ -34,7 +35,7 @@ class RolesController extends BaseController
     public function list()
     {
         $roles = Role::with('permissions')->paginate(10);
-        return $this->sendResponse($roles->toArray(), 'roles retrieved successfully.');
+        return $this->sendResponse(RoleResource::collection($roles), 'roles retrieved successfully.');
     }
 
     /**
@@ -63,7 +64,7 @@ class RolesController extends BaseController
         // save role
         $role->save();
 
-        return $this->sendResponse($role->toArray(), 'role created successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role created successfully.');
     }
 
     /**
@@ -89,7 +90,7 @@ class RolesController extends BaseController
         // save role
         $role->save();
 
-        return $this->sendResponse($role->toArray(), 'role updated successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role updated successfully.');
 
     }
 
@@ -114,6 +115,6 @@ class RolesController extends BaseController
 
         // delete role
         $role->delete();
-        return $this->sendResponse($role->toArray(), 'role deleted successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role deleted successfully.');
     }
 }

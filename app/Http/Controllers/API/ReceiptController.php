@@ -7,6 +7,7 @@ use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Http\Resources\ReceiptResource;
 use App\Notifications\Receipt\ReceiptPaid;
 
 class ReceiptController extends BaseController 
@@ -44,7 +45,7 @@ class ReceiptController extends BaseController
   {
     $receipts = Receipt::with('task')->get();
 
-    return $this->sendResponse($receipts->toArray(), 'Receipts retrieved successfully.');
+    return $this->sendResponse(ReceiptResource::collection($receipts), 'Receipts retrieved successfully.');
   }
 
   /**
@@ -72,8 +73,7 @@ class ReceiptController extends BaseController
       auth()->user()->notify(new ReceiptPaid($receipt));
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt created successfully.');
-    
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt created successfully.');
   }
 
   /**
@@ -90,7 +90,7 @@ class ReceiptController extends BaseController
         return $this->sendError('Receipt not found.');
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt retrieved successfully.');    
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt retrieved successfully.');    
   }
 
   /**
@@ -129,7 +129,7 @@ class ReceiptController extends BaseController
       auth()->user()->notify(new ReceiptPaid($receipt));
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt updated successfully.');    
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt updated successfully.');  
   }
 
   /**
@@ -152,7 +152,7 @@ class ReceiptController extends BaseController
 
     $receipt->delete();
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt deleted successfully.');
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt deleted successfully.');
   }
   
 }
