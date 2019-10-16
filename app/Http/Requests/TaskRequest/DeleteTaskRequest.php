@@ -14,6 +14,9 @@ class DeleteTaskRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can delete task ??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,7 +28,8 @@ class DeleteTaskRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
-        if ($task->responsible->id == auth()->user()->id) {
+        // 2- created by
+        if ($task->created_by == auth()->user()->id) {
             return true;
         }
         

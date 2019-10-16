@@ -14,6 +14,9 @@ class AddTaskRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can add new task?
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class AddTaskRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
+        //2- people who is assign to this projects
         foreach ($project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;

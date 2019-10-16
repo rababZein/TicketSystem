@@ -14,6 +14,9 @@ class ViewTaskRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can view tasks
+
+        //1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,15 +28,19 @@ class ViewTaskRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
-        if ($task->responsible->id == auth()->user()->id) {
+        // 2- responsible && created by && project owner
+        if ($task->responsible->id == auth()->user()->id 
+            && $task->created_by == auth()->user()->id
+            && $task->project->owner->id == auth()->user()->id ) {
             return true;
         }
 
+        // 3- assign to project
         foreach ($task->project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;
             }
-        }        
+        }
         
         return false;
     }
