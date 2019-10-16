@@ -28,7 +28,7 @@ class UpdateProjectRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
-        // creator
+        // 2- creator
         if ($project->created_by == auth()->user()->id) {
             return true;
         }
