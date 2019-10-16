@@ -7,6 +7,7 @@ use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Notifications\Receipt\ReceiptPaid;
 
 class ReceiptController extends BaseController 
 {
@@ -67,6 +68,10 @@ class ReceiptController extends BaseController
 
     $receipt = Receipt::create($input);
 
+    if ($input['is_paid']) {
+      auth()->user()->notify(new ReceiptPaid($receipt));
+    }
+
     return $this->sendResponse($receipt->toArray(), 'Receipt created successfully.');
     
   }
@@ -113,10 +118,16 @@ class ReceiptController extends BaseController
     $receipt->updated_at = Carbon::now();
     $receipt->updated_by = auth()->user()->id;
 
-    $updated = $receipt->fill($request->all())->save();
+    $input = $request->all();
+
+    $updated = $receipt->fill($input)->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, Receipt could not be updated', 500);
+
+    if (isset($input['is_paid']) && $input['is_paid']) {
+      auth()->user()->notify(new ReceiptPaid($receipt));
+    }
 
     return $this->sendResponse($receipt->toArray(), 'Receipt updated successfully.');    
   }

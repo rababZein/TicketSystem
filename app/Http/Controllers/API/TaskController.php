@@ -7,6 +7,7 @@ use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Notifications\Task\TaskAssign;
 
 class TaskController extends BaseController 
 {
@@ -68,6 +69,9 @@ class TaskController extends BaseController
 
     $task = Task::create($input);
 
+    $responsible = User::find($input['responsible_id']);
+    $responsible->notify(new TaskAssign($task));
+
     return $this->sendResponse($task->toArray(), 'Task created successfully.');
     
   }
@@ -116,11 +120,18 @@ class TaskController extends BaseController
     $task->updated_at = Carbon::now();
     $task->updated_by = auth()->user()->id;
 
-    $updated = $task->fill($request->all())->save();
+    $input = $request->all();
+
+    $updated = $task->fill($input)->save();
 
     if (!$updated)
       return $this->sendError('Not update!.', 'Sorry, task could not be updated', 500);
 
+    if (isset($input['responsible_id'])) {
+      $responsible = User::find($input['responsible_id']);
+      $responsible->notify(new TaskAssign($task));
+    }
+  
     return $this->sendResponse($task->toArray(), 'task updated successfully.');    
   }
 
