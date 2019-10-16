@@ -14,6 +14,9 @@ class DeleteReceiptRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can delete receipt ?
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class DeleteReceiptRequest extends FormRequest
             throw new ItemNotFoundException($receipt_id);
         }
 
+        // 2- creator
         if ($receipt->created_by == auth()->user()->id) {
             return true;
         }

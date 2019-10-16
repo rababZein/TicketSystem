@@ -14,6 +14,9 @@ class AddReceiptRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can create a receipt
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class AddReceiptRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
+        // 2- assigns
         foreach ($project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;

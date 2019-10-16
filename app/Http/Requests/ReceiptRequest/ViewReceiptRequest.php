@@ -14,6 +14,9 @@ class ViewReceiptRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can view ?
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,12 @@ class ViewReceiptRequest extends FormRequest
             throw new ItemNotFoundException($receipt_id);
         }
 
+        // 2- creaor
+        if ($receipt->created_by == auth()->user()->id) {
+            return true;
+        }
+
+        // 3- assigns
         foreach ($receipt->task->project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;

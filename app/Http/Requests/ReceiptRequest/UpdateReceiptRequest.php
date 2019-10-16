@@ -14,6 +14,9 @@ class UpdateReceiptRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can update ??
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class UpdateReceiptRequest extends FormRequest
             throw new ItemNotFoundException($receipt_id);
         }
 
+        // 2- creaor
         if ($receipt->created_by == auth()->user()->id) {
             return true;
         }
