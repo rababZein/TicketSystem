@@ -30,8 +30,8 @@ class ViewTaskRequest extends FormRequest
         
         // 2- responsible && created by && project owner
         if ($task->responsible->id == auth()->user()->id 
-            && $task->created_by == auth()->user()->id
-            && $task->project->owner->id == auth()->user()->id ) {
+            || $task->created_by == auth()->user()->id
+            || $task->project->owner->id == auth()->user()->id ) {
             return true;
         }
 
