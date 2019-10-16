@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\ReceiptRequest\AddReceiptRequest;
+use App\Http\Requests\ReceiptRequest\UpdateReceiptRequest;
 use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\ReceiptResource;
 use App\Notifications\Receipt\ReceiptPaid;
 
@@ -53,21 +59,17 @@ class ReceiptController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddReceiptRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'task_id' => 'required|integer|exists:tasks,id',
-      'total' => 'numeric|min:0',
-      'is_paid' => 'boolean',
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $receipt = Receipt::create($input);
+    try {
+      $receipt = Receipt::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Receipt');
+    }
 
     if ($input['is_paid']) {
       auth()->user()->notify(new ReceiptPaid($receipt));
@@ -87,7 +89,7 @@ class ReceiptController extends BaseController
     $receipt = Receipt::find($id);
 
     if (is_null($receipt)) {
-        return $this->sendError('Receipt not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse(new ReceiptResource($receipt), 'Receipt retrieved successfully.');    
@@ -99,20 +101,12 @@ class ReceiptController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateReceiptRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'task_id' => 'integer|exists:tasks,id',
-      'total' => 'numeric|min:0',
-      'is_paid' => 'boolean',
-    ]);
-
     $receipt = Receipt::find($id);
     
     if (!$receipt) {
-        return $this->sendError('Not found Error.', 'Sorry, Receipt with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $receipt->updated_at = Carbon::now();
@@ -121,9 +115,15 @@ class ReceiptController extends BaseController
     $input = $request->all();
 
     $updated = $receipt->fill($input)->save();
+    
+    try {
+      $updated = $receipt->fill($request->validated())->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Receipt');
+    }
 
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Receipt could not be updated', 500);
+      throw new ItemNotUpdatedException('Receipt');
 
     if (isset($input['is_paid']) && $input['is_paid']) {
       auth()->user()->notify(new ReceiptPaid($receipt));
@@ -143,18 +143,24 @@ class ReceiptController extends BaseController
     $receipt = Receipt::find($id);
 
     if (is_null($receipt)) {
-      return $this->sendError('Receipt not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($receipt->is_paid) {
-      return $this->sendError('Can\'t delete!, Receipt is paid.');
+      throw new InvalidDataException([
+        'receipt' => $receipt->toArray()
+      ],
+      'Can\'t delete!, Receipt is paid.');
     }
 
-    $receipt->delete();
+    try {
+      $receipt->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Receipt');
+    }
 
     return $this->sendResponse(new ReceiptResource($receipt), 'Receipt deleted successfully.');
   }
-  
 }
 
 ?>

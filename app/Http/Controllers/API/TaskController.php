@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\TaskRequest\AddTaskRequest;
+use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\TaskResource;
 use App\Notifications\Task\TaskAssign;
 
@@ -53,22 +59,17 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddTaskRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'project_id' => 'required|integer|exists:projects,id',
-      'ticket_id' => 'nullable|integer|exists:tickets,id',
-      'responsible_id' => 'required|integer|exists:users,id',
-      'count_hours' => 'nullable|numeric|min:0'
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $task = Task::create($input);
+    try {
+      $task = Task::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Task');
+    }
 
     $responsible = User::find($input['responsible_id']);
     $responsible->notify(new TaskAssign($task));
@@ -88,7 +89,7 @@ class TaskController extends BaseController
     $task = $task->find($id);
 
     if (is_null($task)) {
-        return $this->sendError('task not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse(new TaskResource($task), 'Task retrieved successfully.');    
@@ -100,21 +101,12 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateTaskRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'project_id' => 'integer|exists:projects,id',
-      'ticket_id' => 'nullable|integer|exists:tickets,id',
-      'responsible_id' => 'integer|exists:users,id',
-      'count_hours' => 'nullable|numeric|min:0'
-    ]);
-
     $task = Task::find($id);
     
     if (!$task) {
-        return $this->sendError('Not found Error.', 'Sorry, task with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $task->updated_at = Carbon::now();
@@ -123,9 +115,15 @@ class TaskController extends BaseController
     $input = $request->all();
 
     $updated = $task->fill($input)->save();
+    
+     try {
+      $updated = $task->fill($request->validated())->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Task');
+    }
 
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, task could not be updated', 500);
+      throw new ItemNotUpdatedException('Task');
 
     if (isset($input['responsible_id'])) {
       $responsible = User::find($input['responsible_id']);
@@ -146,18 +144,24 @@ class TaskController extends BaseController
     $task = Task::find($id);
 
     if (is_null($task)) {
-      return $this->sendError('task not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($task->tracking_history->isNotEmpty()) {
-      return $this->sendError('Can\'t delete!, someone work in this task.');
+      throw new InvalidDataException([
+        'tracking_history' => $task->tracking_history->toArray()
+      ],
+      'Can\'t delete!, someone work in this task.');
     }
 
-    $task->delete();
+    try {
+      $task->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Task');
+    }
 
     return $this->sendResponse(new TaskResource($task), 'Task deleted successfully.');
   }
-  
 }
 
 ?>

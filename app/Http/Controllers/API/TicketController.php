@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\TicketRequest\AddTicketRequest;
+use App\Http\Requests\TicketRequest\UpdateTicketRequest;
 use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\TicketResource;
 
 class TicketController extends BaseController 
@@ -52,19 +58,17 @@ class TicketController extends BaseController
    *
    * @return Response
    */
-  public function store(Request $request)
+  public function store(AddTicketRequest $request)
   {
-    $this->validate($request, [
-      'name' => 'required|string',
-      'description' => 'required|string',
-      'project_id' => 'required|integer|exists:projects,id',
-    ]);
-
-    $input = $request->all();
+    $input = $request->validated();
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
-    $ticket = Ticket::create($input);
+    try {
+      $ticket = Ticket::create($input);
+    } catch (\Throwable $th) {
+      throw new ItemNotCreatedException('Ticket');
+    }
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
     
@@ -82,7 +86,7 @@ class TicketController extends BaseController
     $ticket = $ticket->find($id);
 
     if (is_null($ticket)) {
-        return $this->sendError('Ticket not found.');
+      throw new ItemNotFoundException($id);
     }
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket retrieved successfully.');    
@@ -94,27 +98,27 @@ class TicketController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(Request $request, $id)
+  public function update(UpdateTicketRequest $request, $id)
   {
-    $this->validate($request, [
-      'name' => 'string',
-      'description' => 'string',
-      'project_id' => 'integer|exists:projects,id',
-    ]);
-
     $ticket = Ticket::find($id);
     
     if (!$ticket) {
-        return $this->sendError('Not found Error.', 'Sorry, ticket with id ' . $id . ' cannot be found', 400);
+      throw new ItemNotFoundException($id);
     }
 
     $ticket->updated_at = Carbon::now();
     $ticket->updated_by = auth()->user()->id;
 
-    $updated = $ticket->fill($request->all())->save();
+     $updated = $ticket->fill($request->all())->save();
 
+    try {
+      $updated = $ticket->fill($request->validated())->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Tracking_task');
+    }
+    
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, Ticket could not be updated', 500);
+      throw new ItemNotUpdatedException('Tracking_task');
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');    
   }
@@ -130,14 +134,21 @@ class TicketController extends BaseController
     $ticket = Ticket::find($id);
 
     if (is_null($ticket)) {
-      return $this->sendError('ticket not found.');
+      throw new ItemNotFoundException($id);
     }
 
     if($ticket->tasks->isNotEmpty()) {
-      return $this->sendError('Can\'t delete!, Ticket has tasks.');
+      throw new InvalidDataException([
+        'tasks' => $ticket->tasks->toArray()
+      ],
+      'Can\'t delete!, Ticket has tasks.');
     }
 
-    $ticket->delete();
+    try {
+      $ticket->delete();
+    } catch (\Throwable $th) {
+      throw new ItemNotDeletedException('Tracking_task');
+    }
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket deleted successfully.');
   }

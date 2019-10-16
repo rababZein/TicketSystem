@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\API;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest\AddUserRequest;
+use App\Http\Requests\UserRequest\UpdateUserRequest;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Resources\User as UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
 
 class UsersController extends BaseController
 {
@@ -48,6 +53,7 @@ class UsersController extends BaseController
     public function getClients()
     {
         $clients = User::where('type', 'client')->get();
+
         return $this->sendResponse(UserResource::collection($clients), 'Clients retrieved successfully.');
     }
 
@@ -57,18 +63,18 @@ class UsersController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddUserRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191',
-            'email' => 'required|string|email|max:191|unique:users',
-            'password' => 'required|string|min:6'
-        ]);
+        $input = $request->validated();
+        $input['password'] = Hash::make($request->password);
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
-        $user = new User;
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+        try {
+            $user = User::create($input);
+        } catch (\Throwable $th) {
+            throw new ItemNotCreatedException('User');
+        }
 
         // add role to user
         $user->assignRole($request->roles);
@@ -86,32 +92,36 @@ class UsersController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserRequest $request, $id)
     {
-        $user = User::findOrFail($id);
-
-        $this->validate($request, [
-            'name' => 'required|string|max:191',
-            'email' => 'required|string|email|max:191|unique:users,email,'.$user->id,
-            'password' => 'sometimes|string|min:6',
-            'type' => 'string|min:6'
-        ]);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if (!empty($request->password)) {
-            $user->password = Hash::make($request->password);
+        $user = User::find($id);
+        if (is_null($user)) {
+            throw new ItemNotFoundException($id);
         }
-        $user->type = $request->type;
 
-        // add role to user
-        $user->syncRoles($request->roles);
+        $input = $request->validated();
+
+        $user->updated_at = Carbon::now();
+        $user->updated_by = auth()->user()->id;
+        if (isset($input['password'])) {
+            $user->password = Hash::make($input['password']);
+        }
+
+        $user = $user->fill($input);
+
+        if (isset($input['roles'])) {
+            // add role to user
+            $user->syncRoles($input['roles']);
+        }
 
         // save User
-        $user->save();
-
-        return $this->sendResponse(new UserResource($user), 'users updated successfully.');
-
+        try {
+            $user->save();
+        } catch (\Throwable $th) {
+            throw new ItemNotUpdatedException('Role');
+        }
+        
+        return $this->sendResponse($user->toArray(), 'users updated successfully.');
     }
 
     /**
@@ -123,10 +133,19 @@ class UsersController extends BaseController
     public function destroy($id)
     {
         // delete user
-        $user = User::findOrFail($id);
+        $user = User::find($id);
+        if (is_null($user)) {
+            throw new ItemNotFoundException($id);
+        }
+
         $user->roles()->detach();
 
-        $user->delete();
+        // delete role
+        try {
+            $user->delete();
+        } catch (\Throwable $th) {
+            throw new ItemNotDeletedException('Role');
+        }
 
         return $this->sendResponse(new UserResource($user), 'users deleted successfully.');
 
