@@ -15,6 +15,7 @@ class EditTrackingRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can edit ?
         $task_id =$this->route('task_id');
         $task = Task::find($task_id);
 
@@ -22,6 +23,7 @@ class EditTrackingRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
+        // admin && responsible
         if ($task->responsible->id == auth()->user()->id || auth()->user()->isAdmin()) {
             return true;
         }

@@ -15,6 +15,7 @@ class AddTrackingRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can start task tracking?
         $task_id =$this->route('task_id');
         $task = Task::find($task_id);
 
@@ -22,6 +23,7 @@ class AddTrackingRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
+        // only responsible
         if ($task->responsible->id == auth()->user()->id) {
             return true;
         }
