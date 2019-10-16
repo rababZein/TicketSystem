@@ -6,6 +6,7 @@ use App\Http\Requests\ProjectRequest\AddProjectRequest;
 use App\Http\Requests\ProjectRequest\UpdateProjectRequest;
 use App\Http\Requests\ProjectRequest\ViewProjectRequest;
 use App\Http\Requests\ProjectRequest\DeleteProjectRequest;
+use App\Http\Requests\ProjectRequest\ListProjectRequest;
 use App\Models\Project;
 use App\Models\User;
 use Validator;
@@ -27,7 +28,7 @@ class ProjectController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index']]);
+      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index', 'getAllByOwner']]);
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
@@ -38,7 +39,7 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function index()
+  public function index(ListProjectRequest $request)
   {
     $projects = Project::all();
 
@@ -51,7 +52,7 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function getAllByOwner($owner_id)
+  public function getAllByOwner(ListProjectRequest $request, $owner_id)
   {
     $projects = Project::whereHas('owner', function ($query)  use ($owner_id) {
       $query->where('owner_id','=', $owner_id);

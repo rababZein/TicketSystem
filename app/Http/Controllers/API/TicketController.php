@@ -6,6 +6,7 @@ use App\Http\Requests\TicketRequest\AddTicketRequest;
 use App\Http\Requests\TicketRequest\UpdateTicketRequest;
 use App\Http\Requests\TicketRequest\DeleteTicketRequest;
 use App\Http\Requests\TicketRequest\ViewTicketRequest;
+use App\Http\Requests\TicketRequest\ListTicketRequest;
 use App\Models\Ticket;
 use Validator;
 use Carbon\Carbon;
@@ -26,7 +27,7 @@ class TicketController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index']]);
+      $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index', 'getAll']]);
       $this->middleware('permission:ticket-create', ['only' => ['store']]);
       $this->middleware('permission:ticket-edit', ['only' => ['update']]);
       $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
@@ -37,7 +38,7 @@ class TicketController extends BaseController
    *
    * @return Response
    */
-  public function index()
+  public function index(ListTicketRequest $request)
   {
     return view('pages.tickets.index');
   }
@@ -47,7 +48,7 @@ class TicketController extends BaseController
    *
    * @return Response
    */
-  public function getAll()
+  public function getAll(ListTicketRequest $request)
   {
     $tickets = Ticket::with('project.owner')->get();
  

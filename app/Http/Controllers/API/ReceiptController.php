@@ -6,6 +6,7 @@ use App\Http\Requests\ReceiptRequest\AddReceiptRequest;
 use App\Http\Requests\ReceiptRequest\UpdateReceiptRequest;
 use App\Http\Requests\ReceiptRequest\ViewReceiptRequest;
 use App\Http\Requests\ReceiptRequest\DeleteReceiptRequest;
+use App\Http\Requests\ReceiptRequest\ListReceiptRequest;
 use App\Models\Receipt;
 use Validator;
 use Carbon\Carbon;
@@ -26,7 +27,7 @@ class ReceiptController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:receipt-list|receipt-create|receipt-edit|receipt-delete', ['only' => ['index']]);
+      $this->middleware('permission:receipt-list|receipt-create|receipt-edit|receipt-delete', ['only' => ['index', 'getAll']]);
       $this->middleware('permission:receipt-create', ['only' => ['store']]);
       $this->middleware('permission:receipt-edit', ['only' => ['update']]);
       $this->middleware('permission:receipt-delete', ['only' => ['destroy']]);
@@ -37,7 +38,7 @@ class ReceiptController extends BaseController
    *
    * @return Response
    */
-  public function index()
+  public function index(ListReceiptRequest $request)
   {
     return view('pages.receipts.index');
   }
@@ -47,7 +48,7 @@ class ReceiptController extends BaseController
    *
    * @return Response
    */
-  public function getAll()
+  public function getAll(ListReceiptRequest $request)
   {
     $receipts = Receipt::with('task')->get();
 

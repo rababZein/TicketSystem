@@ -6,6 +6,7 @@ use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Http\Requests\TaskRequest\ViewTaskRequest;
 use App\Http\Requests\TaskRequest\DeleteTaskRequest;
+use App\Http\Requests\TaskRequest\ListTaskRequest;
 use App\Models\Task;
 use Validator;
 use Carbon\Carbon;
@@ -26,7 +27,7 @@ class TaskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
+      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
@@ -37,7 +38,7 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function index()
+  public function index(ListTaskRequest $request)
   {
     return view('pages.tasks.index');
   }
@@ -47,7 +48,7 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function getAll()
+  public function getAll(ListTaskRequest $request)
   {
     $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
 

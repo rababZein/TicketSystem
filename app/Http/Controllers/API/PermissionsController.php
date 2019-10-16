@@ -7,6 +7,7 @@ use App\Http\Requests\PermissionRequest\AddPermissionRequest;
 use App\Http\Requests\PermissionRequest\UpdatePermissionRequest;
 use App\Http\Requests\PermissionRequest\DeletePermissionRequest;
 use App\Http\Requests\PermissionRequest\ViewPermissionRequest;
+use App\Http\Requests\PermissionRequest\ListPermissionRequest;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Exceptions\ItemNotCreatedException;
@@ -36,12 +37,12 @@ class PermissionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ListPermissionRequest $request)
     {
         return view('pages.permissions.index');
     }
 
-    public function list()
+    public function list(ListPermissionRequest $request)
     {
         $permissions = Permission::paginate(10);
 
