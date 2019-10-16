@@ -14,6 +14,9 @@ class ViewProjectRequest extends FormRequest
      */
     public function authorize()
     {
+        // who view ?
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,10 +28,14 @@ class ViewProjectRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
-        if ($project->created_by == auth()->user()->id) {
+
+        // 2- creator && owner
+        if ($project->created_by == auth()->user()->id
+            || $project->owner->id == auth()->user()->id) {
             return true;
         }
 
+        // 3- assigns
         foreach ($project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;

@@ -13,6 +13,7 @@ class AddProjectRequest extends FormRequest
      */
     public function authorize()
     {
+        // all who has permission
         return true;
     }
 

@@ -14,6 +14,9 @@ class DeleteProjectRequest extends FormRequest
      */
     public function authorize()
     {
+        // who can delete project?
+
+        // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
@@ -25,6 +28,7 @@ class DeleteProjectRequest extends FormRequest
             throw new ItemNotFoundException($project_id);
         }
 
+        // 2- creator
         if ($project->created_by == auth()->user()->id) {
             return true;
         }
