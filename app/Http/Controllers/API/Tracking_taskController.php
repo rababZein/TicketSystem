@@ -16,6 +16,7 @@ use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemsNotFoundException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\TrackingResource;
 
 class Tracking_taskController extends BaseController 
 {
@@ -69,7 +70,7 @@ class Tracking_taskController extends BaseController
       throw new ItemNotCreatedException('Tracking_task');
     }
 
-    return $this->sendResponse($tracking_task->toArray(), 'Tracking task created successfully.');
+    return $this->sendResponse(new TrackingResource($tracking_task), 'Tracking task created successfully.');
   }
 
 
@@ -104,7 +105,7 @@ class Tracking_taskController extends BaseController
       throw new ItemNotUpdatedException('Tracking_task');
     }
       
-    return $this->sendResponse($tracking_task->toArray(), 'Tracking task updated successfully.');    
+    return $this->sendResponse(new TrackingResource($tracking_task), 'Tracking task updated successfully.');    
   }
 
   /**
@@ -134,7 +135,7 @@ class Tracking_taskController extends BaseController
       throw new ItemNotDeletedException('Tracking_task');
     }
 
-    return $this->sendResponse($tracking_task->toArray(), 'Tracking task deleted successfully.');
+    return $this->sendResponse(new TrackingResource($tracking_task), 'Tracking task deleted successfully.');
   }
 
  /**
@@ -173,7 +174,7 @@ public function checkTrackingInProgress($task_id)
   if (! $tracking)
     throw new ItemsNotFoundException();
 
-  return $this->sendResponse($tracking->toArray(), 'Traking task counter retrived successfully.');
+  return $this->sendResponse(new TrackingResource($tracking), 'Traking task counter retrived successfully.');
 }
 
   /**
@@ -193,7 +194,7 @@ public function checkTrackingInProgress($task_id)
     if (! $tracking)
       throw new ItemsNotFoundException();
 
-    return $this->sendResponse($tracking->toArray(), 'Traking History retrieved successfully.');
+    return $this->sendResponse(TrackingResource::collection($tracking), 'Traking History retrieved successfully.');
   }
 }
 

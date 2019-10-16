@@ -13,6 +13,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\TaskResource;
+use App\Notifications\Task\TaskAssign;
 
 class TaskController extends BaseController 
 {
@@ -49,7 +51,7 @@ class TaskController extends BaseController
   {
     $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
 
-    return $this->sendResponse($tasks->toArray(), 'Tasks retrieved successfully.');
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**
@@ -69,7 +71,10 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'Task created successfully.');
+    $responsible = User::find($input['responsible_id']);
+    $responsible->notify(new TaskAssign($task));
+
+    return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
   }
 
   /**
@@ -87,7 +92,7 @@ class TaskController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($task->toArray(), 'Task retrieved successfully.');    
+    return $this->sendResponse(new TaskResource($task), 'Task retrieved successfully.');    
   }
 
   /**
@@ -107,13 +112,25 @@ class TaskController extends BaseController
     $task->updated_at = Carbon::now();
     $task->updated_by = auth()->user()->id;
 
-    try {
+    $input = $request->all();
+
+    $updated = $task->fill($input)->save();
+    
+     try {
       $updated = $task->fill($request->validated())->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'task updated successfully.');    
+    if (!$updated)
+      throw new ItemNotUpdatedException('Task');
+
+    if (isset($input['responsible_id'])) {
+      $responsible = User::find($input['responsible_id']);
+      $responsible->notify(new TaskAssign($task));
+    }
+  
+    return $this->sendResponse(new TaskResource($task), 'task updated successfully.');     
   }
 
   /**
@@ -143,7 +160,7 @@ class TaskController extends BaseController
       throw new ItemNotDeletedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'Task deleted successfully.');
+    return $this->sendResponse(new TaskResource($task), 'Task deleted successfully.');
   }
 }
 

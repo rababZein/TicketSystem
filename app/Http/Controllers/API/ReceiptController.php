@@ -13,6 +13,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\ReceiptResource;
+use App\Notifications\Receipt\ReceiptPaid;
 
 class ReceiptController extends BaseController 
 {
@@ -49,7 +51,7 @@ class ReceiptController extends BaseController
   {
     $receipts = Receipt::with('task')->get();
 
-    return $this->sendResponse($receipts->toArray(), 'Receipts retrieved successfully.');
+    return $this->sendResponse(ReceiptResource::collection($receipts), 'Receipts retrieved successfully.');
   }
 
   /**
@@ -69,8 +71,11 @@ class ReceiptController extends BaseController
       throw new ItemNotCreatedException('Receipt');
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt created successfully.');
-    
+    if ($input['is_paid']) {
+      auth()->user()->notify(new ReceiptPaid($receipt));
+    }
+
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt created successfully.');
   }
 
   /**
@@ -87,7 +92,7 @@ class ReceiptController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt retrieved successfully.');    
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt retrieved successfully.');    
   }
 
   /**
@@ -107,13 +112,24 @@ class ReceiptController extends BaseController
     $receipt->updated_at = Carbon::now();
     $receipt->updated_by = auth()->user()->id;
 
+    $input = $request->all();
+
+    $updated = $receipt->fill($input)->save();
+    
     try {
       $updated = $receipt->fill($request->validated())->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Receipt');
     }
-    
-    return $this->sendResponse($receipt->toArray(), 'Receipt updated successfully.');    
+
+    if (!$updated)
+      throw new ItemNotUpdatedException('Receipt');
+
+    if (isset($input['is_paid']) && $input['is_paid']) {
+      auth()->user()->notify(new ReceiptPaid($receipt));
+    }
+
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt updated successfully.');  
   }
 
   /**
@@ -143,8 +159,8 @@ class ReceiptController extends BaseController
       throw new ItemNotDeletedException('Receipt');
     }
 
-    return $this->sendResponse($receipt->toArray(), 'Receipt deleted successfully.');
-  } 
+    return $this->sendResponse(new ReceiptResource($receipt), 'Receipt deleted successfully.');
+  }
 }
 
 ?>

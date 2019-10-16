@@ -11,6 +11,7 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\RoleResource;
 
 class RolesController extends BaseController
 {
@@ -41,7 +42,7 @@ class RolesController extends BaseController
     {
         $roles = Role::with('permissions')->paginate(10);
 
-        return $this->sendResponse($roles->toArray(), 'roles retrieved successfully.');
+        return $this->sendResponse(RoleResource::collection($roles), 'roles retrieved successfully.');
     }
 
     /**
@@ -73,7 +74,7 @@ class RolesController extends BaseController
         // save role
         $role->save();
 
-        return $this->sendResponse($role->toArray(), 'role created successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role created successfully.');
     }
 
     /**
@@ -112,7 +113,7 @@ class RolesController extends BaseController
             throw new ItemNotUpdatedException('Role');
         }
 
-        return $this->sendResponse($role->toArray(), 'role updated successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role updated successfully.');
     }
 
     /**
@@ -138,12 +139,11 @@ class RolesController extends BaseController
         }
 
         // delete role
-        try {
+         try {
             $role->delete();
         } catch (\Throwable $th) {
             throw new ItemNotDeletedException('Role');
         }
-
-        return $this->sendResponse($role->toArray(), 'role deleted successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role deleted successfully.');
     }
 }

@@ -14,6 +14,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\ProjectResource;
+use App\Notifications\Project\ProjectAssign;r
 
 class ProjectController extends BaseController 
 {
@@ -40,7 +42,7 @@ class ProjectController extends BaseController
   {
     $projects = Project::all();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
 
@@ -55,7 +57,7 @@ class ProjectController extends BaseController
       $query->where('owner_id','=', $owner_id);
     })->with('owner')->get();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
   /**
@@ -80,7 +82,9 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
-    return $this->sendResponse($project->toArray(), 'Project created successfully.');
+    Notification::send($employees, new ProjectAssign($project));
+
+    return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
 
   /**
@@ -97,7 +101,7 @@ class ProjectController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($project->toArray(), 'Project retrieved successfully.');    
+    return $this->sendResponse(new ProjectResource($project), 'Project retrieved successfully.');    
   }
 
   /**
@@ -130,9 +134,14 @@ class ProjectController extends BaseController
       $employees = User::find($input['project_assign']);
       $project->assigns()->sync($employees);
       $project->assigns;
+
+      Notification::send($employees, new ProjectAssign($project));
     }
 
-    return $this->sendResponse($project->toArray(), 'Project updated successfully.');    
+    if (!$updated)
+      return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
+
+    return $this->sendResponse(new ProjectResource($project), 'Project updated successfully.');    
   }
 
   /**
@@ -169,7 +178,7 @@ class ProjectController extends BaseController
       throw new ItemNotDeletedException('Project');
     }
 
-    return $this->sendResponse($project->toArray(), 'Project deleted successfully.');
+    return $this->sendResponse(new ProjectResource($project), 'Project deleted successfully.');
   }
 
 

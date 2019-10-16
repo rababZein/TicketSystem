@@ -11,6 +11,7 @@ use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\PermissionResource;
 
 class PermissionsController extends BaseController
 {
@@ -42,7 +43,7 @@ class PermissionsController extends BaseController
     {
         $permissions = Permission::paginate(10);
 
-        return $this->sendResponse($permissions->toArray(), 'Permissions retrieved successfully.');
+        return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully.');
     }
 
     /**
@@ -65,7 +66,7 @@ class PermissionsController extends BaseController
             throw new ItemNotCreatedException('Permission');
         }
 
-        return $this->sendResponse($permission->toArray(), 'permission created successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission created successfully.');
     }
 
     /**
@@ -94,7 +95,7 @@ class PermissionsController extends BaseController
             throw new ItemNotUpdatedException('Project');
         }
 
-        return $this->sendResponse($permission->toArray(), 'permission updated successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission updated successfully.');
     }
 
     /**
@@ -124,12 +125,12 @@ class PermissionsController extends BaseController
             throw new ItemNotDeletedException('Project');
         }
 
-        return $this->sendResponse($permission->toArray(), 'permission deleted successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission deleted successfully.');
     }
 
     public function getAllPermissions() {
         $permissions = Permission::all();
 
-        return $this->sendResponse($permissions->toArray(), 'permission listed successfully.');
+        return $this->sendResponse(PermissionResource::collection($permissions), 'permission listed successfully.');
     }
 }
