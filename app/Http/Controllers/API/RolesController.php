@@ -3,8 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use Illuminate\Http\Request;
+use App\Http\Requests\UserRequest\AddRoleRequest;
+use App\Http\Requests\UserRequest\UpdateRoleRequest;
 use Spatie\Permission\Models\Role;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\RoleResource;
 
 class RolesController extends BaseController
 {
@@ -34,7 +41,8 @@ class RolesController extends BaseController
     public function list()
     {
         $roles = Role::with('permissions')->paginate(10);
-        return $this->sendResponse($roles->toArray(), 'roles retrieved successfully.');
+
+        return $this->sendResponse(RoleResource::collection($roles), 'roles retrieved successfully.');
     }
 
     /**
@@ -43,19 +51,22 @@ class RolesController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddRoleRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
+        $input = $request->validated();
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
         // creating new role
-        $role = new Role;
-        $role->name = $request->name;
+        try {
+            $role = Role::create($input);
+        } catch (\Throwable $th) {
+            throw new ItemNotCreatedException('Role');
+        }
 
         // insert permissions for role
         $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
+        foreach ($input['permissions'] as $permission) {
             $permissionsArray[] = $permission['name'];
         }
         $role->syncPermissions($permissionsArray);
@@ -63,7 +74,7 @@ class RolesController extends BaseController
         // save role
         $role->save();
 
-        return $this->sendResponse($role->toArray(), 'role created successfully.');
+        return $this->sendResponse(new RoleResource($role), 'role created successfully.');
     }
 
     /**
@@ -73,24 +84,36 @@ class RolesController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateRoleRequest $request, $id)
     {
         // edit role by id
-        $role = Role::findOrFail($id);
-        $role->name = $request->name;
+        $role = Role::find($id);
+        if (is_null($role)) {
+            throw new ItemNotFoundException($id);
+        }
+
+        $input = $request->validated();
+
+        $role->updated_at = Carbon::now();
+        $role->updated_by = auth()->user()->id;
+
+        $role = $role->fill($input);
         
         // insert permissions for role
         $permissionsArray = [];
-        foreach ($request->permissions as $permission) {
+        foreach ($input['permissions'] as $permission) {
             $permissionsArray[] = $permission['name'];
         }
         $role->syncPermissions($permissionsArray);
 
         // save role
-        $role->save();
+        try {
+            $role->save();
+        } catch (\Throwable $th) {
+            throw new ItemNotUpdatedException('Role');
+        }
 
-        return $this->sendResponse($role->toArray(), 'role updated successfully.');
-
+        return $this->sendResponse(new RoleResource($role), 'role updated successfully.');
     }
 
     /**
@@ -102,7 +125,10 @@ class RolesController extends BaseController
     public function destroy($id)
     {
         // find the role
-        $role = Role::findOrFail($id);
+        $role = Role::find($id);
+        if (is_null($role)) {
+            throw new ItemNotFoundException($id);
+        }
 
         // get permission of this role
         $permissions = $role->permissions->pluck('name', 'id');
@@ -113,7 +139,11 @@ class RolesController extends BaseController
         }
 
         // delete role
-        $role->delete();
-        return $this->sendResponse($role->toArray(), 'role deleted successfully.');
+         try {
+            $role->delete();
+        } catch (\Throwable $th) {
+            throw new ItemNotDeletedException('Role');
+        }
+        return $this->sendResponse(new RoleResource($role), 'role deleted successfully.');
     }
 }
