@@ -51,7 +51,7 @@
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">
-            Tickets in
+            Tasks in
             <strong>{{ ticket.name }}</strong>
           </h3>
 
