@@ -48,7 +48,7 @@ class Project extends Model
 
     public function project_status()
     {
-        return $this->hasOne('App\Models\Status');
+        return $this->belongsTo('App\Models\Status');
     }
 
     public function search($searckKey)

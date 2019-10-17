@@ -86,7 +86,7 @@ const receipts = {
 
 // status end point
 const status = {
-    getAll: params => API.get('/status/getall'),
+    getAll: params => API.get('/status/getAll'),
 }
 
 export default {

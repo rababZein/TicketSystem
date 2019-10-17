@@ -73,7 +73,7 @@ class ProjectController extends BaseController
 
     try {
       $project = Project::create($input);
-    } catch (\Throwable $th) {
+    } catch (Exception $ex) {
       throw new ItemNotCreatedException('Project');
     }
 

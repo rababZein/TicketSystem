@@ -50,7 +50,7 @@ class TaskController extends BaseController
    */
   public function getAll()
   {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
+    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
 
     return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
   }

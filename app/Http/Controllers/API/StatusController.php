@@ -1,12 +1,13 @@
 <?php 
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\API\BaseController;
 use Illuminate\Http\Request;
 use App\Http\Resources\StatusResource;
 use App\Models\Status;
 
-class StatusController extends Controller 
+class StatusController extends BaseController 
 {
 
   public function getAll()

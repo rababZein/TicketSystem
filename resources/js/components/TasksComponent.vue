@@ -33,7 +33,7 @@
                 <td>{{ task.id }}</td>
                 <td><router-link :to="'/task/' + task.id">{{ task.name }}</router-link></td>
                 <td>{{ task.description }}</td>
-                <td>{{ task.status.name }}</td>
+                <td><p v-if="task.status">{{ task.status.name }}</p></td>
                 <td>{{ task.project.owner.name }}</td>
                 <td>{{ task.project.name }}</td>
                 <td><p v-if="task.ticket">{{ task.ticket.name }}</p></td>
@@ -245,7 +245,7 @@ export default {
           id: "",
           name: ""
         },
-        status_id,
+        status_id: "",
         project: {
           id: "",
           name: "",
@@ -462,6 +462,7 @@ export default {
     this.getOwners();
     this.getResponsibles();
     this.getTickets();
+    this.getStatus();
     console.log('xx',this.tickets);
   }
 };
