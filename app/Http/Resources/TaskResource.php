@@ -14,7 +14,6 @@ class TaskResource extends JsonResource
      */
     public function toArray($request)
     {
-        dd($this->task_status);
         return [
             "id" => $this->id,
             "name" => $this->name,

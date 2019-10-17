@@ -29,6 +29,7 @@ class UpdateTaskRequest extends FormRequest
             'project_id' => 'integer|exists:projects,id',
             'ticket_id' => 'nullable|integer|exists:tickets,id',
             'responsible_id' => 'integer|exists:users,id',
+            'status_id' => 'nullable|integer|exists:status,id',
             'count_hours' => 'nullable|numeric|min:0'
         ];
     }
