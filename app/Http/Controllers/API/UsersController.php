@@ -13,6 +13,7 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\UserResource;
+use Carbon\Carbon;
 
 class UsersController extends BaseController
 {
@@ -41,7 +42,7 @@ class UsersController extends BaseController
 
     public function list()
     {
-        $users = UserResource::collection(User::paginate(10));
+        $users = UserResource::collection(User::with('roles')->paginate(10));
         return $this->sendResponse(UserResource::collection($users), 'users retrieved successfully.');
     }
 
@@ -117,8 +118,9 @@ class UsersController extends BaseController
         // save User
         try {
             $user->save();
-        } catch (\Throwable $th) {
-            throw new ItemNotUpdatedException('Role');
+        } catch (Exception $th) {
+            dd($th);
+            throw new ItemNotUpdatedException('User');
         }
         
         return $this->sendResponse($user->toArray(), 'users updated successfully.');

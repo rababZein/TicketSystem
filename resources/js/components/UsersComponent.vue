@@ -37,7 +37,7 @@
                     v-for="role in user.roles"
                     :key="role"
                     class="badge badge-primary mr-1"
-                  >{{ role }}</div>
+                  >{{ role.name }}</div>
                 </td>
                 <td>{{ user.type }}</td>
                 <td>{{user.created_at | myDate}}</td>
@@ -169,7 +169,7 @@ export default {
         name: "",
         email: "",
         password: "",
-        roles: [],
+        roles: "",
         type: ""
       }),
       roles: [],
@@ -200,7 +200,7 @@ export default {
       $("#Modal").modal("show");
       this.form.fill(item);
       this.form.roles = _.map(this.form.roles, function(value) {
-        return { name: value };
+        return { name: value.name };
       });
     },
     createUser() {
@@ -249,9 +249,11 @@ export default {
       this.$api.roles
         .get()
         .then(response => {
-          this.roles = _.map(response.data.data.data, function(key, value) {
+          console.log(response);
+          this.roles = _.map(response.data.data, function(key, value) {
             return { id: key.id, name: key.name };
           });
+          console.log($this.roles);
           this.$Progress.finish();
         })
         .catch(error => {

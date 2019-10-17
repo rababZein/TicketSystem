@@ -53,6 +53,24 @@ class Tracking_taskController extends BaseController
       'There is a tracking task in-progress');
     }
 
+    $task = Task::find($input['task_id']);
+    if ($task->status_id == 4) {
+      throw new InvalidDataException([
+        'task' => $inprogressTask->toArray()
+      ],
+      'There is closed');
+    } else {
+      if ($task->status_id == 3) {
+        $task->status_id = 4;
+
+        try {
+          $task->save();
+        } catch (\Throwable $th) {
+          throw new ItemNotUpdatedException('Task');
+        }
+      }
+    }
+
     $input['created_at'] = Carbon::now();
     $input['created_by'] = auth()->user()->id;
 
