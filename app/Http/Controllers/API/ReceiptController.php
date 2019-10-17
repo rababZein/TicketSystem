@@ -112,12 +112,10 @@ class ReceiptController extends BaseController
     $receipt->updated_at = Carbon::now();
     $receipt->updated_by = auth()->user()->id;
 
-    $input = $request->all();
-
-    $updated = $receipt->fill($input)->save();
+    $input = $request->validated();
     
     try {
-      $updated = $receipt->fill($request->validated())->save();
+      $updated = $receipt->fill($input)->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Receipt');
     }

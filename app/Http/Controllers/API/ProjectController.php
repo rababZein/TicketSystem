@@ -15,7 +15,7 @@ use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\ProjectResource;
-use App\Notifications\Project\ProjectAssign;r
+use App\Notifications\Project\ProjectAssign;
 
 class ProjectController extends BaseController 
 {
@@ -82,7 +82,7 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
-    Notification::send($employees, new ProjectAssign($project));
+    \Notification::send($employees, new ProjectAssign($project));
 
     return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
@@ -124,7 +124,7 @@ class ProjectController extends BaseController
     $project->updated_by = auth()->user()->id;
 
     try {
-      $project = $project->fill($input)->save();
+      $updated = $project->fill($input)->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Project');
     }
@@ -139,7 +139,7 @@ class ProjectController extends BaseController
     }
 
     if (!$updated)
-      return $this->sendError('Not update!.', 'Sorry, project could not be updated', 500);
+      throw new ItemNotUpdatedException('Project');
 
     return $this->sendResponse(new ProjectResource($project), 'Project updated successfully.');    
   }

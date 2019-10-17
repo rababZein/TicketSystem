@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\UserRequest\AddUserRequest;
 use App\Http\Requests\UserRequest\UpdateUserRequest;
 use App\Http\Controllers\API\BaseController;
-use App\Http\Resources\User as UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
@@ -13,6 +12,7 @@ use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\UserResource;
 
 class UsersController extends BaseController
 {

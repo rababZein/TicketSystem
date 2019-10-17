@@ -109,16 +109,14 @@ class TicketController extends BaseController
     $ticket->updated_at = Carbon::now();
     $ticket->updated_by = auth()->user()->id;
 
-     $updated = $ticket->fill($request->all())->save();
-
     try {
       $updated = $ticket->fill($request->validated())->save();
     } catch (\Throwable $th) {
-      throw new ItemNotUpdatedException('Tracking_task');
+      throw new ItemNotUpdatedException('Ticket');
     }
     
     if (!$updated)
-      throw new ItemNotUpdatedException('Tracking_task');
+      throw new ItemNotUpdatedException('Ticket');
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');    
   }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Models\Task;
+use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
@@ -112,12 +113,10 @@ class TaskController extends BaseController
     $task->updated_at = Carbon::now();
     $task->updated_by = auth()->user()->id;
 
-    $input = $request->all();
-
-    $updated = $task->fill($input)->save();
+    $input = $request->validated();
     
      try {
-      $updated = $task->fill($request->validated())->save();
+      $updated = $task->fill($input)->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Task');
     }
