@@ -20,6 +20,7 @@
                 <th width="10">ID</th>
                 <th width="20%">Name</th>
                 <th width="40%">Description</th>
+                <th width="40%">Status</th>
                 <th width="20%">Client</th>
                 <th width="20%">Project</th>
                 <th width="10%">Ticket</th>
@@ -32,6 +33,7 @@
                 <td>{{ task.id }}</td>
                 <td><router-link :to="'/task/' + task.id">{{ task.name }}</router-link></td>
                 <td>{{ task.description }}</td>
+                <td>{{ task.status.name }}</td>
                 <td>{{ task.project.owner.name }}</td>
                 <td>{{ task.project.name }}</td>
                 <td><p v-if="task.ticket">{{ task.ticket.name }}</p></td>
@@ -105,6 +107,28 @@
                   :class="{ 'is-invalid': form.errors.has('description') }"
                 />
                 <has-error :form="form" field="description"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Status</label>
+                <multiselect
+                  v-model="form.status"
+                  :options="status"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                  :preselect-first="true"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="status_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Client</label>
@@ -217,6 +241,11 @@ export default {
         id: "",
         name: "",
         description: "",
+        status: {
+          id: "",
+          name: ""
+        },
+        status_id,
         project: {
           id: "",
           name: "",
@@ -241,7 +270,8 @@ export default {
       responsibles: [],
       tickets: [],
       projects: [],
-      owners: []
+      owners: [],
+      status: []
     };
   },
   methods: {
@@ -271,6 +301,19 @@ export default {
           // convert array to object for paginate
           this.tasks = Object.assign({}, this.tasks);
 
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getStatus() {
+      this.$api.status
+        .getAll()
+        .then(response => {
+          this.status = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
           this.$Progress.finish();
         })
         .catch(error => {
@@ -335,6 +378,7 @@ export default {
       this.form.project_id = this.form.project.id;
       this.form.ticket_id = this.form.ticket.id;
       this.form.responsible_id = this.form.responsible.id;
+      this.form.status_id = this.form.status.id;
 
       this.form
         .post("/v-api/tasks")
@@ -362,7 +406,8 @@ export default {
       this.form.project_id = this.form.project.id;
       this.form.ticket_id = this.form.ticket.id;
       this.form.responsible_id = this.form.responsible.id;
-      
+      this.form.status_id = this.form.status.id;
+
       this.form
         .patch("/v-api/tasks/" + id)
         .then(response => {

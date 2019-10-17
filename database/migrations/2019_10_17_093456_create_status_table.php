@@ -11,10 +11,10 @@ class CreateStatusTable extends Migration {
 			$table->increments('id');
 			$table->timestamp('created_at');
 			$table->timestamp('updated_at')->nullable();
-			$table->integer('updated_by')->unsigned();
-			$table->integer('created_by')->unsigned();
+			$table->integer('updated_by')->unsigned()->nullable();
+			$table->integer('created_by')->unsigned()->nullable();
 			$table->string('name');
-			$table->longText('description');
+			$table->longText('description')->nullable();
 			$table->boolean('main')->default(0);
 		});
 	}

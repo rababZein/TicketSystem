@@ -70,6 +70,10 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
     Route::get('/history/{task_id}', 'Tracking_taskController@getHistory');
 });
 
+Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
+    Route::get('/getAll', 'API\StatusController@getAll');
+});
+
 
 
 

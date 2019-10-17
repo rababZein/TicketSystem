@@ -84,6 +84,11 @@ const receipts = {
     delete: params => API.delete('/receipts/' + params),
 }
 
+// status end point
+const status = {
+    getAll: params => API.get('/status/getall'),
+}
+
 export default {
     users,
     roles,
@@ -94,5 +99,6 @@ export default {
     tasks,
     responsibles,
     receipts,
-    track
+    track,
+    status
 }
