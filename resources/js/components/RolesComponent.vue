@@ -151,7 +151,7 @@ export default {
       this.$api.roles
         .get({ page: page })
         .then(response => {
-          this.roles = response.data.data;
+          this.roles = response.data;
           this.$Progress.finish();
         })
         .catch(error => {
