@@ -35,12 +35,14 @@ const projects = {
     getAll: params => API.get('/project/getall'),
     getAllByOwner: params => API.get('/project/getAllByOwner/' + params),
     delete: params => API.delete('/projects/' + params),
+    show: params => API.get('/projects/' + params),
 }
 
 // tickets end point
 const tickets = {
     getAll: params => API.get('/tickets/getall'),
     delete: params => API.delete('/tickets/' + params),
+    show: params => API.get('/tickets/' + params)
 }
 
 // owners end point
