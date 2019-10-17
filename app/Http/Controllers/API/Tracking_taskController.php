@@ -54,15 +54,14 @@ class Tracking_taskController extends BaseController
     }
 
     $task = Task::find($input['task_id']);
-    if ($task->status_id == 4) {
+    if ($task->status_id == 4) { // done
       throw new InvalidDataException([
         'task' => $inprogressTask->toArray()
       ],
       'There is closed');
     } else {
-      if ($task->status_id == 3) {
-        $task->status_id = 4;
-
+      if ($task->status_id != 3) { //inprogress
+        $task->status_id = 3;
         try {
           $task->save();
         } catch (\Throwable $th) {
