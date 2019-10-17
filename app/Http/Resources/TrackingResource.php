@@ -21,6 +21,7 @@ class TrackingResource extends JsonResource
             "comment" => $this->comment,
             "start_at" => $this->start_at,
             "end_at" => $this->end_at,
+            "count_time" => $this->count_time,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),

@@ -95,7 +95,7 @@ class ProjectController extends BaseController
    */
   public function show($id)
   {
-    $project = Project::find($id);
+    $project = Project::with('tickets')->find($id);
 
     if (is_null($project)) {
       throw new ItemNotFoundException($id);

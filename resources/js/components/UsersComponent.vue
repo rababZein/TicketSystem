@@ -21,6 +21,7 @@
                 <th>name</th>
                 <th>email</th>
                 <th>Role</th>
+                <th>user type</th>
                 <th>created at</th>
                 <th>action</th>
               </tr>
@@ -38,6 +39,7 @@
                     class="badge badge-primary mr-1"
                   >{{ role.name }}</div>
                 </td>
+                <td>{{ user.type }}</td>
                 <td>{{user.created_at | myDate}}</td>
                 <td>
                   <a href="#" class="btn btn-primary btn-xs" @click="editModal(user)">
