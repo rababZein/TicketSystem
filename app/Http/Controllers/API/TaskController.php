@@ -164,10 +164,10 @@ class TaskController extends BaseController
 
   public function changeStatus(changeStatusRequest $request, $task_id)
   {
-    $task = Task::find($id);
+    $task = Task::find($task_id);
 
     if (is_null($task)) {
-      return $this->sendError('task not found.');
+      return ItemNotFoundException($task_id);
     }
 
     $input = $request->validated();
