@@ -29,7 +29,7 @@
                 <tbody>
                   <tr>
                     <td>
-                      <small>Tickets:</small>
+                      <small>Tasks:</small>
                     </td>
                     <td>{{ ticket.tasks.length }}</td>
                   </tr>
