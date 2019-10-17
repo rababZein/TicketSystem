@@ -48,6 +48,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::get('/{task_id}', 'API\TaskController@show');
         Route::post('/', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
+        Route::patch('/changeStatus/{task_id}', 'API\TaskController@changeStatus');
         Route::delete('/{task_id}', 'API\TaskController@destroy');
     });
 

@@ -57,6 +57,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // task
     Route::get('/tasks/getall', 'TaskController@getAll');
     Route::resource('/tasks', 'TaskController')->except('create');
+    Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');

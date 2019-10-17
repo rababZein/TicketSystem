@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStatusToTickets extends Migration
+class AddStatusToTask extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddStatusToTickets extends Migration
      */
     public function up()
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->enum('status', array('open', 'in-progress', 'pending', 'close'))->default('regular-user');
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->integer('status_id')->unsigned();
         });
     }
 
@@ -25,7 +25,7 @@ class AddStatusToTickets extends Migration
      */
     public function down()
     {
-        Schema::table('ticket', function (Blueprint $table) {
+        Schema::table('task', function (Blueprint $table) {
             //
         });
     }

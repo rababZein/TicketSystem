@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStatusToTasks extends Migration
+class AddStatusToProject extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddStatusToTasks extends Migration
      */
     public function up()
     {
-        Schema::table('tasks', function (Blueprint $table) {
-            //
+        Schema::table('projects', function (Blueprint $table) {
+            $table->integer('status_id')->unsigned();
         });
     }
 
@@ -25,7 +25,7 @@ class AddStatusToTasks extends Migration
      */
     public function down()
     {
-        Schema::table('task', function (Blueprint $table) {
+        Schema::table('project', function (Blueprint $table) {
             //
         });
     }

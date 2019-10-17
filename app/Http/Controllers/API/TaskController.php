@@ -20,7 +20,7 @@ class TaskController extends BaseController
   {
       $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
-      $this->middleware('permission:task-edit', ['only' => ['update']]);
+      $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
   }
 
@@ -145,6 +145,28 @@ class TaskController extends BaseController
     $task->delete();
 
     return $this->sendResponse($task->toArray(), 'Task deleted successfully.');
+  }
+
+  public function changeStatus(changeStatusRequest $request, $task_id)
+  {
+    $task = Task::find($id);
+
+    if (is_null($task)) {
+      return $this->sendError('task not found.');
+    }
+
+    $input = $request->validated();
+
+    try {
+      $updated = $tracking_task->fill($input)->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Task');
+    }
+
+    if (!$updated)
+      throw new ItemNotUpdatedException('Task');
+
+    return $this->sendResponse(new TaskResource($task), 'task updated successfully.');
   }
   
 }
