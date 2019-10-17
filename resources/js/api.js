@@ -42,6 +42,7 @@ const projects = {
 const tickets = {
     getAll: params => API.get('/tickets/getall'),
     delete: params => API.delete('/tickets/' + params),
+    show: params => API.get('/tickets/' + params)
 }
 
 // owners end point

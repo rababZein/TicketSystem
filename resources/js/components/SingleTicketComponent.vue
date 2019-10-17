@@ -4,8 +4,8 @@
       <div class="card">
         <div class="card-header">
           <span>Title:</span>
-          <span class="font-weight-light">{{ project.name }}</span>
-          <div class="float-right font-weight-light">{{ project.created_at | myDate }}</div>
+          <span class="font-weight-light">{{ ticket.name }}</span>
+          <div class="float-right font-weight-light">{{ ticket.created_at | myDate }}</div>
         </div>
 
         <div class="card-body">
@@ -14,16 +14,16 @@
               <div class="form-group">
                 <label for="Description" class="col-form-label">Description:</label>
                 <textarea
-                  v-model="project.description"
+                  v-model="ticket.description"
                   class="form-control"
                   id="Description"
                   disabled
                 ></textarea>
               </div>
             </div>
-            <div class="col-sm-6" v-if="project.tickets">
+            <div class="col-sm-6" v-if="ticket.tasks">
               <table
-                class="table table-borderless table-sm table-hover table-responsive-lg mt-2"
+                class="table table-borderless table-sm table-hover table-responsive-lg mt-4"
                 style="width: 70%"
               >
                 <tbody>
@@ -31,19 +31,13 @@
                     <td>
                       <small>Tickets:</small>
                     </td>
-                    <td>{{ project.tickets.length }}</td>
+                    <td>{{ ticket.tasks.length }}</td>
                   </tr>
                   <tr>
                     <td>
-                      <small>Budget hours:</small>
+                      <small>Project:</small>
                     </td>
-                    <td>{{ project.budget_hours }}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <small>Task rate:</small>
-                    </td>
-                    <td>{{ project.task_rate }}</td>
+                    <td>{{ ticket.project.name }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -52,12 +46,13 @@
         </div>
       </div>
     </div>
+    <!-- tasks for this ticket -->
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
           <h3 class="card-title">
             Tickets in
-            <strong>{{ project.name }}</strong>
+            <strong>{{ ticket.name }}</strong>
           </h3>
 
           <div class="card-tools"></div>
@@ -69,19 +64,16 @@
               <tr>
                 <th width="10">ID</th>
                 <th width="40%">Name</th>
-                <th width="40%">Description</th>
-                <th width="10%">Read</th>
+                <th width="50%">Description</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="ticket in project.tickets" :key="ticket.id">
-                <td>{{ ticket.id }}</td>
+              <tr v-for="task in ticket.tasks" :key="task.id">
+                <td>{{ task.id }}</td>
                 <td>
-                  <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
+                  <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
                 </td>
-                <td>{{ ticket.description }}</td>
-                <td v-if="!ticket.read">Not Read</td>
-                <td v-else>Read</td>
+                <td>{{ task.description }}</td>
               </tr>
             </tbody>
           </table>
@@ -105,16 +97,17 @@
 export default {
   data() {
     return {
-      projectId: this.$route.params.id,
-      project: {}
+      ticketId: this.$route.params.id,
+      ticket: {}
     };
   },
   methods: {
-    getPrject(project_id) {
-      this.$api.projects
-        .show(project_id)
+    getPrject(id) {
+      this.$Progress.start();
+      this.$api.tickets
+        .show(id)
         .then(response => {
-          this.project = response.data.data;
+          this.ticket = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
@@ -122,11 +115,8 @@ export default {
         });
     }
   },
-  mounted() {
-    console.log("Component mounted.");
-  },
   created() {
-    this.getPrject(this.projectId);
+    this.getPrject(this.ticketId);
   }
 };
 </script>
