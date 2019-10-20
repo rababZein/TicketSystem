@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use Illuminate\Http\Request;
+use App\Http\Requests\PermissionRequest\AddPermissionRequest;
+use App\Http\Requests\PermissionRequest\UpdatePermissionRequest;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\ItemNotFoundException;
+use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\PermissionResource;
 
 class PermissionsController extends BaseController
 {
@@ -36,7 +42,8 @@ class PermissionsController extends BaseController
     public function list()
     {
         $permissions = Permission::paginate(10);
-        return $this->sendResponse($permissions->toArray(), 'Permissions retrieved successfully.');
+
+        return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully.');
     }
 
     /**
@@ -45,20 +52,21 @@ class PermissionsController extends BaseController
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(AddPermissionRequest $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
+        $input = $request->validated();
 
         // creating new permission
-        $permission = new Permission;
-        $permission->name = $request->name;
+        $input['created_at'] = Carbon::now();
+        $input['created_by'] = auth()->user()->id;
 
-        // save permission
-        $permission->save();
+        try {
+            $permission = Permission::create($input);
+        } catch (\Throwable $th) {
+            throw new ItemNotCreatedException('Permission');
+        }
 
-        return $this->sendResponse($permission->toArray(), 'permission created successfully.');
+        return $this->sendResponse(new PermissionResource($permission), 'permission created successfully.');
     }
 
     /**
@@ -68,20 +76,26 @@ class PermissionsController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdatePermissionRequest $request, $id)
     {
-        $this->validate($request, [
-            'name' => 'required|string|max:191'
-        ]);
-
         // update permission
-        $permission = Permission::findOrFail($id);
-        $permission->name = $request->name;
+        $permission = Permission::find($id);
+        if (is_null($permission)) {
+            throw new ItemNotFoundException($id);
+        }
+        
+        $input = $request->validated();
 
-        // save permission
-        $permission->save();
+        $permission->updated_at = Carbon::now();
+        $permission->updated_by = auth()->user()->id;
 
-        return $this->sendResponse($permission->toArray(), 'permission updated successfully.');
+        try {
+            $permission = $permission->fill($input)->save();
+        } catch (\Throwable $th) {
+            throw new ItemNotUpdatedException('Project');
+        }
+
+        return $this->sendResponse(new PermissionResource($permission), 'permission updated successfully.');
     }
 
     /**
@@ -93,7 +107,10 @@ class PermissionsController extends BaseController
     public function destroy($id)
     {
         // delete permission
-        $permission = Permission::findOrFail($id);
+        $permission = Permission::find($id);
+        if (is_null($permission)) {
+            throw new ItemNotFoundException($id);
+        }
 
         $roles = $permission->roles->pluck('name', 'id');
 
@@ -102,15 +119,18 @@ class PermissionsController extends BaseController
             $permission->removeRole($roles);
         }
         
-        // delete role
-        $permission->delete();
+        try {
+            $permission->delete();
+        } catch (\Throwable $th) {
+            throw new ItemNotDeletedException('Project');
+        }
 
-        return $this->sendResponse($permission->toArray(), 'permission deleted successfully.');
-
+        return $this->sendResponse(new PermissionResource($permission), 'permission deleted successfully.');
     }
 
     public function getAllPermissions() {
         $permissions = Permission::all();
-        return $this->sendResponse($permissions->toArray(), 'permission listed successfully.');
+
+        return $this->sendResponse(PermissionResource::collection($permissions), 'permission listed successfully.');
     }
 }

@@ -13,12 +13,12 @@ class Receipt extends Model
 
     public function creator()
     {
-        return $this->hasOne('App\Models\User', 'created_by');
+        return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
 
     public function updater()
     {
-        return $this->hasOne('App\Models\User', 'updated_by');
+        return $this->hasOne('App\Models\User', 'id', 'updated_by');
     }
 
     public function task()

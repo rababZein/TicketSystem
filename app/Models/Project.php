@@ -14,7 +14,7 @@ class Project extends Model
     protected $table = 'projects';
     public $timestamps = false;
 
-    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'owner_id', 'task_rate', 'budget_hours', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'owner_id', 'task_rate', 'budget_hours', 'status_id', 'created_by', 'updated_by');
 
     public function owner()
     {
@@ -23,12 +23,12 @@ class Project extends Model
 
     public function creator()
     {
-        return $this->hasOne('App\Models\User', 'created_by');
+        return $this->hasOne('App\Models\User', 'id',  'created_by');
     }
 
     public function updater()
     {
-        return $this->hasOne('App\Models\User', 'updated_by');
+        return $this->hasOne('App\Models\User', 'id', 'updated_by');
     }
 
     public function tasks()
@@ -44,6 +44,11 @@ class Project extends Model
     public function assigns()
     {
         return $this->belongsToMany('App\Models\User','project_assigns', 'project_id', 'assign_to');
+    }
+
+    public function project_status()
+    {
+        return $this->belongsTo('App\Models\Status');
     }
 
     public function search($searckKey)

@@ -44,10 +44,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 
     Route::group(['prefix' => 'task'], function () {
-        Route::get('/', 'API\TaskController@index');
+        Route::get('/', 'API\TaskController@getAll');
         Route::get('/{task_id}', 'API\TaskController@show');
         Route::post('/', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
+        Route::patch('/changeStatus/{task_id}', 'API\TaskController@changeStatus');
         Route::delete('/{task_id}', 'API\TaskController@destroy');
     });
 
@@ -67,6 +68,10 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
     Route::get('/{task_id}', 'Tracking_taskController@tracking');
     Route::get('/checkTrackingInProgress/{task_id}', 'Tracking_taskController@checkTrackingInProgress');
     Route::get('/history/{task_id}', 'Tracking_taskController@getHistory');
+});
+
+Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
+    Route::get('/getAll', 'API\StatusController@getAll');
 });
 
 

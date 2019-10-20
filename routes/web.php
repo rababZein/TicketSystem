@@ -57,6 +57,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // task
     Route::get('/tasks/getall', 'TaskController@getAll');
     Route::resource('/tasks', 'TaskController')->except('create');
+    Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');
@@ -64,6 +65,9 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // receipt
     Route::get('/receipts/getall', 'ReceiptController@getAll');
     Route::resource('/receipts', 'ReceiptController')->except('create');
+
+    // status
+    Route::get('/status/getAll', 'StatusController@getAll');
 });
 
 Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');

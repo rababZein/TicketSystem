@@ -21,13 +21,32 @@
                 ></textarea>
               </div>
             </div>
-            <div class="col-sm-6">
-              <div class="form-group row" v-if="project.tickets">
-                <label for="Tickets" class="col-form-label col-sm-3">
-                  Tickets:
-                </label>
-                <h3 class=" col-sm-3">{{ project.tickets.length }}</h3>
-              </div>
+            <div class="col-sm-6" v-if="project.tickets">
+              <table
+                class="table table-borderless table-sm table-hover table-responsive-lg mt-2"
+                style="width: 70%"
+              >
+                <tbody>
+                  <tr>
+                    <td>
+                      <small>Tickets:</small>
+                    </td>
+                    <td>{{ project.tickets.length }}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <small>Budget hours:</small>
+                    </td>
+                    <td>{{ project.budget_hours }}</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <small>Task rate:</small>
+                    </td>
+                    <td>{{ project.task_rate }}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -57,7 +76,9 @@
             <tbody>
               <tr v-for="ticket in project.tickets" :key="ticket.id">
                 <td>{{ ticket.id }}</td>
-                <td>{{ ticket.name }}</td>
+                <td>
+                  <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
+                </td>
                 <td>{{ ticket.description }}</td>
                 <td v-if="!ticket.read">Not Read</td>
                 <td v-else>Read</td>
