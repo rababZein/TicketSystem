@@ -4,6 +4,7 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Carbon\Carbon;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -14,6 +15,18 @@ class RolesAndPermissionsSeeder extends Seeder
      */
     public function run()
     {
+        // create Admin
+         /** @var User $admin */
+         $admin = factory(User::class)->create([
+            'name' => 'admin',
+            'email' => 'admin@admin.com',
+            // default password "password"
+        ]);
+
+        // create regular-user
+        /** @var User $user */
+        $user = factory(User::class)->create(['created_by' => $admin->id]);
+
         // Reset cached roles and permissions
         app()['cache']->forget('spatie.permission.cache');
 
@@ -30,15 +43,26 @@ class RolesAndPermissionsSeeder extends Seeder
 
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::create([
+                'name' => $permission,
+                'created_by' => $admin->id,
+                'created_at' => Carbon::now()
+             ]);
         }
 
-        Role::create(['name' => 'user']);
-        /** @var User $user */
-        $user = factory(User::class)->create();
+        Role::create([
+            'name' => 'user',
+            'created_by' => $admin->id,
+            'created_at' => Carbon::now()
+        ]);
 
         $user->assignRole('user');
-        $role = Role::create(['name' => 'admin']);
+
+        $role = Role::create([
+            'name' => 'admin',
+            'created_by' => $admin->id,
+            'created_at' => Carbon::now()
+        ]);
 
         $role->givePermissionTo([
             'role-list',
@@ -49,13 +73,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'permission-create',
             'permission-edit',
             'permission-delete'
-        ]);
-
-        /** @var User $user */
-        $admin = factory(User::class)->create([
-            'name' => 'admin',
-            'email' => 'admin@admin.com',
-            // default password "password"
         ]);
 
         $admin->assignRole('admin');

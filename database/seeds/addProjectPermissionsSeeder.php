@@ -3,7 +3,8 @@
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
+use App\Models\User;
+use Carbon\Carbon;
 
 class addProjectPermissionsSeeder extends Seeder
 {
@@ -20,8 +21,15 @@ class addProjectPermissionsSeeder extends Seeder
             'project-edit',
             'project-delete'
         ];
+
+        $admin = User::where('name', 'admin')->firstOrFail();
+
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::create([
+                'name' => $permission,
+                'created_by' => $admin->id,
+                'created_at' => Carbon::now()
+            ]);
         }
 
         // add Permission to admin role
