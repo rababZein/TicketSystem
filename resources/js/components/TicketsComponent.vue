@@ -204,7 +204,7 @@ export default {
     getResults(page = 1) {
       this.$Progress.start();
       this.$api.tickets
-        .getAll()
+        .get()
         .then(response => {
           this.tickets = response.data.data;
                    

@@ -24,11 +24,12 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'Vue'], function () {
 Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api'], function () {
     // roles
     Route::get('/roles/list', 'RolesController@list');
+    Route::get('/roles/getall', 'RolesController@getAll');
     Route::resource('/roles', 'RolesController')->except('show', 'create');
 
     // permissions
     Route::get('/permissions/list', 'PermissionsController@list');
-    Route::get('/permissions/getall', 'PermissionsController@getAllPermissions');
+    Route::get('/permissions/getall', 'PermissionsController@getAll');
     Route::resource('/permissions', 'PermissionsController')->except('show', 'create');
 
     // users
@@ -38,7 +39,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
-    Route::get('/project/getall', 'ProjectController@getAll');
+    Route::get('/projects/list', 'ProjectController@list');
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
     Route::resource('/projects', 'ProjectController')->except('create');
 
@@ -51,10 +52,12 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/tracking/history/{task_id}', 'Tracking_taskController@getHistory');
 
     // tickets
+    Route::get('/tickets/list', 'TicketController@list');
     Route::get('/tickets/getall', 'TicketController@getAll');
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
+    Route::get('/tasks/list', 'TaskController@list');
     Route::get('/tasks/getall', 'TaskController@getAll');
     Route::resource('/tasks', 'TaskController')->except('create');
     Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
@@ -63,6 +66,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/owner/getall', 'UsersController@getClients');
 
     // receipt
+    Route::get('/receipts/list', 'ReceiptController@list');
     Route::get('/receipts/getall', 'ReceiptController@getAll');
     Route::resource('/receipts', 'ReceiptController')->except('create');
 

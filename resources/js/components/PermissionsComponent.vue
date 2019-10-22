@@ -127,7 +127,7 @@ export default {
       this.$api.permissions
         .get({ page: page })
         .then(response => {
-          this.permissions = response.data;
+          this.permissions = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
