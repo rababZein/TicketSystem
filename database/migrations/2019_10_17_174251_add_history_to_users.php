@@ -26,11 +26,8 @@ class AddHistoryToUsers extends Migration
      */
     public function down()
     {
-        Schema::table('user', function (Blueprint $table) {
-            $table->dropColumn('created_by');
-            $table->dropColumn('updated_by');
-            $table->dropColumn('created_at');
-            $table->dropColumn('updated_at');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['created_by', 'updated_by']);
         });
     }
 }
