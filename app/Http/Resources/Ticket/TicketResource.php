@@ -5,7 +5,7 @@ namespace App\Http\Resources\Ticket;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Task\TaskResource;
-use App\Http\Resources\User\ProjectResource;
+use App\Http\Resources\Project\ProjectResource;
 
 class TicketResource extends JsonResource
 {

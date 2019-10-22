@@ -4,10 +4,11 @@ namespace App\Http\Resources\Task;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User\UserResource;
-use App\Http\Resources\Task\TicketResource;
-use App\Http\Resources\User\ProjectResource;
-use App\Http\Resources\Task\ReceiptResource;
-use App\Http\Resources\Task\TrackingResource;
+use App\Http\Resources\Ticket\TicketResource;
+use App\Http\Resources\Project\ProjectResource;
+use App\Http\Resources\Receipt\ReceiptResource;
+use App\Http\Resources\Tracking\TrackingResource;
+use App\Http\Resources\Status\StatusResource;
 
 class TaskResource extends JsonResource
 {
