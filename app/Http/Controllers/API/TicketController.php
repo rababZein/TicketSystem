@@ -13,7 +13,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\TicketResource;
+use App\Http\Resources\Ticket\TicketResource;
+use App\Http\Resources\Ticket\TicketCollection;
 
 class TicketController extends BaseController 
 {
@@ -51,6 +52,13 @@ class TicketController extends BaseController
     $tickets = Ticket::with('project.owner')->get();
  
     return $this->sendResponse(TicketResource::collection($tickets), 'Tickets retrieved successfully.');
+  }
+
+  public function list()
+  {
+    $tickets = Ticket::with('project.owner')->get();
+ 
+    return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
 
   /**

@@ -13,7 +13,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\ReceiptResource;
+use App\Http\Resources\Receipt\ReceiptCollection;
+use App\Http\Resources\Receipt\ReceiptResource;
 use App\Notifications\Receipt\ReceiptPaid;
 
 class ReceiptController extends BaseController 
@@ -52,6 +53,13 @@ class ReceiptController extends BaseController
     $receipts = Receipt::with('task')->get();
 
     return $this->sendResponse(ReceiptResource::collection($receipts), 'Receipts retrieved successfully.');
+  }
+
+  public function list()
+  {
+    $receipts = Receipt::with('task')->paginate();
+
+    return $this->sendResponse(new ReceiptCollection($receipts), 'Receipts retrieved successfully.');
   }
 
   /**
