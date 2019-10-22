@@ -3,6 +3,8 @@
 namespace App\Http\Resources\Receipt;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User\UserResource;
+use App\Http\Resources\Task\TaskResource;
 
 class ReceiptResource extends JsonResource
 {

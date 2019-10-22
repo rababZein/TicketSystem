@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Status;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User\UserResource;
 
 class StatusResource extends JsonResource
 {
