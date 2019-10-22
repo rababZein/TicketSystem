@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Receipt;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TaskResource extends JsonResource
+class ReceiptResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,17 +18,13 @@ class TaskResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "count_hours" => $this->count_hours,
-            "status" => new StatusResource($this->task_status),
+            "total" => $this->total,
+            "is_paid" => $this->is_paid,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),
             "updated_by" => new UserResource($this->whenLoaded('updater')),
-            "ticket" => new TicketResource($this->whenLoaded('ticket')),
-            "project" => new ProjectResource($this->whenLoaded('project')),
-            "responsible" => new UserResource($this->whenLoaded('responsible')),
-            "receipts" => ReceiptResource::collection($this->whenLoaded('receipts')),
-            "tracking_history" => TrackingResource::collection($this->whenLoaded('tracking_history'))
+            "task" => new TaskResource($this->whenLoaded('task')),
         ];
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Role;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ReceiptResource extends JsonResource
+class RoleResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,14 +17,10 @@ class ReceiptResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
-            "description" => $this->description,
-            "total" => $this->total,
-            "is_paid" => $this->is_paid,
+            //"guard_name" => $this->guard_name,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "created_by" => new UserResource($this->whenLoaded('creator')),
-            "updated_by" => new UserResource($this->whenLoaded('updater')),
-            "task" => new TaskResource($this->whenLoaded('task')),
+            "permissions" => PermissionResource::collection($this->permissions),
         ];
     }
 }

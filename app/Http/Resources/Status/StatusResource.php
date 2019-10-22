@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Status;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PermissionResource extends JsonResource
+class StatusResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +17,12 @@ class PermissionResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
-            //"guard_name" => $this->guard_name,
+            "description" => $this->description,
+            "main" => $this->main,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
+            "created_by" => new UserResource($this->whenLoaded('creator')),
+            "updated_by" => new UserResource($this->whenLoaded('updater')),
         ];
     }
 }
