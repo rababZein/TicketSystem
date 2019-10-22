@@ -409,7 +409,7 @@ export default {
     this.checkTrackingInProgress(this.task_id);
 
     this.$api.tasks
-      .get(this.task_id)
+      .getById(this.task_id)
       .then(response => {
         this.task = response.data.data;
         this.$Progress.finish();
