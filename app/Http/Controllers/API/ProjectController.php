@@ -40,7 +40,7 @@ class ProjectController extends BaseController
    */
   public function index()
   {
-    $projects = Project::all();
+    $projects = Project::with('owner')->get();
 
     return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }

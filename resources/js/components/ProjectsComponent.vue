@@ -92,7 +92,7 @@
               <div class="form-group">
                 <label for="client">Client</label>
                 <multiselect
-                  v-model="owner_id"
+                  v-model="form.owner"
                   :options="owners"
                   :searchable="true"
                   :close-on-select="true"
@@ -155,44 +155,37 @@ export default {
       form: new Form({
         id: "",
         name: "",
-        owner_id: "",
+        owner: "",
         description: "",
         task_rate: "",
         budget_hours: "",
         project_assign: []
       }),
-      owners: [],
       owner_id: ""
     };
   },
   methods: {
     getResults() {
+      this.$Progress.start();
       store
         .dispatch("getProjects")
         .then(() => {
-          // this.projects = store.projects;
-        })
-        .catch(error => {
-          if (error.response) {
-            this.checkResponse(error.response.status);
-          }
-        });
-    },
-    getOwners() {
-      this.$api.owners
-        .getAll()
-        .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
     },
-    selectOwnerId(opt) {
-      opt => (form.owner_id = opt.id);
+    getOwners() {
+      this.$Progress.start();
+      store
+        .dispatch("getOwners")
+        .then(() => {
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
     },
     newModal() {
       this.editMode = false;
@@ -203,33 +196,34 @@ export default {
       this.editMode = true;
       this.form.reset();
       this.form.clear();
-      this.owner_id = "";
       $("#Modal").modal("show");
       this.form.fill(item);
     },
     createProject() {
+      this.$Progress.start();
       store
         .dispatch("createProject", this.form)
         .then(() => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
-          this.form.errors.errors = error.response.data.data;
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     editProject(id) {
       this.$Progress.start();
-      this.form
-        .put("/v-api/projects/" + id)
+      store
+        .dispatch("editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
-          this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
@@ -238,10 +232,9 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     deleteProject(id) {
@@ -256,8 +249,8 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.projects
-            .delete(id)
+          store
+            .dispatch("deleteProject", id)
             .then(response => {
               this.$Progress.finish();
               this.getResults();
@@ -267,22 +260,11 @@ export default {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the project"
+                title: error.response.data.message
               });
             });
         }
       });
-    },
-    checkResponse(status) {
-      if (status == 500) {
-        Toast.fire({
-          type: "error",
-          title: "Server error!"
-        });
-      }
-      if (status == 403 || status == 401) {
-        console.log("error 403 or 401")
-      }
     }
   },
   mounted() {
@@ -292,6 +274,7 @@ export default {
   computed: {
     ...mapGetters({
       projects: "activeProjects",
+      owners: "owners"
     })
   }
 };
