@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import store from "../store/index";
+import store from "../../store/index";
 import { mapGetters, mapState } from "vuex";
 
 export default {
@@ -224,6 +224,7 @@ export default {
         .dispatch("editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
+          this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
