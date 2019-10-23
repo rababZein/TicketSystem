@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Tracking;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User\UserResource;
+use App\Http\Resources\Task\TaskResource;
 
 class TrackingResource extends JsonResource
 {

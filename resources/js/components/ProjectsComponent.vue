@@ -164,7 +164,7 @@ export default {
       this.$api.projects
         .get({ page: page })
         .then(response => {
-          this.projects = response.data.data;
+          this.projects = response.data.data.data;
           this.$Progress.finish();
         })
         .catch(error => {

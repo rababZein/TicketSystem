@@ -11,7 +11,9 @@ use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\PermissionResource;
+use App\Http\Resources\Permission\PermissionCollection;
+use App\Http\Resources\Permission\PermissionResource;
+use Carbon\Carbon;
 
 class PermissionsController extends BaseController
 {
@@ -26,7 +28,7 @@ class PermissionsController extends BaseController
         $this->middleware('permission:permission-create', ['only' => ['store']]);
         $this->middleware('permission:permission-edit', ['only' => ['update']]);
         $this->middleware('permission:permission-delete', ['only' => ['destroy']]);
-        $this->middleware('permission:permission-list', ['only' => ['getAllPermissions']]);
+        $this->middleware('permission:permission-list', ['only' => ['getAll']]);
     }
 
     /**
@@ -39,11 +41,18 @@ class PermissionsController extends BaseController
         return view('pages.permissions.index');
     }
 
-    public function list()
+    public function getAll()
     {
-        $permissions = Permission::paginate(10);
+        $permissions = Permission::all();
 
         return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully.');
+    }
+
+    public function list()
+    {
+        $permissions = Permission::paginate();
+
+        return $this->sendResponse(new PermissionCollection($permissions), 'Permissions retrieved successfully.');
     }
 
     /**
@@ -62,7 +71,8 @@ class PermissionsController extends BaseController
 
         try {
             $permission = Permission::create($input);
-        } catch (\Throwable $th) {
+        } catch (Exception $ex) {
+            dd($ex);
             throw new ItemNotCreatedException('Permission');
         }
 
@@ -126,11 +136,5 @@ class PermissionsController extends BaseController
         }
 
         return $this->sendResponse(new PermissionResource($permission), 'permission deleted successfully.');
-    }
-
-    public function getAllPermissions() {
-        $permissions = Permission::all();
-
-        return $this->sendResponse(PermissionResource::collection($permissions), 'permission listed successfully.');
     }
 }

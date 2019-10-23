@@ -16,7 +16,7 @@ use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemsNotFoundException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\TrackingResource;
+use App\Http\Resources\Tracking\TrackingResource;
 
 class Tracking_taskController extends BaseController 
 {

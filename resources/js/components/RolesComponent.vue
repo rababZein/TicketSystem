@@ -147,11 +147,11 @@ export default {
   },
   methods: {
     getResults(page = 1) {
-      this.$Progress.start();
+      this.$Progress.start();  
       this.$api.roles
         .get({ page: page })
         .then(response => {
-          this.roles = response.data;
+          this.roles = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {

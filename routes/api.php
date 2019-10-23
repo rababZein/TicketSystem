@@ -27,8 +27,29 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 });
 
 Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
+    // roles
+    Route::group(['prefix' => 'role'], function () {
+        Route::get('/list', 'RolesController@list');
+        Route::get('/getall', 'RolesController@getAll');
+        Route::resource('/roles', 'RolesController')->except('show', 'create');
+    });
+
+    // permissions
+    Route::group(['prefix' => 'permission'], function () {
+        Route::get('/permissions/list', 'PermissionsController@list');
+        Route::get('/permissions/getall', 'PermissionsController@getAll');
+        Route::resource('/permissions', 'PermissionsController')->except('show', 'create');
+    });
+
+    // users
+    Route::group(['prefix' => 'permission'], function () {
+        Route::get('/users/list', 'UsersController@list');
+        Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
+        Route::resource('/users', 'UsersController')->except('show', 'create');
+    });
+
     Route::group(['prefix' => 'project'], function () {
-        Route::get('/', 'API\ProjectController@index');
+        Route::get('/list', 'API\ProjectController@list');
         Route::post('/', 'API\ProjectController@store');
         Route::patch('/{project_id}', 'API\ProjectController@update');
         Route::delete('/{project_id}', 'API\ProjectController@destroy');
@@ -36,7 +57,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 
     Route::group(['prefix' => 'ticket'], function () {
-        Route::get('/', 'API\TicketController@index');
+        Route::get('/list', 'API\TicketController@list');
+        Route::get('/getall', 'API\TicketController@getAll');
         Route::get('/{ticket_id}', 'API\TicketController@show');
         Route::post('/', 'API\TicketController@store');
         Route::patch('/{ticket_id}', 'API\TicketController@update');
@@ -45,6 +67,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
 
     Route::group(['prefix' => 'task'], function () {
         Route::get('/', 'API\TaskController@getAll');
+        Route::get('/list', 'API\TaskController@list');
         Route::get('/{task_id}', 'API\TaskController@show');
         Route::post('/', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
@@ -53,7 +76,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 
     Route::group(['prefix' => 'receipt'], function () {
-        Route::get('/', 'API\ReceiptController@index');
+        Route::get('/', 'API\ReceiptController@getAll');
+        Route::get('/list', 'API\ReceiptController@list');
         Route::post('/', 'API\ReceiptController@store');
         Route::patch('/{receipt_id}', 'API\ReceiptController@update');
         Route::delete('/{receipt_id}', 'API\ReceiptController@destroy');
