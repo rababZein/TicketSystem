@@ -247,7 +247,7 @@ export default {
     },
     getAllRoles() {
       this.$api.roles
-        .get()
+        .getAll()
         .then(response => {
           console.log(response);
           this.roles = _.map(response.data.data, function(key, value) {

@@ -1,8 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Project;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User\UserResource;
+use App\Http\Resources\Task\TaskResource;
+use App\Http\Resources\Ticket\TicketResource;
 
 class ProjectResource extends JsonResource
 {
@@ -28,7 +31,7 @@ class ProjectResource extends JsonResource
             "owner" => UserResource::make($this->whenLoaded('owner')),
             "assigns" => UserResource::collection($this->whenLoaded('assigns')),
             "tasks" => TaskResource::collection($this->whenLoaded('tasks')),
-            "tickets" => TicketResource::collection($this->whenLoaded('tickets'))
+            "tickets" => TicketResource::collection($this->whenLoaded('tickets')),
         ];
     }
 }

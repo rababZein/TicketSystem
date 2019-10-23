@@ -4,7 +4,7 @@ export default {
     getProjects({ commit }) {
         return new Promise((resolve, reject) => {
             projects.get().then(response => {
-                commit('setProjects', response.data.data);
+                commit('setProjects', response.data.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

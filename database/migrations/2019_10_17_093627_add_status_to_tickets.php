@@ -25,7 +25,7 @@ class AddStatusToTickets extends Migration
      */
     public function down()
     {
-        Schema::table('ticket', function (Blueprint $table) {
+        Schema::table('tickets', function (Blueprint $table) {
             $table->dropColumn('status_id');
         });
     }

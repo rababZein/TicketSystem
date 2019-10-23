@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Status;
+use App\Models\User;
+use Carbon\Carbon;
 
 class addStatusSeeder extends Seeder
 {
@@ -18,8 +20,16 @@ class addStatusSeeder extends Seeder
             'in-progress',
             'done'
         ];
+
+        $admin = User::where('name', 'admin')->firstOrFail();
+
         foreach ($status as $one) {
-            Status::create(['name' => $one]);
+            Status::create([
+                'name' => $one,
+                'main' => 1,
+                'created_by' => $admin->id,
+                'created_at' => Carbon::now()
+                ]);
         }
     }
 }

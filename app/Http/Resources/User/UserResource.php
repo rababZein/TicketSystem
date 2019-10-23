@@ -1,9 +1,11 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\User;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
+use App\Http\Resources\Role\RoleResource;
+use App\Http\Resources\Project\ProjectResource;
 
 class UserResource extends JsonResource
 {

@@ -14,7 +14,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\TaskResource;
+use App\Http\Resources\Task\TaskResource;
+use App\Http\Resources\Task\TaskCollection;
 use App\Notifications\Task\TaskAssign;
 
 class TaskController extends BaseController 
@@ -53,6 +54,13 @@ class TaskController extends BaseController
     $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
 
     return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function list()
+  {
+    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**

@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace App\Http\Resources\Receipt;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\User\UserResource;
+use App\Http\Resources\Task\TaskResource;
 
-class TicketResource extends JsonResource
+class ReceiptResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,13 +20,13 @@ class TicketResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "description" => $this->description,
-            "read" => $this->read,
+            "total" => $this->total,
+            "is_paid" => $this->is_paid,
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),
             "updated_by" => new UserResource($this->whenLoaded('updater')),
-            "project" => new ProjectResource($this->whenLoaded('project')),
-            "tasks" => TaskResource::collection($this->whenLoaded('tasks'))
+            "task" => new TaskResource($this->whenLoaded('task')),
         ];
     }
 }

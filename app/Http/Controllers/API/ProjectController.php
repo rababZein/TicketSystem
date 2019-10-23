@@ -14,7 +14,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\ProjectResource;
+use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectResource;
 use App\Notifications\Project\ProjectAssign;
 
 class ProjectController extends BaseController 
@@ -38,11 +39,12 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function index()
-  {
-    $projects = Project::with('owner')->get();
 
-    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
+  public function list()
+  {
+    $projects = Project::paginate();
+
+    return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
 
 

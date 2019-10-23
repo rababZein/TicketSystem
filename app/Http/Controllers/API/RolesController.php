@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\API\BaseController;
-use App\Http\Requests\UserRequest\AddRoleRequest;
-use App\Http\Requests\UserRequest\UpdateRoleRequest;
+use App\Http\Requests\RoleRequest\AddRoleRequest;
+use App\Http\Requests\RoleRequest\UpdateRoleRequest;
 use Spatie\Permission\Models\Role;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
-use App\Http\Resources\RoleResource;
+use App\Http\Resources\Role\RoleResource;
+use App\Http\Resources\Role\RoleCollection;
+use Carbon\Carbon;
 
 class RolesController extends BaseController
 {
@@ -38,11 +40,18 @@ class RolesController extends BaseController
         return view('pages.roles.index');
     }
 
-    public function list()
+    public function getAll()
     {
-        $roles = Role::with('permissions')->paginate(10);
+        $roles = Role::with('permissions')->get();
 
         return $this->sendResponse(RoleResource::collection($roles), 'roles retrieved successfully.');
+    }
+
+    public function list()
+    {
+        $roles = Role::with('permissions')->paginate();
+
+        return $this->sendResponse(new RoleCollection($roles), 'roles retrieved successfully.');
     }
 
     /**
@@ -57,19 +66,18 @@ class RolesController extends BaseController
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
 
+        $permissionData = $input['permissions'];
+        unset($input['permissions']);
+
         // creating new role
         try {
             $role = Role::create($input);
-        } catch (\Throwable $th) {
+        } catch (Exception $ex) {
             throw new ItemNotCreatedException('Role');
         }
 
         // insert permissions for role
-        $permissionsArray = [];
-        foreach ($input['permissions'] as $permission) {
-            $permissionsArray[] = $permission['name'];
-        }
-        $role->syncPermissions($permissionsArray);
+        $role->syncPermissions($permissionData);
         
         // save role
         $role->save();
@@ -91,20 +99,20 @@ class RolesController extends BaseController
         if (is_null($role)) {
             throw new ItemNotFoundException($id);
         }
-
+ 
         $input = $request->validated();
+        // dd($input);
 
         $role->updated_at = Carbon::now();
         $role->updated_by = auth()->user()->id;
 
+        $permissionData = $input['permissions'];
+        unset($input['permissions']);
+
         $role = $role->fill($input);
         
         // insert permissions for role
-        $permissionsArray = [];
-        foreach ($input['permissions'] as $permission) {
-            $permissionsArray[] = $permission['name'];
-        }
-        $role->syncPermissions($permissionsArray);
+        $role->syncPermissions($permissionData);
 
         // save role
         try {
