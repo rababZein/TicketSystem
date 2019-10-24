@@ -82,7 +82,7 @@ class UsersController extends BaseController
         }
 
         // add role to user
-        $user->assignRole($request->roles);
+        $user->assignRole($input['roles']);
 
         // save User
         $user->save();

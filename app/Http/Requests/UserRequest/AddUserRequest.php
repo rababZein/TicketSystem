@@ -31,7 +31,10 @@ class AddUserRequest extends FormRequest
             'name' => 'required|string|max:191',
             'email' => 'required|string|email|max:191|unique:users',
             'password' => 'required|string|min:6',
-            'type' => 'string'
+            'type' => 'required|string',
+            'roles' => 'required|array',
+            'roles.*.id' => 'required|integer',
+            'roles.*.name' => 'required|string',
         ];
     }
 }
