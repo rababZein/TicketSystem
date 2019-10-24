@@ -22,7 +22,7 @@ class ViewReceiptRequest extends FormRequest
             return true;
         }
 
-        $receipt_id =$this->route('receipt_id');
+        $receipt_id =$this->route('receipt');
         $receipt = Receipt::find($receipt_id);
 
         if (!$receipt) {

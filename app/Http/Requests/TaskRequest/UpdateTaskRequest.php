@@ -22,7 +22,7 @@ class UpdateTaskRequest extends FormRequest
             return true;
         }
 
-        $task_id =$this->route('task_id');
+        $task_id =$this->route('task');
         $task = Task::find($task_id);
 
         if (!$task) {

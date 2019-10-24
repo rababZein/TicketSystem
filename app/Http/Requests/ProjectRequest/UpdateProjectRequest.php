@@ -22,7 +22,7 @@ class UpdateProjectRequest extends FormRequest
             return true;
         }
 
-        $project_id =$this->route('project_id');
+        $project_id =$this->route('project');
         $project = Project::find($project_id);
 
         if (!$project) {

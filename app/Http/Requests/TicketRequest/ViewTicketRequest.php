@@ -22,7 +22,7 @@ class ViewTicketRequest extends FormRequest
             return true;
         }
 
-        $ticket_id =$this->route('ticket_id');
+        $ticket_id =$this->route('ticket');
         $ticket = Ticket::find($ticket_id);
 
         if (!$ticket) {
