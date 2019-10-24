@@ -294,7 +294,7 @@ export default {
     getResults(page = 1) {
       this.$Progress.start();
       this.$api.tasks
-        .getAll()
+        .get()
         .then(response => {
           this.tasks = response.data.data;
           
