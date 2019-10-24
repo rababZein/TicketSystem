@@ -296,7 +296,8 @@ export default {
       this.$api.tasks
         .get()
         .then(response => {
-          this.tasks = response.data.data;
+          console.log(response);
+          this.tasks = response.data.data.data;
           
           // convert array to object for paginate
           this.tasks = Object.assign({}, this.tasks);
@@ -463,7 +464,7 @@ export default {
     this.getResponsibles();
     this.getTickets();
     this.getStatus();
-    console.log('xx',this.tickets);
+    console.log('xx',this.tasks);
   }
 };
 </script>
