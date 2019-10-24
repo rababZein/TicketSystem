@@ -8,6 +8,7 @@ use App\Http\Requests\TaskRequest\ViewTaskRequest;
 use App\Http\Requests\TaskRequest\DeleteTaskRequest;
 use App\Http\Requests\TaskRequest\ListTaskRequest;
 use App\Models\Task;
+use App\Models\User;
 use Validator;
 use Carbon\Carbon;
 use App\Http\Controllers\API\BaseController;
@@ -16,6 +17,9 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\Task\TaskResource;
+use App\Http\Resources\Task\TaskCollection;
+use App\Notifications\Task\TaskAssign;
 
 class TaskController extends BaseController 
 {
@@ -29,7 +33,7 @@ class TaskController extends BaseController
   {
       $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
-      $this->middleware('permission:task-edit', ['only' => ['update']]);
+      $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
   }
 
@@ -50,9 +54,16 @@ class TaskController extends BaseController
    */
   public function getAll(ListTaskRequest $request)
   {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible')->get();
+    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
 
-    return $this->sendResponse($tasks->toArray(), 'Tasks retrieved successfully.');
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function list()
+  {
+    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**
@@ -72,7 +83,10 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'Task created successfully.');
+    $responsible = User::find($input['responsible_id']);
+    $responsible->notify(new TaskAssign($task));
+
+    return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
   }
 
   /**
@@ -90,7 +104,7 @@ class TaskController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($task->toArray(), 'Task retrieved successfully.');    
+    return $this->sendResponse(new TaskResource($task), 'Task retrieved successfully.');    
   }
 
   /**
@@ -110,13 +124,23 @@ class TaskController extends BaseController
     $task->updated_at = Carbon::now();
     $task->updated_by = auth()->user()->id;
 
-    try {
-      $updated = $task->fill($request->validated())->save();
+    $input = $request->validated();
+    
+     try {
+      $updated = $task->fill($input)->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'task updated successfully.');    
+    if (!$updated)
+      throw new ItemNotUpdatedException('Task');
+
+    if (isset($input['responsible_id'])) {
+      $responsible = User::find($input['responsible_id']);
+      $responsible->notify(new TaskAssign($task));
+    }
+  
+    return $this->sendResponse(new TaskResource($task), 'task updated successfully.');     
   }
 
   /**
@@ -146,8 +170,31 @@ class TaskController extends BaseController
       throw new ItemNotDeletedException('Task');
     }
 
-    return $this->sendResponse($task->toArray(), 'Task deleted successfully.');
+    return $this->sendResponse(new TaskResource($task), 'Task deleted successfully.');
   }
+
+  public function changeStatus(changeStatusRequest $request, $task_id)
+  {
+    $task = Task::find($task_id);
+
+    if (is_null($task)) {
+      return ItemNotFoundException($task_id);
+    }
+
+    $input = $request->validated();
+
+    try {
+      $updated = $tracking_task->fill($input)->save();
+    } catch (\Throwable $th) {
+      throw new ItemNotUpdatedException('Task');
+    }
+
+    if (!$updated)
+      throw new ItemNotUpdatedException('Task');
+
+    return $this->sendResponse(new TaskResource($task), 'task updated successfully.');
+  }
+  
 }
 
 ?>

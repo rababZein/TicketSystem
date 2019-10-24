@@ -16,6 +16,8 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\Ticket\TicketResource;
+use App\Http\Resources\Ticket\TicketCollection;
 
 class TicketController extends BaseController 
 {
@@ -52,7 +54,14 @@ class TicketController extends BaseController
   {
     $tickets = Ticket::with('project.owner')->get();
  
-    return $this->sendResponse($tickets->toArray(), 'Tickets retrieved successfully.');
+    return $this->sendResponse(TicketResource::collection($tickets), 'Tickets retrieved successfully.');
+  }
+
+  public function list()
+  {
+    $tickets = Ticket::with('project.owner')->get();
+ 
+    return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
 
   /**
@@ -72,7 +81,7 @@ class TicketController extends BaseController
       throw new ItemNotCreatedException('Ticket');
     }
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket created successfully.');
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
     
   }
 
@@ -91,7 +100,7 @@ class TicketController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket retrieved successfully.');    
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket retrieved successfully.');    
   }
 
   /**
@@ -114,9 +123,13 @@ class TicketController extends BaseController
     try {
       $updated = $ticket->fill($request->validated())->save();
     } catch (\Throwable $th) {
-      throw new ItemNotUpdatedException('Tracking_task');
+      throw new ItemNotUpdatedException('Ticket');
     }
-    return $this->sendResponse($ticket->toArray(), 'Ticket updated successfully.');    
+    
+    if (!$updated)
+      throw new ItemNotUpdatedException('Ticket');
+
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');    
   }
 
   /**
@@ -146,7 +159,7 @@ class TicketController extends BaseController
       throw new ItemNotDeletedException('Tracking_task');
     }
 
-    return $this->sendResponse($ticket->toArray(), 'Ticket deleted successfully.');
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket deleted successfully.');
   }
   
 }

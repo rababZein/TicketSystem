@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
             addTicketPermissionsSeeder::class,
             addTaskPermissionsSeeder::class,
             addReceiptPermissionsSeeder::class,
-            addTrackTaskPermissionsSeeder::class
+            addTrackTaskPermissionsSeeder::class,
+            addStatusSeeder::class
         ]);
     }
 }

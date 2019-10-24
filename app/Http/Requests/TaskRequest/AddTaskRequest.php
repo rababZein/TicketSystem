@@ -51,6 +51,7 @@ class AddTaskRequest extends FormRequest
             'project_id' => 'required|integer|exists:projects,id',
             'ticket_id' => 'nullable|integer|exists:tickets,id',
             'responsible_id' => 'required|integer|exists:users,id',
+            'status_id' => 'nullable|integer|exists:status,id',
             'count_hours' => 'nullable|numeric|min:0'
         ];
     }

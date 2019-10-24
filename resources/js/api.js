@@ -18,6 +18,7 @@ const users = {
 // roles end point
 const roles = {
     get: params => API.get('/roles/list', { params }),
+    getAll: params => API.get('/roles/getall', { params }),
     post: params => API.post('/roles', { params }),
     put: params => API.put('/roles', { params }),
     delete: params => API.delete('/roles/' + params),
@@ -30,17 +31,19 @@ const permissions = {
 }
 // projects end point
 const projects = {
-    get: params => API.get('/projects', { params }),
+    get: params => API.get('/projects/list', { params }),
     post: params => API.post('/projects', { params }),
-    getAll: params => API.get('/project/getall'),
     getAllByOwner: params => API.get('/project/getAllByOwner/' + params),
     delete: params => API.delete('/projects/' + params),
+    show: params => API.get('/projects/' + params),
 }
 
 // tickets end point
 const tickets = {
+    get: params => API.get('/tickets/list'),
     getAll: params => API.get('/tickets/getall'),
     delete: params => API.delete('/tickets/' + params),
+    show: params => API.get('/tickets/' + params)
 }
 
 // owners end point
@@ -55,7 +58,8 @@ const responsibles = {
 
 // tasks end point
 const tasks = {
-    get: params => API.get('/tasks/' + params),
+    get: params => API.get('/tasks/list/' + params),
+    getById: params => API.get('/tasks/' + params),
     getAll: params => API.get('/tasks/getall'),
     delete: params => API.delete('/tasks/' + params),
 }
@@ -80,8 +84,14 @@ const track = {
 
 // receipts end point
 const receipts = {
+    list: params => API.get('/receipts/list'),
     getAll: params => API.get('/receipts/getall'),
     delete: params => API.delete('/receipts/' + params),
+}
+
+// status end point
+const status = {
+    getAll: params => API.get('/status/getAll'),
 }
 
 export default {
@@ -94,5 +104,6 @@ export default {
     tasks,
     responsibles,
     receipts,
-    track
+    track,
+    status
 }

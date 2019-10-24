@@ -37,9 +37,19 @@ let routes = [
         meta: { title: 'Projects' }
     },
     {
+        path: '/project/:id',
+        component: require('./components/SingleProjectComponent.vue').default,
+        meta: { title: 'Project' }
+    },
+    {
         path: '/tickets',
         component: require('./components/TicketsComponent.vue').default,
         meta: { title: 'Tickets' }
+    },
+    {
+        path: '/ticket/:id',
+        component: require('./components/SingleTicketComponent.vue').default,
+        meta: { title: 'Ticket' }
     },
     {
         path: '/tasks',

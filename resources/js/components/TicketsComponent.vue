@@ -29,7 +29,7 @@
             <tbody>
               <tr v-for="ticket in tickets" :key="ticket.id">
                 <td>{{ ticket.id }}</td>
-                <td>{{ ticket.name }}</td>
+                <td><router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link></td>
                 <td>{{ ticket.description }}</td>
                 <td>{{ ticket.project.owner.name }}</td>
                 <td>{{ ticket.project.name }}</td>
@@ -204,7 +204,7 @@ export default {
     getResults(page = 1) {
       this.$Progress.start();
       this.$api.tickets
-        .getAll()
+        .get()
         .then(response => {
           this.tickets = response.data.data;
                    

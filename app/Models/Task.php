@@ -9,7 +9,7 @@ class Task extends Model
 
     protected $table = 'tasks';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours');
+    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours', 'status_id');
 
     public function responsible()
     {
@@ -18,12 +18,12 @@ class Task extends Model
 
     public function creator()
     {
-        return $this->hasOne('App\Models\User', 'created_by');
+        return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
 
     public function updater()
     {
-        return $this->hasOne('App\Models\User', 'updated_by');
+        return $this->hasOne('App\Models\User', 'id', 'updated_by');
     }
 
     public function project()
@@ -44,6 +44,11 @@ class Task extends Model
     public function tracking_history()
     {
         return $this->hasMany('App\Models\Tracking_task');
+    }
+
+    public function task_status()
+    {
+        return $this->hasOne('App\Models\Status', 'id', 'status_id');
     }
 
 }

@@ -28,10 +28,10 @@
         <div class="icon">
           <i class="fas fa-briefcase"></i>
         </div>
-        <a href="#" class="small-box-footer">
+        <router-link :to="'/project/' + project.id" class="small-box-footer">
           More info
           <i class="fas fa-arrow-circle-right"></i>
-        </a>
+        </router-link>
       </div>
     </div>
     <div class="col-lg-3 col-6">
@@ -164,7 +164,7 @@ export default {
       this.$api.projects
         .get({ page: page })
         .then(response => {
-          this.projects = response.data.data;
+          this.projects = response.data.data.data;
           this.$Progress.finish();
         })
         .catch(error => {

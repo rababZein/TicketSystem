@@ -9,7 +9,7 @@ class Ticket extends Model
 
     protected $table = 'tickets';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'status_id', 'created_by', 'updated_by');
 
     public function project()
     {
@@ -18,17 +18,22 @@ class Ticket extends Model
 
     public function creator()
     {
-        return $this->hasOne('App\Models\User', 'created_by');
+        return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
 
-    public function updated_by()
+    public function updater()
     {
-        return $this->hasOne('App\Models\User', 'updated_by');
+        return $this->hasOne('App\Models\User', 'id', 'updated_by');
     }
 
     public function tasks()
     {
         return $this->hasMany('App\Models\Task');
+    }
+
+    public function ticket_status()
+    {
+        return $this->belongsTo('App\Models\Status');
     }
 
 }

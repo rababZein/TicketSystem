@@ -17,6 +17,9 @@ use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
+use App\Http\Resources\Project\ProjectCollection;
+use App\Http\Resources\Project\ProjectResource;
+use App\Notifications\Project\ProjectAssign;
 
 class ProjectController extends BaseController 
 {
@@ -39,11 +42,12 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function index(ListProjectRequest $request)
-  {
-    $projects = Project::all();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+  public function list(ListProjectRequest $request)
+  {
+    $projects = Project::paginate();
+
+    return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
 
 
@@ -58,7 +62,7 @@ class ProjectController extends BaseController
       $query->where('owner_id','=', $owner_id);
     })->with('owner')->get();
 
-    return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
   /**
@@ -74,7 +78,7 @@ class ProjectController extends BaseController
 
     try {
       $project = Project::create($input);
-    } catch (\Throwable $th) {
+    } catch (Exception $ex) {
       throw new ItemNotCreatedException('Project');
     }
 
@@ -83,7 +87,9 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
-    return $this->sendResponse($project->toArray(), 'Project created successfully.');
+    \Notification::send($employees, new ProjectAssign($project));
+
+    return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
 
   /**
@@ -94,13 +100,13 @@ class ProjectController extends BaseController
    */
   public function show(ViewProjectRequest $request, $id)
   {
-    $project = Project::find($id);
+    $project = Project::with('tickets')->find($id);
 
     if (is_null($project)) {
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse($project->toArray(), 'Project retrieved successfully.');    
+    return $this->sendResponse(new ProjectResource($project), 'Project retrieved successfully.');    
   }
 
   /**
@@ -123,7 +129,7 @@ class ProjectController extends BaseController
     $project->updated_by = auth()->user()->id;
 
     try {
-      $project = $project->fill($input)->save();
+      $updated = $project->fill($input)->save();
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Project');
     }
@@ -133,9 +139,14 @@ class ProjectController extends BaseController
       $employees = User::find($input['project_assign']);
       $project->assigns()->sync($employees);
       $project->assigns;
+
+      Notification::send($employees, new ProjectAssign($project));
     }
 
-    return $this->sendResponse($project->toArray(), 'Project updated successfully.');    
+    if (!$updated)
+      throw new ItemNotUpdatedException('Project');
+
+    return $this->sendResponse(new ProjectResource($project), 'Project updated successfully.');    
   }
 
   /**
@@ -172,7 +183,7 @@ class ProjectController extends BaseController
       throw new ItemNotDeletedException('Project');
     }
 
-    return $this->sendResponse($project->toArray(), 'Project deleted successfully.');
+    return $this->sendResponse(new ProjectResource($project), 'Project deleted successfully.');
   }
 
 
