@@ -71,7 +71,7 @@ class UsersController extends BaseController
     public function store(AddUserRequest $request)
     {
         $input = $request->validated();
-        $input['password'] = Hash::make($request->password);
+        $input['password'] = Hash::make($input['password']);
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
 
@@ -109,7 +109,7 @@ class UsersController extends BaseController
         $user->updated_at = Carbon::now();
         $user->updated_by = auth()->user()->id;
         if (isset($input['password'])) {
-            $user->password = Hash::make($input['password']);
+            $input['password'] = Hash::make($input['password']);
         }
 
         $user = $user->fill($input);
@@ -123,7 +123,6 @@ class UsersController extends BaseController
         try {
             $user->save();
         } catch (Exception $th) {
-            dd($th);
             throw new ItemNotUpdatedException('User');
         }
         
