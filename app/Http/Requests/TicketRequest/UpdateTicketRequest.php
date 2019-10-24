@@ -4,6 +4,7 @@ namespace App\Http\Requests\TicketRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Ticket;
+use App\Exceptions\ItemNotFoundException;
 
 class UpdateTicketRequest extends FormRequest
 {

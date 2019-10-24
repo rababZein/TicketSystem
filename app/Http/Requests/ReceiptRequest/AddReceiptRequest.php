@@ -4,6 +4,7 @@ namespace App\Http\Requests\ReceiptRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Project;
+use App\Exceptions\ItemNotFoundException;
 
 class AddReceiptRequest extends FormRequest
 {

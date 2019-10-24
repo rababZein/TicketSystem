@@ -4,6 +4,7 @@ namespace App\Http\Requests\ProjectRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Project;
+use App\Exceptions\ItemNotFoundException;
 
 class UpdateProjectRequest extends FormRequest
 {

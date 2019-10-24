@@ -4,6 +4,7 @@ namespace App\Http\Requests\TaskRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Task;
+use App\Exceptions\ItemNotFoundException;
 
 class DeleteTaskRequest extends FormRequest
 {
