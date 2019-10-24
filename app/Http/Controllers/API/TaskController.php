@@ -61,7 +61,12 @@ class TaskController extends BaseController
 
   public function list()
   {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+    if (auth()->user()->isAdmin()) {
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+    } else {
+      $taskModel = new Task();
+      $tasks = $taskModel->ownTasks(auth()->user()->id);
+    }
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }

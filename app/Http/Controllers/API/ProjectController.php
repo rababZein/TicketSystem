@@ -45,7 +45,12 @@ class ProjectController extends BaseController
 
   public function list(ListProjectRequest $request)
   {
-    $projects = Project::paginate();
+    if (auth()->user()->isAdmin()) {
+      $projects = Project::paginate();
+    } else {
+      $projectModel = new Project();
+      $projects = $projectModel->ownProjects(auth()->user()->id);
+    }
 
     return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }

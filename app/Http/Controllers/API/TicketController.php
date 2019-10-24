@@ -59,7 +59,12 @@ class TicketController extends BaseController
 
   public function list()
   {
-    $tickets = Ticket::with('project.owner')->get();
+    if (auth()->user()->isAdmin()) {
+      $tickets = Ticket::with('project.owner')->paginate();
+    } else {
+      $ticketModel = new Ticket();
+      $tickets = $ticketModel->ownTickets(auth()->user()->id);
+    }
  
     return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
