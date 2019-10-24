@@ -53,7 +53,8 @@ class Task extends Model
 
     public function ownTasks($id)
     {
-        return Task::select('tasks.*')
+        return Task::with('project.owner', 'ticket', 'responsible', 'task_status')
+                    ->select('tasks.*')
                     ->where('tasks.responsible_id', $id)
                     ->orWhere('tasks.created_by', $id)
                     ->paginate();
