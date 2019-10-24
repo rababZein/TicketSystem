@@ -104,18 +104,17 @@ class RolesController extends BaseController
         }
  
         $input = $request->validated();
-        // dd($input);
 
         $role->updated_at = Carbon::now();
         $role->updated_by = auth()->user()->id;
 
-        $permissionData = $input['permissions'];
+        $permissionIds = array_column($input['permissions'], 'id');
         unset($input['permissions']);
 
         $role = $role->fill($input);
         
         // insert permissions for role
-        $role->syncPermissions($permissionData);
+        $role->syncPermissions($permissionIds);
 
         // save role
         try {
