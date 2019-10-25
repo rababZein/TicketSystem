@@ -24,7 +24,7 @@ export default {
     editProject({ commit }, project) {
         return new Promise((resolve, reject) => {
             projects.editProject(project).then(response => {
-                commit('editProject', response.data.data);
+                // commit('editProject', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

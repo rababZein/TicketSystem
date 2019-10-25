@@ -1,6 +1,6 @@
 export default {
-    setProjects(state, Projects) {
-        state.Projects = Projects;
+    setProjects(state, projects) {
+        state.items = projects;
     },
     createProject(state, project) {
         const projectObj = {

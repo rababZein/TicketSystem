@@ -1,6 +1,6 @@
 export default {
     activeProjects(state) {
-        return state.Projects;
+        return state.items;
     },
     owners(state) {
         return state.owners;

@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import store from "../../store/index";
 import { mapGetters, mapState } from "vuex";
 
 export default {
@@ -167,7 +166,7 @@ export default {
   methods: {
     getResults() {
       this.$Progress.start();
-      store
+      this.$store
         .dispatch("getProjects")
         .then(() => {
           this.$Progress.finish();
@@ -178,7 +177,7 @@ export default {
     },
     getOwners() {
       this.$Progress.start();
-      store
+      this.$store
         .dispatch("getOwners")
         .then(() => {
           this.$Progress.finish();
@@ -201,7 +200,7 @@ export default {
     },
     createProject() {
       this.$Progress.start();
-      store
+      this.$store
         .dispatch("createProject", this.form)
         .then(() => {
           $("#Modal").modal("hide");
@@ -220,7 +219,7 @@ export default {
     },
     editProject(id) {
       this.$Progress.start();
-      store
+      this.$store
         .dispatch("editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
@@ -233,6 +232,7 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
+          console.log(error);
           if (error.response) {
             this.form.errors.errors = error.response.data.errors;
           }
@@ -250,7 +250,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          store
+          this.$store
             .dispatch("deleteProject", id)
             .then(response => {
               this.$Progress.finish();
