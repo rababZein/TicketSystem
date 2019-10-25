@@ -40,9 +40,9 @@ class ProjectController extends BaseController
    * @return Response
    */
 
-  public function list()
+  public function index()
   {
-    $projects = Project::paginate();
+    $projects = Project::with('owner')->paginate();
 
     return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
