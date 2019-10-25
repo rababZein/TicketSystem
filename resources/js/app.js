@@ -8,7 +8,7 @@ require('./bootstrap');
 require('admin-lte');
 
 window.Vue = require('vue');
-import store from './store';
+import store from './store/index';
 import {Form, HasError, AlertError} from 'vform';
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar';

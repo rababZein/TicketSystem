@@ -43,7 +43,7 @@ let routes = [
     },
     {
         path: '/tickets',
-        component: require('./components/TicketsComponent.vue').default,
+        component: require('./pages/TicketPage/TicketsComponent.vue').default,
         meta: { title: 'Tickets' }
     },
     {

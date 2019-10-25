@@ -29,22 +29,6 @@ const permissions = {
     getAll: params => API.get('/permissions/getall', { params }),
     delete: params => API.delete('/permissions/' + params),
 }
-// projects end point
-const projects = {
-    get: params => API.get('/projects/list', { params }),
-    post: params => API.post('/projects', { params }),
-    getAllByOwner: params => API.get('/project/getAllByOwner/' + params),
-    delete: params => API.delete('/projects/' + params),
-    show: params => API.get('/projects/' + params),
-}
-
-// tickets end point
-const tickets = {
-    get: params => API.get('/tickets/list'),
-    getAll: params => API.get('/tickets/getall'),
-    delete: params => API.delete('/tickets/' + params),
-    show: params => API.get('/tickets/' + params)
-}
 
 // owners end point
 const owners = {
@@ -98,9 +82,7 @@ export default {
     users,
     roles,
     permissions,
-    tickets,
     owners,
-    projects,
     tasks,
     responsibles,
     receipts,

@@ -164,6 +164,8 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex";
+
 export default {
   data() {
     return {
@@ -179,9 +181,7 @@ export default {
         },
         project_id: ""
       }),
-      tickets: {},
       projects: [],
-      owners: []
     };
   },
   methods: {
@@ -203,34 +203,36 @@ export default {
     },
     getResults(page = 1) {
       this.$Progress.start();
-      this.$api.tickets
-        .get()
-        .then(response => {
-          this.tickets = response.data.data;
-                   
-          // convert array to object for paginate
-          this.tickets = Object.assign({}, this.tickets);
-
+      this.$store
+        .dispatch("getTickets")
+        .then(() => {
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
+      
     },
     getOwners() {
-      this.$api.owners
-        .getAll()
-        .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
+      this.$Progress.start();
+      this.$store
+        .dispatch("getOwners")
+        .then(() => {
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
     },
-    getProjects(owner_id) {
+    getProjectsByOwner(owner_id) {
+      this.$store
+        .dispatch("getProjectsByOwner")
+        .then(() => {
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
       this.$api.projects
         .getAllByOwner(owner_id)
         .then(response => {
@@ -325,7 +327,12 @@ export default {
     this.getResults();
     this.getOwners();
     // this.getProjects();
-    console.log(this.owners);
+  },
+  computed: {
+    ...mapGetters({
+      tickets: "activeTickets",
+      owners: "ticketsOwners"
+    })
   }
 };
 </script>
