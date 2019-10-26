@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\TrackingRequest\AddTrackingRequest;
 use App\Http\Requests\TrackingRequest\EditTrackingRequest;
 use App\Http\Requests\TrackingRequest\DeleteTrackingRequest;
+use App\Http\Requests\TrackingRequest\ListTrackingRequest;
 use App\Models\Tracking_task;
 use App\Models\Task;
 use Validator;
@@ -203,7 +204,7 @@ public function checkTrackingInProgress($task_id)
    * @param  int  $id
    * @return Response
    */
-  public function getHistory($task_id)
+  public function getHistory(ListTrackingRequest $request, $task_id)
   {
     $task = Task::find($task_id);
     if (!$task)

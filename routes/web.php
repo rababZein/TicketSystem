@@ -59,8 +59,9 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // task
     Route::get('/tasks/list', 'TaskController@list');
     Route::get('/tasks/getall', 'TaskController@getAll');
-    Route::resource('/tasks', 'TaskController')->except('create');
+    Route::post('/tasks/{project_id}', 'TaskController@store');
     Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
+    Route::resource('/tasks', 'TaskController')->except('create', 'store');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');
@@ -68,7 +69,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // receipt
     Route::get('/receipts/list', 'ReceiptController@list');
     Route::get('/receipts/getall', 'ReceiptController@getAll');
-    Route::resource('/receipts', 'ReceiptController')->except('create');
+    Route::resource('/receipts', 'ReceiptController')->except('create'. 'store');
+    Route::post('/receipts/{project_id}', 'ReceiptController@store');
 
     // status
     Route::get('/status/getAll', 'StatusController@getAll');

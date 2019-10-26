@@ -206,7 +206,7 @@ export default {
       this.$api.tickets
         .get()
         .then(response => {
-          this.tickets = response.data.data;
+          this.tickets = response.data.data.data;
                    
           // convert array to object for paginate
           this.tickets = Object.assign({}, this.tickets);

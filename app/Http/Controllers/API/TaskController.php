@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
+use App\Http\Requests\TaskRequest\ViewTaskRequest;
+use App\Http\Requests\TaskRequest\DeleteTaskRequest;
+use App\Http\Requests\TaskRequest\ListTaskRequest;
 use App\Models\Task;
 use App\Models\User;
 use Validator;
@@ -28,7 +31,7 @@ class TaskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
+      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
@@ -39,7 +42,7 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function index()
+  public function index(ListTaskRequest $request)
   {
     return view('pages.tasks.index');
   }
@@ -49,7 +52,7 @@ class TaskController extends BaseController
    *
    * @return Response
    */
-  public function getAll()
+  public function getAll(ListTaskRequest $request)
   {
     $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
 
@@ -58,7 +61,12 @@ class TaskController extends BaseController
 
   public function list()
   {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+    if (auth()->user()->isAdmin()) {
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+    } else {
+      $taskModel = new Task();
+      $tasks = $taskModel->ownTasks(auth()->user()->id);
+    }
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
@@ -92,7 +100,7 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewTaskRequest $request, $id)
   {
     $task = Task::with('project.owner', 'ticket', 'responsible')->get();
     $task = $task->find($id);
@@ -146,7 +154,7 @@ class TaskController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteTaskRequest $request, $id)
   {
     $task = Task::find($id);
 

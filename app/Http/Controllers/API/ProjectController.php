@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\ProjectRequest\AddProjectRequest;
 use App\Http\Requests\ProjectRequest\UpdateProjectRequest;
+use App\Http\Requests\ProjectRequest\ViewProjectRequest;
+use App\Http\Requests\ProjectRequest\DeleteProjectRequest;
+use App\Http\Requests\ProjectRequest\ListProjectRequest;
 use App\Models\Project;
 use App\Models\User;
 use Validator;
@@ -28,7 +31,7 @@ class ProjectController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index']]);
+      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index', 'getAllByOwner']]);
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
@@ -40,9 +43,14 @@ class ProjectController extends BaseController
    * @return Response
    */
 
-  public function list()
+  public function list(ListProjectRequest $request)
   {
-    $projects = Project::paginate();
+    if (auth()->user()->isAdmin()) {
+      $projects = Project::paginate();
+    } else {
+      $projectModel = new Project();
+      $projects = $projectModel->ownProjects(auth()->user()->id);
+    }
 
     return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
@@ -53,7 +61,7 @@ class ProjectController extends BaseController
    *
    * @return Response
    */
-  public function getAllByOwner($owner_id)
+  public function getAllByOwner(ListProjectRequest $request, $owner_id)
   {
     $projects = Project::whereHas('owner', function ($query)  use ($owner_id) {
       $query->where('owner_id','=', $owner_id);
@@ -95,7 +103,7 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show($id)
+  public function show(ViewProjectRequest $request, $id)
   {
     $project = Project::with('tickets')->find($id);
 
@@ -152,7 +160,7 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy($id)
+  public function destroy(DeleteProjectRequest $request, $id)
   {
     $project = Project::find($id);
 

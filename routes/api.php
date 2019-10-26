@@ -69,7 +69,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::get('/', 'API\TaskController@getAll');
         Route::get('/list', 'API\TaskController@list');
         Route::get('/{task_id}', 'API\TaskController@show');
-        Route::post('/', 'API\TaskController@store');
+        Route::post('/{project_id}', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
         Route::patch('/changeStatus/{task_id}', 'API\TaskController@changeStatus');
         Route::delete('/{task_id}', 'API\TaskController@destroy');
@@ -78,7 +78,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     Route::group(['prefix' => 'receipt'], function () {
         Route::get('/', 'API\ReceiptController@getAll');
         Route::get('/list', 'API\ReceiptController@list');
-        Route::post('/', 'API\ReceiptController@store');
+        Route::post('/{project_id}', 'API\ReceiptController@store');
         Route::patch('/{receipt_id}', 'API\ReceiptController@update');
         Route::delete('/{receipt_id}', 'API\ReceiptController@destroy');
     });

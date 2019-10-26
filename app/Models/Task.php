@@ -51,4 +51,14 @@ class Task extends Model
         return $this->hasOne('App\Models\Status', 'id', 'status_id');
     }
 
+    public function ownTasks($id)
+    {
+        return Task::with('project.owner', 'ticket', 'responsible', 'task_status')
+                    ->select('tasks.*')
+                    ->where('tasks.responsible_id', $id)
+                    ->orWhere('tasks.created_by', $id)
+                    ->paginate();
+
+    }
+
 }

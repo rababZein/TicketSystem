@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\TaskRequest;
+namespace App\Http\Requests\ProjectRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Project;
 use App\Exceptions\ItemNotFoundException;
 
-class AddTaskRequest extends FormRequest
+class ViewProjectRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,27 +15,34 @@ class AddTaskRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can add new task?
+        // who view ?
 
         // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
 
-        $project_id =$this->route('project_id');
+        $project_id =$this->route('project');
         $project = Project::find($project_id);
 
         if (!$project) {
             throw new ItemNotFoundException($project_id);
         }
 
-        //2- people who is assign to this projects
+
+        // 2- creator && owner
+        if ($project->created_by == auth()->user()->id
+            || $project->owner->id == auth()->user()->id) {
+            return true;
+        }
+
+        // 3- assigns
         foreach ($project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -47,13 +54,7 @@ class AddTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'project_id' => 'required|integer|exists:projects,id',
-            'ticket_id' => 'nullable|integer|exists:tickets,id',
-            'responsible_id' => 'required|integer|exists:users,id',
-            'status_id' => 'nullable|integer|exists:status,id',
-            'count_hours' => 'nullable|numeric|min:0'
+            //
         ];
     }
 }

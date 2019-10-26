@@ -13,7 +13,11 @@ class UpdateRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -28,7 +32,7 @@ class UpdateRoleRequest extends FormRequest
         return [
             'name' => 'string|max:191|unique:roles,name,'.$id,
             'permissions' => 'array',
-            'permissions.*.name' => 'string'
+            'permissions.*.id' => 'integer',
         ];
     }
 }

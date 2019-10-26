@@ -3,10 +3,10 @@
 namespace App\Http\Requests\ReceiptRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Project;
+use App\Models\Receipt;
 use App\Exceptions\ItemNotFoundException;
 
-class AddReceiptRequest extends FormRequest
+class ViewReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,22 +15,27 @@ class AddReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can create a receipt
+        // who can view ?
 
         // 1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
 
-        $project_id =$this->route('project_id');
-        $project = Project::find($project_id);
+        $receipt_id =$this->route('receipt');
+        $receipt = Receipt::find($receipt_id);
 
-        if (!$project) {
-            throw new ItemNotFoundException($project_id);
+        if (!$receipt) {
+            throw new ItemNotFoundException($receipt_id);
         }
 
-        // 2- assigns
-        foreach ($project->assigns as $assign) {
+        // 2- creaor
+        if ($receipt->created_by == auth()->user()->id) {
+            return true;
+        }
+
+        // 3- assigns
+        foreach ($receipt->task->project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;
             }
@@ -47,11 +52,7 @@ class AddReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'task_id' => 'required|integer|exists:tasks,id',
-            'total' => 'numeric|min:0',
-            'is_paid' => 'boolean',
+            //
         ];
     }
 }

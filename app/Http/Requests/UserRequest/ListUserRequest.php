@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\RoleRequest;
+namespace App\Http\Requests\UserRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AddRoleRequest extends FormRequest
+class ListUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,11 +13,7 @@ class AddRoleRequest extends FormRequest
      */
     public function authorize()
     {
-        if (auth()->user()->isAdmin()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     /**
@@ -28,9 +24,7 @@ class AddRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|max:191|unique:roles,name',
-            'permissions' => 'required|array',
-            'permissions.*.name' => 'required|string'
+            //
         ];
     }
 }
