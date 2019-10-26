@@ -46,7 +46,7 @@ class ProjectController extends BaseController
   public function index(ListProjectRequest $request)
   {
     if (auth()->user()->isAdmin()) {
-      $projects = Project::paginate();
+      $projects = Project::with('owner')->paginate();
     } else {
       $projectModel = new Project();
       $projects = $projectModel->ownProjects(auth()->user()->id);
