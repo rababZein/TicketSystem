@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\TicketRequest;
+namespace App\Http\Requests\TaskRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Project;
+use App\Models\Task;
 use App\Exceptions\ItemNotFoundException;
 
-class AddTicketRequest extends FormRequest
+class ViewTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,27 +15,29 @@ class AddTicketRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can add ticket ??
+        // who can view tasks
 
-        // 1- admin
+        //1- admin
         if (auth()->user()->isAdmin()) {
             return true;
         }
 
-        $project_id =$this->route('project_id');
-        $project = Project::find($project_id);
+        $task_id =$this->route('task');
+        $task = Task::find($task_id);
 
-        if (!$project) {
-            throw new ItemNotFoundException($project_id);
+        if (!$task) {
+            throw new ItemNotFoundException($task_id);
         }
-
-        // 2- project owner
-        if ($project->owner->id == auth()->user()->id) {
+        
+        // 2- responsible && created by && project owner
+        if ($task->responsible->id == auth()->user()->id 
+            || $task->created_by == auth()->user()->id
+            || $task->project->owner->id == auth()->user()->id ) {
             return true;
         }
 
-        // 3- people who are assign to project
-        foreach ($project->assigns as $assign) {
+        // 3- assign to project
+        foreach ($task->project->assigns as $assign) {
             if ($assign->id == auth()->user()->id) {
                 return true;
             }
@@ -52,9 +54,7 @@ class AddTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'description' => 'required|string',
-            'project_id' => 'required|integer|exists:projects,id',
+            //
         ];
     }
 }

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Requests\UserRequest\AddUserRequest;
 use App\Http\Requests\UserRequest\UpdateUserRequest;
+use App\Http\Requests\UserRequest\ViewUserRequest;
+use App\Http\Requests\UserRequest\DeleteUserRequest;
+use App\Http\Requests\UserRequest\ListUserRequest;
 use App\Http\Controllers\API\BaseController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +28,7 @@ class UsersController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'list']]);
+        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'list', 'getClients', 'getAllResponsibles']]);
         $this->middleware('permission:user-create', ['only' => ['store']]);
         $this->middleware('permission:user-edit', ['only' => ['update']]);
         $this->middleware('permission:user-delete', ['only' => ['destroy']]);
@@ -36,12 +39,12 @@ class UsersController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ListUserRequest $request)
     {
         return view('pages.users.index');
     }
 
-    public function list()
+    public function list(ListUserRequest $request)
     {
         $users = UserResource::collection(User::with('roles')->paginate(10));
         return $this->sendResponse(UserResource::collection($users), 'users retrieved successfully.');
@@ -52,7 +55,7 @@ class UsersController extends BaseController
      *
      * @return Response
      */
-    public function getClients()
+    public function getClients(ListUserRequest $request)
     {
         $clients = User::where('type', 'client')->get();
 
@@ -68,7 +71,7 @@ class UsersController extends BaseController
     public function store(AddUserRequest $request)
     {
         $input = $request->validated();
-        $input['password'] = Hash::make($request->password);
+        $input['password'] = Hash::make($input['password']);
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
 
@@ -79,7 +82,7 @@ class UsersController extends BaseController
         }
 
         // add role to user
-        $user->assignRole($request->roles);
+        $user->assignRole($input['roles']);
 
         // save User
         $user->save();
@@ -106,7 +109,7 @@ class UsersController extends BaseController
         $user->updated_at = Carbon::now();
         $user->updated_by = auth()->user()->id;
         if (isset($input['password'])) {
-            $user->password = Hash::make($input['password']);
+            $input['password'] = Hash::make($input['password']);
         }
 
         $user = $user->fill($input);
@@ -120,7 +123,6 @@ class UsersController extends BaseController
         try {
             $user->save();
         } catch (Exception $th) {
-            dd($th);
             throw new ItemNotUpdatedException('User');
         }
         
@@ -133,7 +135,7 @@ class UsersController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteUserRequest $request, $id)
     {
         // delete user
         $user = User::find($id);
@@ -154,7 +156,7 @@ class UsersController extends BaseController
 
     }
 
-    public function getAllResponsibles()
+    public function getAllResponsibles(ListUserRequest $request)
     {
         $users = User::where('type','regular-user')->get();
 

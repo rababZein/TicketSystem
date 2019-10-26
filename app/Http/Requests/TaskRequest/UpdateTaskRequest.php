@@ -3,6 +3,8 @@
 namespace App\Http\Requests\TaskRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Task;
+use App\Exceptions\ItemNotFoundException;
 
 class UpdateTaskRequest extends FormRequest
 {
@@ -13,7 +15,26 @@ class UpdateTaskRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        // who can update task
+
+        // 1- admin
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
+
+        $task_id =$this->route('task');
+        $task = Task::find($task_id);
+
+        if (!$task) {
+            throw new ItemNotFoundException($task_id);
+        }
+        
+        // 2- created by
+        if ($task->created_by == auth()->user()->id) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**

@@ -13,7 +13,11 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -26,10 +30,13 @@ class UpdateUserRequest extends FormRequest
         $id = $this->route('user');
         
         return [
-            'name' => 'required|string|max:191',
-            'email' => 'required|string|email|max:191|unique:users,email,'.$id,
+            'name' => 'string|max:191',
+            'email' => 'string|email|max:191|unique:users,email,'.$id,
             'password' => 'sometimes|string|min:6',
-            'type' => 'string'
+            'type' => 'string',
+            'roles' => 'array',
+            'roles.*.id' => 'integer',
+            'roles.*.name' => 'string',
         ];
     }
 }

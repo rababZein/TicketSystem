@@ -36,4 +36,16 @@ class Ticket extends Model
         return $this->belongsTo('App\Models\Status');
     }
 
+    public function ownTickets($id)
+    {
+        return Ticket::with('project.owner')
+                    ->select('tickets.*')
+                    ->join('projects', 'tickets.project_id', 'projects.id')
+                    ->join('project_assigns', 'project_assigns.project_id', '=', 'projects.id')
+                    ->where('project_assigns.assign_to', $id)
+                    ->orWhere('tickets.created_by', $id)
+                    ->paginate();
+
+    }
+
 }

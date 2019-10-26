@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\TrackingRequest;
+namespace App\Http\Requests\TaskRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Task;
 use App\Exceptions\ItemNotFoundException;
 
-class AddTrackingRequest extends FormRequest
+class DeleteTaskRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,19 +15,25 @@ class AddTrackingRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can start task tracking?
-        $task_id =$this->route('task_id');
+        // who can delete task ??
+
+        // 1- admin
+        if (auth()->user()->isAdmin()) {
+            return true;
+        }
+
+        $task_id =$this->route('task');
         $task = Task::find($task_id);
 
         if (!$task) {
             throw new ItemNotFoundException($task_id);
         }
         
-        // only responsible
-        if ($task->responsible->id == auth()->user()->id) {
+        // 2- created by
+        if ($task->created_by == auth()->user()->id) {
             return true;
         }
-
+        
         return false;
     }
 
@@ -38,13 +44,8 @@ class AddTrackingRequest extends FormRequest
      */
     public function rules()
     {
-        $task_id =$this->route('task_id');
-
         return [
-            'comment' => 'required|string',
-            'start_at' => 'required|date_format:Y-m-d H:i:s',
-            'end_at' => 'date_format:Y-m-d H:i:s',
-            'task_id' => 'required|integer|exists:tasks,id|in:'.$task_id
+            //
         ];
     }
 }

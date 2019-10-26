@@ -6,7 +6,7 @@ export default {
     getTickets({ commit }) {
         return new Promise((resolve, reject) => {
             tickets.get().then(response => {
-                commit('setTickets', response.data.data);
+                commit('setTickets', response.data.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Requests\RoleRequest\AddRoleRequest;
 use App\Http\Requests\RoleRequest\UpdateRoleRequest;
+use App\Http\Requests\RoleRequest\DeleteRoleRequest;
+use App\Http\Requests\RoleRequest\ViewRoleRequest;
+use App\Http\Requests\RoleRequest\ListRoleRequest;
 use Spatie\Permission\Models\Role;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
@@ -35,19 +38,19 @@ class RolesController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ListRoleRequest $request)
     {
         return view('pages.roles.index');
     }
 
-    public function getAll()
+    public function getAll(ListRoleRequest $request)
     {
         $roles = Role::with('permissions')->get();
 
         return $this->sendResponse(RoleResource::collection($roles), 'roles retrieved successfully.');
     }
 
-    public function list()
+    public function list(ListRoleRequest $request)
     {
         $roles = Role::with('permissions')->paginate();
 
@@ -101,18 +104,17 @@ class RolesController extends BaseController
         }
  
         $input = $request->validated();
-        // dd($input);
 
         $role->updated_at = Carbon::now();
         $role->updated_by = auth()->user()->id;
 
-        $permissionData = $input['permissions'];
+        $permissionIds = array_column($input['permissions'], 'id');
         unset($input['permissions']);
 
         $role = $role->fill($input);
         
         // insert permissions for role
-        $role->syncPermissions($permissionData);
+        $role->syncPermissions($permissionIds);
 
         // save role
         try {
@@ -130,7 +132,7 @@ class RolesController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeleteRoleRequest $request, $id)
     {
         // find the role
         $role = Role::find($id);

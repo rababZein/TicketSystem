@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Task;
 use App\Exceptions\ItemNotFoundException;
 
-class AddTrackingRequest extends FormRequest
+class ListTrackingRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,7 @@ class AddTrackingRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can start task tracking?
+        // who can list ?
         $task_id =$this->route('task_id');
         $task = Task::find($task_id);
 
@@ -23,8 +23,8 @@ class AddTrackingRequest extends FormRequest
             throw new ItemNotFoundException($task_id);
         }
         
-        // only responsible
-        if ($task->responsible->id == auth()->user()->id) {
+        // admin && responsible
+        if ($task->responsible->id == auth()->user()->id || auth()->user()->isAdmin()) {
             return true;
         }
 
@@ -41,10 +41,11 @@ class AddTrackingRequest extends FormRequest
         $task_id =$this->route('task_id');
 
         return [
-            'comment' => 'required|string',
-            'start_at' => 'required|date_format:Y-m-d H:i:s',
+            'comment' => 'string',
+            'start_at' => 'date_format:Y-m-d H:i:s',
             'end_at' => 'date_format:Y-m-d H:i:s',
-            'task_id' => 'required|integer|exists:tasks,id|in:'.$task_id
+            'task_id' => 'integer|exists:tasks,id|in:'.$task_id,
+            'count_time' => 'numeric|min:0'
         ];
     }
 }

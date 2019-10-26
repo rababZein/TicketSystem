@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\API\BaseController;
 use App\Http\Requests\PermissionRequest\AddPermissionRequest;
 use App\Http\Requests\PermissionRequest\UpdatePermissionRequest;
+use App\Http\Requests\PermissionRequest\DeletePermissionRequest;
+use App\Http\Requests\PermissionRequest\ViewPermissionRequest;
+use App\Http\Requests\PermissionRequest\ListPermissionRequest;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Exceptions\ItemNotCreatedException;
@@ -14,6 +17,7 @@ use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Permission\PermissionCollection;
 use App\Http\Resources\Permission\PermissionResource;
 use Carbon\Carbon;
+
 
 class PermissionsController extends BaseController
 {
@@ -36,19 +40,19 @@ class PermissionsController extends BaseController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ListPermissionRequest $request)
     {
         return view('pages.permissions.index');
     }
 
-    public function getAll()
+    public function getAll(ListPermissionRequest $request)
     {
         $permissions = Permission::all();
 
         return $this->sendResponse(PermissionResource::collection($permissions), 'Permissions retrieved successfully.');
     }
 
-    public function list()
+    public function list(ListPermissionRequest $request)
     {
         $permissions = Permission::paginate();
 
@@ -114,7 +118,7 @@ class PermissionsController extends BaseController
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(DeletePermissionRequest $request, $id)
     {
         // delete permission
         $permission = Permission::find($id);

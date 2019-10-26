@@ -42,7 +42,7 @@ const responsibles = {
 
 // tasks end point
 const tasks = {
-    get: params => API.get('/tasks/list/' + params),
+    get: params => API.get('/tasks/list/'),
     getById: params => API.get('/tasks/' + params),
     getAll: params => API.get('/tasks/getall'),
     delete: params => API.delete('/tasks/' + params),

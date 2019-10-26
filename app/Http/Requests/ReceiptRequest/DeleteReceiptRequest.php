@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Receipt;
 use App\Exceptions\ItemNotFoundException;
 
-class UpdateReceiptRequest extends FormRequest
+class DeleteReceiptRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,7 @@ class UpdateReceiptRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can update ??
+        // who can delete receipt ?
 
         // 1- admin
         if (auth()->user()->isAdmin()) {
@@ -29,7 +29,7 @@ class UpdateReceiptRequest extends FormRequest
             throw new ItemNotFoundException($receipt_id);
         }
 
-        // 2- creaor
+        // 2- creator
         if ($receipt->created_by == auth()->user()->id) {
             return true;
         }
@@ -45,11 +45,7 @@ class UpdateReceiptRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'description' => 'string',
-            'task_id' => 'integer|exists:tasks,id',
-            'total' => 'numeric|min:0',
-            'is_paid' => 'boolean',
+            //
         ];
     }
 }

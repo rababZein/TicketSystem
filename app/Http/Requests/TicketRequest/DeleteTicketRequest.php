@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Ticket;
 use App\Exceptions\ItemNotFoundException;
 
-class UpdateTicketRequest extends FormRequest
+class DeleteTicketRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,7 @@ class UpdateTicketRequest extends FormRequest
      */
     public function authorize()
     {
-        // who can update ticket??
+        // who can delete ticket ??
 
         // 1- admin
         if (auth()->user()->isAdmin()) {
@@ -45,9 +45,7 @@ class UpdateTicketRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
-            'description' => 'string',
-            'project_id' => 'integer|exists:projects,id',
+            //
         ];
     }
 }
