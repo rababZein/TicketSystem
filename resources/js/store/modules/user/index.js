@@ -2,7 +2,7 @@ import users from '../../../api/users';
 
 export default {
     state: {
-        users: {},
+        items: {},
     },
     // getters: {
     //     activeOwners(state) {

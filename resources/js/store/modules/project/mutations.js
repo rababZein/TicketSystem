@@ -13,16 +13,17 @@ export default {
             budget_hours: project.budget_hours
         };
         
-        state.Projects.push(projectObj);
+        state.items.push(projectObj);
+
     },
     editProject(state, project) {
-        const projectObj = state.Projects.find(Projects => Projects.id == project.id);
+        const projectObj = state.items.find(items => items.id == project.id);
         Vue.set(projectObj, 'name', project.name);
     },
     deleteProject(state, project) {
-        state.Projects = state.Projects.filter(Projects => Projects.id != project.id);
+        state.items = state.items.filter(items => items.id != project.id);
     },
-    setOwners(state, owners) {
+    setProjectsOwners(state, owners) {
         state.owners = _.map(owners, function (key, value) {
             return { id: key.id, name: key.name };
         });;

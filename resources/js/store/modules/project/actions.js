@@ -44,7 +44,7 @@ export default {
     getOwners({ commit }){
         return new Promise((resolve, reject) => {
             projects.getOwners().then(response => {
-                commit('setOwners', response.data.data)
+                commit('setProjectsOwners', response.data.data)
                 resolve(response);
             })
             .catch(error => {

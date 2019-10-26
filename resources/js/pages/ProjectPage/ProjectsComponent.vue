@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapGetters, mapState, mapActions } from "vuex";
 
 export default {
   data() {
@@ -164,10 +164,10 @@ export default {
     };
   },
   methods: {
-    getResults() {
+    getProjects() {
       this.$Progress.start();
       this.$store
-        .dispatch("getProjects")
+        .dispatch("project/getProjects")
         .then(() => {
           this.$Progress.finish();
         })
@@ -178,7 +178,7 @@ export default {
     getOwners() {
       this.$Progress.start();
       this.$store
-        .dispatch("getOwners")
+        .dispatch("project/getOwners")
         .then(() => {
           this.$Progress.finish();
         })
@@ -201,8 +201,8 @@ export default {
     createProject() {
       this.$Progress.start();
       this.$store
-        .dispatch("createProject", this.form)
-        .then(() => {
+        .dispatch("project/createProject", this.form)
+        .then((response) => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
           Toast.fire({
@@ -220,11 +220,11 @@ export default {
     editProject(id) {
       this.$Progress.start();
       this.$store
-        .dispatch("editProject", this.form)
+        .dispatch("project/editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
+          this.getProjects();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -251,10 +251,10 @@ export default {
         if (result.value) {
           this.$Progress.start();
           this.$store
-            .dispatch("deleteProject", id)
+            .dispatch("project/deleteProject", id)
             .then(response => {
               this.$Progress.finish();
-              this.getResults();
+              this.getProjects();
               Swal.fire("Deleted!", response.data.message, "success");
             })
             .catch(error => {
@@ -269,13 +269,13 @@ export default {
     }
   },
   mounted() {
-    this.getResults();
+    this.getProjects();
     this.getOwners();
   },
   computed: {
-    ...mapGetters({
+    ...mapGetters("project", {
       projects: "activeProjects",
-      owners: "owners"
+      owners: "projectsOwners"
     })
   }
 };
