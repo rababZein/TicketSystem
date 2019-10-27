@@ -52,8 +52,6 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/tracking/history/{task_id}', 'Tracking_taskController@getHistory');
 
     // tickets
-    Route::get('/tickets/list', 'TicketController@list');
-    Route::get('/tickets/getall', 'TicketController@getAll');
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
