@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Http\Controllers\API;
 
@@ -19,7 +19,7 @@ use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Http\Resources\Ticket\TicketCollection;
 
-class TicketController extends BaseController 
+class TicketController extends BaseController
 {
 
   /**
@@ -29,20 +29,10 @@ class TicketController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index', 'getAll']]);
-      $this->middleware('permission:ticket-create', ['only' => ['store']]);
-      $this->middleware('permission:ticket-edit', ['only' => ['update']]);
-      $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
-  }
-
-  /**
-   * Display a listing of the resource view.
-   *
-   * @return Response
-   */
-  public function index(ListTicketRequest $request)
-  {
-    return view('pages.tickets.index');
+    $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index', 'show']]);
+    $this->middleware('permission:ticket-create', ['only' => ['store']]);
+    $this->middleware('permission:ticket-edit', ['only' => ['update']]);
+    $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
   }
 
   /**
@@ -50,14 +40,7 @@ class TicketController extends BaseController
    *
    * @return Response
    */
-  public function getAll(ListTicketRequest $request)
-  {
-    $tickets = Ticket::with('project.owner')->get();
- 
-    return $this->sendResponse(TicketResource::collection($tickets), 'Tickets retrieved successfully.');
-  }
-
-  public function list()
+  public function index(ListTicketRequest $request)
   {
     if (auth()->user()->isAdmin()) {
       $tickets = Ticket::with('project.owner')->paginate();
@@ -65,7 +48,7 @@ class TicketController extends BaseController
       $ticketModel = new Ticket();
       $tickets = $ticketModel->ownTickets(auth()->user()->id);
     }
- 
+
     return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
 
@@ -87,7 +70,6 @@ class TicketController extends BaseController
     }
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
-    
   }
 
   /**
@@ -105,7 +87,7 @@ class TicketController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    return $this->sendResponse(new TicketResource($ticket), 'Ticket retrieved successfully.');    
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket retrieved successfully.');
   }
 
   /**
@@ -117,7 +99,7 @@ class TicketController extends BaseController
   public function update(UpdateTicketRequest $request, $id)
   {
     $ticket = Ticket::find($id);
-    
+
     if (!$ticket) {
       throw new ItemNotFoundException($id);
     }
@@ -130,11 +112,11 @@ class TicketController extends BaseController
     } catch (\Throwable $th) {
       throw new ItemNotUpdatedException('Ticket');
     }
-    
+
     if (!$updated)
       throw new ItemNotUpdatedException('Ticket');
 
-    return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');    
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket updated successfully.');
   }
 
   /**
@@ -151,11 +133,13 @@ class TicketController extends BaseController
       throw new ItemNotFoundException($id);
     }
 
-    if($ticket->tasks->isNotEmpty()) {
-      throw new InvalidDataException([
-        'tasks' => $ticket->tasks->toArray()
-      ],
-      'Can\'t delete!, Ticket has tasks.');
+    if ($ticket->tasks->isNotEmpty()) {
+      throw new InvalidDataException(
+        [
+          'tasks' => $ticket->tasks->toArray()
+        ],
+        'Can\'t delete!, Ticket has tasks.'
+      );
     }
 
     try {
@@ -166,7 +150,4 @@ class TicketController extends BaseController
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket deleted successfully.');
   }
-  
 }
-
-?>
