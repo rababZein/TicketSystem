@@ -43,7 +43,7 @@ class TicketController extends BaseController
   public function index(ListTicketRequest $request)
   {
     if (auth()->user()->isAdmin()) {
-      $tickets = Ticket::with('project.owner')->paginate();
+      $tickets = Ticket::with('project.owner')->latest()->paginate();
     } else {
       $ticketModel = new Ticket();
       $tickets = $ticketModel->ownTickets(auth()->user()->id);
