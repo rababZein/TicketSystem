@@ -32,6 +32,10 @@ class ReceiptPaidJob implements ShouldQueue
      */
     public function handle()
     {
-        $receipt->task->project->owner->notify(new ReceiptPaidNotification($receipt));
+        try {
+            $this->receipt->task->project->owner->notify(new ReceiptPaidNotification($this->receipt));
+        } catch (\Exception $ex) {
+            throw new \Exception($ex);
+        }
     }
 }

@@ -40,6 +40,10 @@ class TaskAssignJob implements ShouldQueue
             throw new ItemNotFoundException($responsible);
         }
         
-        $responsible->notify(new TaskAssignNotification($this->task));
+        try {
+            $responsible->notify(new TaskAssignNotification($this->task));
+        } catch (\Exception $ex) {
+            throw new \Exception($ex);
+        }
     }
 }

@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use App\Notifications\Project\ProjectAssignNotification;
 use App\Models\Project;
+use Carbon\Carbon;
 
 class ProjectAssignJob implements ShouldQueue
 {
@@ -33,6 +34,12 @@ class ProjectAssignJob implements ShouldQueue
      */
     public function handle()
     {
-        \Notification::send($this->employees, new ProjectAssignNotification($this->project));
+        $when = Carbon::now()->addSeconds(120);
+
+        try {
+            \Notification::send($this->employees, new ProjectAssignNotification($this->project))->delay($when);
+        } catch (\Exception $ex) {
+            throw new \Exception($ex);
+        }
     }
 }
