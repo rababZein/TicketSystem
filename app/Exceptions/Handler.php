@@ -7,7 +7,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\Access\AuthorizationException;
-
+use Spatie\Permission\Exceptions\UnauthorizedException;
 
 class Handler extends ExceptionHandler
 {
@@ -65,6 +65,13 @@ class Handler extends ExceptionHandler
                 'status' => false,
                 'message' => 'This action is unauthorized',
                 'type' => 'AuthorizationException',
+                'data' => auth()->user()]
+                , 403); //unauthoized
+        } elseif ($exception instanceof UnauthorizedException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'This action is unauthorized',
+                'type' => 'UnauthorizedException',
                 'data' => auth()->user()]
                 , 403); //unauthoized
         }
