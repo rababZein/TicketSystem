@@ -1,8 +1,11 @@
 export default {
     activeTickets(state) {
-        return state.Tickets;
+        return state.items;
     },
     ticketsOwners(state) {
         return state.owners;
+    },
+    projectByOwners(state) {
+        return state.projects;
     }
 }

@@ -1,4 +1,5 @@
 export default {
-    Tickets: {},
-    owners: []
+    items: {},
+    owners: [],
+    projects: []
 };
