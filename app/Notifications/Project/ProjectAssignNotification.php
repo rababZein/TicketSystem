@@ -6,19 +6,21 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Models\Project;
 
-class ProjectAssign extends Notification
+class ProjectAssignNotification extends Notification
 {
     use Queueable;
+    private $project;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Project $project)
     {
-        //
+        $this->project = $project;
     }
 
     /**
@@ -41,8 +43,10 @@ class ProjectAssign extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
+                    ->line('The Project '.$this->project->name.' has been assigned to you')
+                    ->line('Description: '.$this->project->description)
+                    ->line('Owner: '.$this->project->owner->name)
+                    ->action('See More ..', url('/project/'. $this->project->id))
                     ->line('Thank you for using our application!');
     }
 
