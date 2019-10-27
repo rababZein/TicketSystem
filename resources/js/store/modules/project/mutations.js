@@ -1,6 +1,6 @@
 export default {
     setProjects(state, projects) {
-        state.items = projects;
+        state.items = Object.assign({}, projects);
     },
     createProject(state, project) {
         const projectObj = {
@@ -12,16 +12,15 @@ export default {
             task_rate: project.task_rate,
             budget_hours: project.budget_hours
         };
-        
-        state.items.push(projectObj);
+        state.items.data.push(projectObj);
 
     },
     editProject(state, project) {
-        const projectObj = state.items.find(items => items.id == project.id);
+        const projectObj = state.items.data.find(items => items.id == project.id);
         Vue.set(projectObj, 'name', project.name);
     },
     deleteProject(state, project) {
-        state.items = state.items.filter(items => items.id != project.id);
+        state.items.data = state.items.data.filter(items => items.id != project.id);
     },
     setProjectsOwners(state, owners) {
         state.owners = _.map(owners, function (key, value) {

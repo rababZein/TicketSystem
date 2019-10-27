@@ -1,10 +1,10 @@
 import projects from '../../../api/projects';
 
 export default {
-    getProjects({ commit }) {
+    getProjects({ commit }, page) {
         return new Promise((resolve, reject) => {
-            projects.get().then(response => {
-                commit('setProjects', response.data.data.data);
+            projects.get({page: page}).then(response => {
+                commit('setProjects', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);
@@ -24,7 +24,7 @@ export default {
     editProject({ commit }, project) {
         return new Promise((resolve, reject) => {
             projects.editProject(project).then(response => {
-                // commit('editProject', response.data.data);
+                commit('editProject', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

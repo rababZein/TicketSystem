@@ -1,49 +1,83 @@
 <template>
   <div class="row">
     <div class="col-12 mb-3">
-      <div class="input-group input-group-sm">
-        <input
-          class="form-control form-control-navbar"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-        />
-        <div class="input-group-append">
-          <button class="btn btn-dark" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div v-for="project in projects" :key="project.id" v-show="project" class="col-lg-3 col-6">
-      <!-- small card -->
-      <div class="small-box bg-blue">
-        <div class="inner">
-          <h3>{{ project.name }}</h3>
+      <div class="card card-default">
+        <div class="card-header">
+          <div class="card-tools">
+            <div class="input-group input-group-sm" style="width: 150px;">
+              <input
+                type="text"
+                name="table_search"
+                class="form-control float-right"
+                placeholder="Search"
+              />
 
-          <p>{{ project.name }}</p>
-          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
-            <i class="fas fa-edit fa-fw"></i>
-          </a>
-          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
-            <i class="fas fa-trash fa-fw"></i>
-          </a>
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-default">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="icon">
-          <i class="fas fa-briefcase"></i>
+        <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div
+                v-for="project in projects.data"
+                :key="project.id"
+                v-show="project"
+                class="col-lg-3 col-6"
+              >
+                <!-- small card -->
+                <div class="small-box bg-blue">
+                  <div class="inner">
+                    <h3>{{ project.name }}</h3>
+
+                    <p>{{ project.name }}</p>
+                    <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
+                      <i class="fas fa-edit fa-fw"></i>
+                    </a>
+                    <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+                      <i class="fas fa-trash fa-fw"></i>
+                    </a>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-briefcase"></i>
+                  </div>
+                  <router-link :to="'/project/' + project.id" class="small-box-footer">
+                    More info
+                    <i class="fas fa-arrow-circle-right"></i>
+                  </router-link>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <button
+                  @click="newModal"
+                  class="btn btn-dark btn-block"
+                  style="display: block; height:90%;"
+                >
+                  <i class="fas fa-plus fa-2x"></i>
+                  <p>create new project</p>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <router-link :to="'/project/' + project.id" class="small-box-footer">
-          More info
-          <i class="fas fa-arrow-circle-right"></i>
-        </router-link>
+        <div class="card-footer">
+          <div class="col-12">
+            <pagination
+              align="right"
+              size="small"
+              :show-disabled="true"
+              :data="projects"
+              @pagination-change-page="getProjects"
+            ></pagination>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-lg-3 col-6">
-      <button @click="newModal" class="btn btn-dark btn-block" style="display: block; height:90%;">
-        <i class="fas fa-plus fa-2x"></i>
-        <p>create new project</p>
-      </button>
-    </div>
+
     <!-- Modal -->
     <div
       class="modal fade"
@@ -164,10 +198,10 @@ export default {
     };
   },
   methods: {
-    getProjects() {
+    getProjects(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("project/getProjects")
+        .dispatch("project/getProjects", page)
         .then(() => {
           this.$Progress.finish();
         })
@@ -189,6 +223,7 @@ export default {
     newModal() {
       this.editMode = false;
       this.form.reset();
+      this.form.clear();
       $("#Modal").modal("show");
     },
     editModal(item) {
@@ -202,7 +237,7 @@ export default {
       this.$Progress.start();
       this.$store
         .dispatch("project/createProject", this.form)
-        .then((response) => {
+        .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
           Toast.fire({
@@ -232,7 +267,6 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          console.log(error);
           if (error.response) {
             this.form.errors.errors = error.response.data.errors;
           }
