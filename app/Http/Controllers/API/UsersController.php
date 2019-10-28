@@ -81,9 +81,6 @@ class UsersController extends BaseController
             throw new ItemNotCreatedException('User');
         }
 
-        // add role to user
-        $user->assignRole($input['roles']);
-
         // save User
         $user->save();
 
@@ -113,11 +110,6 @@ class UsersController extends BaseController
         }
 
         $user = $user->fill($input);
-
-        if (isset($input['roles'])) {
-            // add role to user
-            $user->syncRoles($input['roles']);
-        }
 
         // save User
         try {
