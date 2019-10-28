@@ -46,7 +46,7 @@ class ProjectController extends BaseController
   public function list(ListProjectRequest $request)
   {
     if (auth()->user()->isAdmin()) {
-      $projects = Project::paginate();
+      $projects = Project::with('owner')->paginate();
     } else {
       $projectModel = new Project();
       $projects = $projectModel->ownProjects(auth()->user()->id);
@@ -120,14 +120,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(UpdateProjectRequest $request, $id)
+  public function update(Project $project, UpdateProjectRequest $request)
   {
-    $project = Project::find($id);
-    
-    if (!$project) {
-      throw new ItemNotFoundException($id);
-    }
-
     $input = $request->validated();
 
     $project->updated_at = Carbon::now();
@@ -135,7 +129,8 @@ class ProjectController extends BaseController
 
     try {
       $updated = $project->fill($input)->save();
-    } catch (\Throwable $th) {
+    } catch (\Exception $ex) {
+
       throw new ItemNotUpdatedException('Project');
     }
 
@@ -160,14 +155,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy(DeleteProjectRequest $request, $id)
+  public function destroy(Project $project, DeleteProjectRequest $request)
   {
-    $project = Project::find($id);
-
-    if (is_null($project)) {
-      throw new ItemNotFoundException($id);
-    }
-
     if($project->tickets->isNotEmpty()) {
       throw new InvalidDataException([
         'tickets' => $project->tickets->toArray()
@@ -184,7 +173,7 @@ class ProjectController extends BaseController
 
     try {
       $project->delete();
-    } catch (\Throwable $th) {
+    } catch (\Exception $ex) {
       throw new ItemNotDeletedException('Project');
     }
 

@@ -28,31 +28,29 @@ Route::group(['middleware' => ['jwt.verify']], function() {
 
 Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     // roles
-    Route::group(['prefix' => 'role'], function () {
+    Route::group(['prefix' => 'role', 'namespace' => 'API'], function () {
         Route::get('/list', 'RolesController@list');
         Route::get('/getall', 'RolesController@getAll');
         Route::resource('/roles', 'RolesController')->except('show', 'create');
     });
 
     // permissions
-    Route::group(['prefix' => 'permission'], function () {
+    Route::group(['prefix' => 'permission', 'namespace' => 'API'], function () {
         Route::get('/permissions/list', 'PermissionsController@list');
         Route::get('/permissions/getall', 'PermissionsController@getAll');
         Route::resource('/permissions', 'PermissionsController')->except('show', 'create');
     });
 
     // users
-    Route::group(['prefix' => 'permission'], function () {
+    Route::group(['prefix' => 'permission', 'namespace' => 'API'], function () {
         Route::get('/users/list', 'UsersController@list');
         Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
         Route::resource('/users', 'UsersController')->except('show', 'create');
     });
 
     Route::group(['prefix' => 'project'], function () {
+        Route::resource('/', 'API\ProjectController')->except('create');
         Route::get('/list', 'API\ProjectController@list');
-        Route::post('/', 'API\ProjectController@store');
-        Route::patch('/{project_id}', 'API\ProjectController@update');
-        Route::delete('/{project_id}', 'API\ProjectController@destroy');
         Route::get('/{search_key}', 'API\ProjectController@search');
     });
 
