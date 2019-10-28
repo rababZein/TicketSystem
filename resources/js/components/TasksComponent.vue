@@ -382,7 +382,7 @@ export default {
       this.form.status_id = this.form.status.id;
 
       this.form
-        .post("/v-api/tasks")
+        .post("/v-api/tasks/" + this.form.project_id)
         .then(response => {
           $("#newTask").modal("hide");
           this.$Progress.finish();

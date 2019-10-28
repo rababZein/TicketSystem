@@ -19,7 +19,7 @@ use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
-use App\Notifications\Project\ProjectAssign;
+use App\Jobs\Project\ProjectAssignJob;
 
 class ProjectController extends BaseController 
 {
@@ -92,7 +92,7 @@ class ProjectController extends BaseController
     $project->assigns()->attach($employees);
     $project->assigns;
 
-    \Notification::send($employees, new ProjectAssign($project));
+    ProjectAssignJob::dispatch($employees, $project);
 
     return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
@@ -140,7 +140,7 @@ class ProjectController extends BaseController
       $project->assigns()->sync($employees);
       $project->assigns;
 
-      \Notification::send($employees, new ProjectAssign($project));
+      ProjectAssignJob::dispatch($employees, $project);
     }
 
     if (!$updated)
