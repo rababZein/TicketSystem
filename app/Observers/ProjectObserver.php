@@ -23,7 +23,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        $employees = User::find($input['project_assign']);
+        $employees = User::find($this->input['project_assign']);
         $project->assigns()->attach($employees);
         $project->assigns;
 
@@ -38,8 +38,8 @@ class ProjectObserver
      */
     public function updated(Project $project)
     {
-        if (isset($input['project_assign'])) {
-            $employees = User::find($input['project_assign']);
+        if (isset($this->input['project_assign'])) {
+            $employees = User::find($this->input['project_assign']);
             $project->assigns()->sync($employees);
             $project->assigns;
       
