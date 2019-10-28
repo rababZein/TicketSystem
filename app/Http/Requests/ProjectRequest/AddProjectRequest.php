@@ -27,7 +27,7 @@ class AddProjectRequest extends FormRequest
         return [
             'name' => 'required|string|unique:projects',
             'description' => 'required|string',
-            //'owner_id' => 'required|integer|exists:users,id',
+            'owner_id' => 'required|integer|exists:users,id',
             'task_rate' => 'required|integer',
             'budget_hours' => 'required|integer',
             'project_assign' => 'array',
