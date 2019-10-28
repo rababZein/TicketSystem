@@ -135,9 +135,6 @@ class UsersController extends BaseController
             throw new ItemNotFoundException($id);
         }
 
-        $user->roles()->detach();
-
-        // delete role
         try {
             $user->delete();
         } catch (\Throwable $th) {

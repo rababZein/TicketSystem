@@ -47,7 +47,7 @@ class UserObserver
      */
     public function deleted(User $user)
     {
-        //
+        $user->roles()->detach();
     }
 
     /**
