@@ -40,6 +40,16 @@ class ProjectController extends BaseController
   /**
    * Display a listing of the resource.
    *
+   * @return \Illuminate\Http\Response
+   */
+  public function view()
+  {
+    return view('pages.projects.index');
+  }
+
+  /**
+   * Display a listing of the resource.
+   *
    * @return Response
    */
 
@@ -103,14 +113,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show(ViewProjectRequest $request, $id)
+  public function show(Project $project, ViewProjectRequest $request)
   {
-    $project = Project::with('tickets')->find($id);
-
-    if (is_null($project)) {
-      throw new ItemNotFoundException($id);
-    }
-
     return $this->sendResponse(new ProjectResource($project), 'Project retrieved successfully.');    
   }
 
@@ -193,16 +197,6 @@ class ProjectController extends BaseController
     $projects = $project_model->search($searchKey);
     
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
-  }
-
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function view()
-  {
-    return view('pages.projects.index');
   }
   
 }
