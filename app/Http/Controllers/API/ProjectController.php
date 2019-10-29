@@ -96,6 +96,8 @@ class ProjectController extends BaseController
       throw new ItemNotCreatedException('Project');
     }
 
+    $project->owner;
+
     return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
 
