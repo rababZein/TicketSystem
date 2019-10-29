@@ -34,7 +34,7 @@
                   <div class="inner">
                     <h3>{{ project.name }}</h3>
 
-                    <p>{{ project.name }}</p>
+                    <p>{{ project.owner.name }}</p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
@@ -314,9 +314,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.invalid-feedback {
-  display: inline;
-}
-</style>

@@ -3,7 +3,7 @@ import projects from '../../../api/projects';
 export default {
     getProjects({ commit }, page) {
         return new Promise((resolve, reject) => {
-            projects.get({page: page}).then(response => {
+            projects.get({ page: page }).then(response => {
                 commit('setProjects', response.data.data);
                 resolve(response);
             }).catch(error => {
@@ -41,15 +41,27 @@ export default {
             })
         });
     },
-    getOwners({ commit }){
+    getOwners({ commit }) {
         return new Promise((resolve, reject) => {
             projects.getOwners().then(response => {
                 commit('setProjectsOwners', response.data.data)
                 resolve(response);
             })
-            .catch(error => {
-                reject(error);
-            })
+                .catch(error => {
+                    reject(error);
+                })
+        });
+    },
+    getProjectById({ commit }, id) {
+        return new Promise((resolve, reject) => {
+            projects.show(id)
+                .then(response => {
+                    commit('setSingleProject', response.data.data)
+                    resolve(response);
+                })
+                .catch(error => {
+                    reject(error);
+                })
         });
     }
 }

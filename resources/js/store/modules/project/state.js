@@ -1,4 +1,5 @@
 export default {
     items: {},
-    owners: []
+    owners: [],
+    singleProject: {}
 };

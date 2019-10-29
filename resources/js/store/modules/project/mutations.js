@@ -26,5 +26,8 @@ export default {
         state.owners = _.map(owners, function (key, value) {
             return { id: key.id, name: key.name };
         });;
+    },
+    setSingleProject(state, project) {
+        state.singleProject = project;
     }
 }
