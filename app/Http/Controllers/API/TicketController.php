@@ -29,7 +29,7 @@ class TicketController extends BaseController
    */
   public function __construct()
   {
-    $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index', 'show']]);
+    $this->middleware('permission:ticket-list|ticket-create|ticket-edit|ticket-delete', ['only' => ['index', 'show', 'getTicketsByProjectId']]);
     $this->middleware('permission:ticket-create', ['only' => ['store']]);
     $this->middleware('permission:ticket-edit', ['only' => ['update']]);
     $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
@@ -149,5 +149,18 @@ class TicketController extends BaseController
     }
 
     return $this->sendResponse(new TicketResource($ticket), 'Ticket deleted successfully.');
+  }
+
+  public function getTicketsByProjectId($id, ListTicketRequest $request)
+  {
+    $ticket = Ticket::whereHas('project', function ($query) use ($id) {
+      $query->where('id', $id);
+    })->latest()->paginate();
+
+    if (is_null($ticket)) {
+      throw new ItemNotFoundException($id);
+    }
+
+    return $this->sendResponse(new TicketCollection($ticket), 'Tickets retrieved successfully.');
   }
 }
