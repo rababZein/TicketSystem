@@ -76,7 +76,6 @@ class PermissionsController extends BaseController
         try {
             $permission = Permission::create($input);
         } catch (Exception $ex) {
-            dd($ex);
             throw new ItemNotCreatedException('Permission');
         }
 
