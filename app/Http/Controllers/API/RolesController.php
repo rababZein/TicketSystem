@@ -69,18 +69,12 @@ class RolesController extends BaseController
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
 
-        $permissionData = $input['permissions'];
-        unset($input['permissions']);
-
         // creating new role
         try {
             $role = Role::create($input);
         } catch (Exception $ex) {
             throw new ItemNotCreatedException('Role');
         }
-
-        // insert permissions for role
-        $role->syncPermissions($permissionData);
         
         // save role
         $role->save();
@@ -108,14 +102,7 @@ class RolesController extends BaseController
         $role->updated_at = Carbon::now();
         $role->updated_by = auth()->user()->id;
 
-        $permissionIds = array_column($input['permissions'], 'id');
-        unset($input['permissions']);
-
         $role = $role->fill($input);
-        
-        // insert permissions for role
-        $role->syncPermissions($permissionIds);
-
         // save role
         try {
             $role->save();
@@ -138,14 +125,6 @@ class RolesController extends BaseController
         $role = Role::find($id);
         if (is_null($role)) {
             throw new ItemNotFoundException($id);
-        }
-
-        // get permission of this role
-        $permissions = $role->permissions->pluck('name', 'id');
-
-        // revoke(remove) all permission from this role
-        if (!empty($permissions)) {
-            $role->revokePermissionTo($permissions);
         }
 
         // delete role

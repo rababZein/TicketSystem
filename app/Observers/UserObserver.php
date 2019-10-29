@@ -4,15 +4,10 @@ namespace App\Observers;
 
 use App\Models\User;
 use App\Http\Requests\UserRequest\AddUserRequest;
+use App\Http\Requests\UserRequest\UpdateUserRequest;
 
 class UserObserver
 {
-    protected $input;
-
-    public function __construct(UpdateProjectRequest $request)
-    {
-        $this->input = $request->validated();
-    }
     /**
      * Handle the user "created" event.
      *
@@ -21,7 +16,6 @@ class UserObserver
      */
     public function created(User $user)
     {
-        // add role to user
         $user->assignRole($this->input['roles']);
     }
 
@@ -34,7 +28,6 @@ class UserObserver
     public function updated(User $user)
     {
         if (isset($input['roles'])) {
-            // add role to user
             $user->syncRoles($this->input['roles']);
         }
     }
