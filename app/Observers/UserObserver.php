@@ -16,6 +16,9 @@ class UserObserver
      */
     public function created(User $user)
     {
+        $request = new AddUserRequest();
+        $input = $request->validated();
+
         $user->assignRole($this->input['roles']);
     }
 
@@ -27,6 +30,9 @@ class UserObserver
      */
     public function updated(User $user)
     {
+        $request = new UpdateUserRequest();
+        $input = $request->validated();
+
         if (isset($input['roles'])) {
             $user->syncRoles($this->input['roles']);
         }
