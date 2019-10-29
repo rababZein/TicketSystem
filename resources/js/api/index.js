@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // share a common base URL and configuration
 export const API = axios.create({
-    baseURL: 'v-api/'
+    baseURL: '/v-api/'
 })
 
 // will check if the global handler should be used or not (by default is true)

@@ -7,5 +7,8 @@ export default {
     },
     projectByOwners(state) {
         return state.projects;
-    }
+    },
+    activeTicket(state) {
+        return state.singleTicket;
+    },
 }

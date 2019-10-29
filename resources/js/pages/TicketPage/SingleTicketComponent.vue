@@ -94,20 +94,20 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
-      ticketId: this.$route.params.id,
-      ticket: {}
+      ticketId: this.$route.params.id
     };
   },
   methods: {
-    getPrject(id) {
+    getTicketById(id) {
       this.$Progress.start();
-      this.$api.tickets
-        .show(id)
+      this.$store
+        .dispatch("ticket/getTicketById", id)
         .then(response => {
-          this.ticket = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
@@ -115,8 +115,14 @@ export default {
         });
     }
   },
-  created() {
-    this.getPrject(this.ticketId);
+  mounted() {
+    this.getTicketById(this.ticketId);
+  },
+  computed: {
+    ...mapGetters("ticket", {
+      ticket: "activeTicket",
+      tasks: "activeTasks"
+    })
   }
 };
 </script>

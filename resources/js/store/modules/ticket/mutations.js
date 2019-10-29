@@ -20,15 +20,18 @@ export default {
         Object.assign(ticketObj, ticket);
     },
     createTicket(state, ticket) {
-        // const ticketObj = {
-        //     id: ticket.id,
-        //     name: ticket.name,
-        //     description: ticket.description,
-        //     project: ticket.project,
-        //     read: ticket.read,
-        //     create_at: ticket.created_at,
-        //     updated_at: ticket.updated_at
-        // };
-        // state.items.data.push(ticketObj);
+        const ticketObj = {
+            id: ticket.id,
+            name: ticket.name,
+            description: ticket.description,
+            project: ticket.project,
+            read: ticket.read,
+            create_at: ticket.created_at,
+            updated_at: ticket.updated_at
+        };
+        state.items.data.unshift(ticketObj);
+    },
+    getTicketById(state, ticket) {
+        state.singleTicket = ticket;
     }
 }

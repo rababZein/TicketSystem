@@ -36,7 +36,7 @@ export default {
     createTicket({ commit }, data) {
         return new Promise((resolve, reject) => {
             tickets.createTicket(data).then(response => {
-                // commit('createTicket', response.data.data);
+                commit('createTicket', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);
@@ -57,6 +57,27 @@ export default {
         return new Promise((resolve, reject) => {
             tickets.delete(id).then(response => {
                 commit('deleteTicket', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
+    getTicketById({commit}, id) {
+        return new Promise((resolve, reject) => {
+            tickets.show(id).then(response => {
+                commit('getTicketById', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
+    getTicketsByProjectId({commit}, params) {
+        return new Promise((resolve, reject) => {
+            console.log(params.page);
+            tickets.getByProjectId(params).then(response => {
+                commit('setTickets', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

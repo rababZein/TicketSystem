@@ -8,6 +8,9 @@ export default {
     activeSingleProject(state) {
         return state.singleProject;
     },
+    ownerOfProject(state) {
+        return state.singleProject.owner;
+    },
     activeTicketsForProject(state) {
         if (state.singleProject.tickets !== undefined) {
             return Object.assign({}, state.singleProject.tickets);

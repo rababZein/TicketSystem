@@ -16,8 +16,8 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th>ID</th>
-              <th width="10%">Name</th>
+              <th width="2%">ID</th>
+              <th width="15%">Name</th>
               <th width="30%">Description</th>
               <th width="20%">Client</th>
               <th width="10%">Project</th>
@@ -26,14 +26,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="ticket in tickets.data" :key="ticket.id">
+            <tr v-for="ticket in activeTickets" :key="ticket.id">
               <td>{{ ticket.id }}</td>
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
               <td>{{ ticket.description }}</td>
-              <td>{{ ticket.project.owner.name }}</td>
-              <td>{{ ticket.project.name }}</td>
+              <td>
+                <span v-if="ticket.project">{{ ticket.project.owner.name }}</span>
+              </td>
+              <td>
+                <span v-if="ticket.project">{{ ticket.project.name }}</span>
+              </td>
               <td v-if="!ticket.read">Not Read</td>
               <td v-else>Read</td>
               <td>
@@ -47,15 +51,6 @@
             </tr>
           </tbody>
         </table>
-      </div>
-      <div class="card-footer clear-fix">
-        <pagination
-          align="right"
-          size="small"
-          :show-disabled="true"
-          :data="tickets"
-          @pagination-change-page="getTickets"
-        ></pagination>
       </div>
       <!-- /.card-body -->
     </div>
@@ -105,7 +100,7 @@
                 />
                 <has-error :form="form" field="description"></has-error>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="!isDisabled">
                 <label for="name">Client</label>
                 <multiselect
                   v-model="form.owner"
@@ -141,6 +136,7 @@
                   track-by="name"
                   :preselect-first="true"
                   @input="opt => form.project_id = opt.id"
+                  :disabled="isDisabled"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -165,12 +161,13 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   data() {
     return {
       editMode: false,
+      isDisabled: false,
       form: new Form({
         id: "",
         name: "",
@@ -187,23 +184,33 @@ export default {
     tickets: {
       type: Object,
       required: true
-    }
+    },
+    singlePage: false
   },
   computed: {
     ...mapGetters("ticket", {
       owners: "ticketsOwners",
-      projects: "projectByOwners"
-    })
+      projects: "projectByOwners",
+    }),
+    ...mapGetters("project", {
+      project: "activeSingleProject",
+      ownerOfPorject: "ownerOfProject"
+    }),
+    activeTickets() {
+      return this.tickets.data;
+    }
   },
-  mounted() {
-    this.getTickets();
-    this.getOwners();
-  },
+  mounted() {},
   methods: {
     newModel() {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
+      if (this.singlePage) {
+        this.form.project = this.project;
+        this.form.project_id = this.project.id;
+        this.isDisabled = true;
+      }
       $("#Modal").modal("show");
     },
     editModel(ticket) {
@@ -211,29 +218,14 @@ export default {
       this.form.reset();
       $("#Modal").modal("show");
       this.form.fill(ticket);
+      if (this.singlePage) {
+        this.form.project = this.project;
+        this.form.owner = this.ownerOfPorject;
+        this.form.project_id = this.project.id;
+        this.isDisabled = false;
+      }
     },
-    getTickets(page = 1) {
-      this.$Progress.start();
-      this.$store
-        .dispatch("ticket/getTickets", page)
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    getOwners() {
-      this.$Progress.start();
-      this.$store
-        .dispatch("ticket/getOwners")
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
+
     getProjectsByOwner(ownerId) {
       this.form.project = [];
       if (ownerId !== null && ownerId !== "") {
@@ -254,7 +246,7 @@ export default {
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getTickets();
+          // this.getTickets();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -305,7 +297,6 @@ export default {
             .then(response => {
               this.$Progress.finish();
               Swal.fire("Deleted!", response.data.message, "success");
-              this.$store.dispatch("ticket/getTickets");
             })
             .catch(error => {
               console.log(error);
