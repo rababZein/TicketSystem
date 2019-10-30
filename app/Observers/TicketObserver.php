@@ -25,7 +25,7 @@ class TicketObserver
      */
     public function updated(Ticket $ticket)
     {
-        //
+        $ticket->project->owner;
     }
 
     /**
