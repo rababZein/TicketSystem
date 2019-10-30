@@ -22,7 +22,9 @@ class UserObserver
      */
     public function created(User $user)
     {
-        $user->assignRole($this->input['roles']);
+        if (isset($this->input['roles'])) {
+            $user->assignRole($this->input['roles']);
+        }
     }
 
     /**
