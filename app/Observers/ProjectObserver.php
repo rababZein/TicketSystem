@@ -30,6 +30,8 @@ class ProjectObserver
 
             ProjectAssignJob::dispatch($employees, $project);
         }
+
+        $project->owner;
     }
 
     /**
@@ -47,6 +49,8 @@ class ProjectObserver
       
             ProjectAssignJob::dispatch($employees, $project);
         }
+
+        $project->owner;
     }
 
     /**
