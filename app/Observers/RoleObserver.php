@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Role;
+use Spatie\Permission\Models\Role;
 use \Illuminate\Http\Request;
 
 class RoleObserver

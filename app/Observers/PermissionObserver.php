@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Permission;
+use Spatie\Permission\Models\Permission;
 
 class PermissionObserver
 {
