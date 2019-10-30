@@ -68,6 +68,7 @@ class RolesController extends BaseController
         $input = $request->validated();
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
+        unset($input['permissions']);
 
         // creating new role
         try {
@@ -98,6 +99,7 @@ class RolesController extends BaseController
         }
  
         $input = $request->validated();
+        unset($input['permissions']);
 
         $role->updated_at = Carbon::now();
         $role->updated_by = auth()->user()->id;
