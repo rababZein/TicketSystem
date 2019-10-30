@@ -76,7 +76,6 @@ class PermissionsController extends BaseController
         try {
             $permission = Permission::create($input);
         } catch (Exception $ex) {
-            dd($ex);
             throw new ItemNotCreatedException('Permission');
         }
 
@@ -124,13 +123,6 @@ class PermissionsController extends BaseController
         $permission = Permission::find($id);
         if (is_null($permission)) {
             throw new ItemNotFoundException($id);
-        }
-
-        $roles = $permission->roles->pluck('name', 'id');
-
-        // revoke(remove) this permission from all role
-        if (!empty($permissions)) {
-            $permission->removeRole($roles);
         }
         
         try {

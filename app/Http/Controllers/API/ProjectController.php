@@ -19,7 +19,6 @@ use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
-use App\Notifications\Project\ProjectAssign;
 
 class ProjectController extends BaseController 
 {
@@ -35,6 +34,16 @@ class ProjectController extends BaseController
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
+  }
+
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function view()
+  {
+    return view('pages.projects.index');
   }
 
   /**
@@ -87,13 +96,6 @@ class ProjectController extends BaseController
       throw new ItemNotCreatedException('Project');
     }
 
-    // assign people to project
-    $employees = User::find($input['project_assign']);
-    $project->assigns()->attach($employees);
-    $project->assigns;
-
-    \Notification::send($employees, new ProjectAssign($project));
-
     return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
 
@@ -103,14 +105,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function show(ViewProjectRequest $request, $id)
+  public function show(Project $project, ViewProjectRequest $request)
   {
-    $project = Project::with('tickets')->find($id);
-
-    if (is_null($project)) {
-      throw new ItemNotFoundException($id);
-    }
-
     return $this->sendResponse(new ProjectResource($project), 'Project retrieved successfully.');    
   }
 
@@ -120,14 +116,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function update(UpdateProjectRequest $request, $id)
+  public function update(Project $project, UpdateProjectRequest $request)
   {
-    $project = Project::find($id);
-    
-    if (!$project) {
-      throw new ItemNotFoundException($id);
-    }
-
     $input = $request->validated();
 
     $project->updated_at = Carbon::now();
@@ -135,18 +125,9 @@ class ProjectController extends BaseController
 
     try {
       $updated = $project->fill($input)->save();
-    } catch (\Throwable $th) {
+    } catch (\Exception $ex) {
       throw new ItemNotUpdatedException('Project');
-    }
-
-    // update assign people
-    if (isset($input['project_assign'])) {
-      $employees = User::find($input['project_assign']);
-      $project->assigns()->sync($employees);
-      $project->assigns;
-
-      Notification::send($employees, new ProjectAssign($project));
-    }
+    }    
 
     if (!$updated)
       throw new ItemNotUpdatedException('Project');
@@ -160,14 +141,8 @@ class ProjectController extends BaseController
    * @param  int  $id
    * @return Response
    */
-  public function destroy(DeleteProjectRequest $request, $id)
+  public function destroy(Project $project, DeleteProjectRequest $request)
   {
-    $project = Project::find($id);
-
-    if (is_null($project)) {
-      throw new ItemNotFoundException($id);
-    }
-
     if($project->tickets->isNotEmpty()) {
       throw new InvalidDataException([
         'tickets' => $project->tickets->toArray()
@@ -184,7 +159,7 @@ class ProjectController extends BaseController
 
     try {
       $project->delete();
-    } catch (\Throwable $th) {
+    } catch (\Exception $ex) {
       throw new ItemNotDeletedException('Project');
     }
 

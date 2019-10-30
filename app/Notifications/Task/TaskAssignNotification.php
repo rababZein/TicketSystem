@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Notifications\Receipt;
+namespace App\Notifications\Task;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Models\Task;
 
-class ReceiptPaid extends Notification
+class TaskAssignNotification extends Notification
 {
     use Queueable;
+    private $task;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Task $task)
     {
-        //
+        $this->task = $task;
     }
 
     /**
@@ -41,8 +43,9 @@ class ReceiptPaid extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
+                    ->line('The task '.$this->task->name.' has been assigned to you')
+                    ->line('Description: '.$this->task->description)
+                    ->action('See more ..', url('/').'tasks/'.$this->task->id)
                     ->line('Thank you for using our application!');
     }
 

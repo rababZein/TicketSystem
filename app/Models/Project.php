@@ -66,7 +66,8 @@ class Project extends Model
 
     public function ownProjects($id)
     {
-        return Project::select('projects.*')
+        return Project::with('owner')
+                    ->select('projects.*')
                     ->join('project_assigns', 'project_assigns.project_id', '=', 'projects.id')
                     ->where('project_assigns.assign_to', $id)
                     ->orWhere('projects.created_by', $id)
