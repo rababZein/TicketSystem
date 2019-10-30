@@ -85,9 +85,8 @@ class TicketController extends BaseController
     } catch (\Throwable $th) {
       throw new ItemNotCreatedException('Ticket');
     }
-
-    return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
     
+    return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
   }
 
   /**

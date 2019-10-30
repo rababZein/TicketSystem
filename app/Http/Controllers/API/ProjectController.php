@@ -19,7 +19,6 @@ use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Project\ProjectCollection;
 use App\Http\Resources\Project\ProjectResource;
-use App\Jobs\Project\ProjectAssignJob;
 
 class ProjectController extends BaseController 
 {
@@ -97,13 +96,6 @@ class ProjectController extends BaseController
       throw new ItemNotCreatedException('Project');
     }
 
-    // assign people to project
-    $employees = User::find($input['project_assign']);
-    $project->assigns()->attach($employees);
-    $project->assigns;
-
-    ProjectAssignJob::dispatch($employees, $project);
-
     return $this->sendResponse(new ProjectResource($project), 'Project created successfully.');
   }
 
@@ -134,18 +126,8 @@ class ProjectController extends BaseController
     try {
       $updated = $project->fill($input)->save();
     } catch (\Exception $ex) {
-
       throw new ItemNotUpdatedException('Project');
-    }
-
-    // update assign people
-    if (isset($input['project_assign'])) {
-      $employees = User::find($input['project_assign']);
-      $project->assigns()->sync($employees);
-      $project->assigns;
-
-      ProjectAssignJob::dispatch($employees, $project);
-    }
+    }    
 
     if (!$updated)
       throw new ItemNotUpdatedException('Project');

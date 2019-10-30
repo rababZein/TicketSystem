@@ -59,7 +59,7 @@ class Tracking_taskController extends BaseController
       throw new InvalidDataException([
         'task' => $inprogressTask->toArray()
       ],
-      'There is closed');
+      'Task is closed');
     } else {
       if ($task->status_id != 3) { //inprogress
         $task->status_id = 3;
