@@ -19,7 +19,6 @@ use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\Task\TaskCollection;
-use App\Jobs\Task\TaskAssignJob;
 
 class TaskController extends BaseController 
 {
@@ -88,8 +87,6 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    TaskAssignJob::dispatch($input['responsible_id'], $task);
-
     return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
   }
 
@@ -138,10 +135,6 @@ class TaskController extends BaseController
 
     if (!$updated)
       throw new ItemNotUpdatedException('Task');
-
-    if (isset($input['responsible_id'])) {
-      TaskAssignJob::dispatch($input['responsible_id'], $task);
-    }
   
     return $this->sendResponse(new TaskResource($task), 'task updated successfully.');     
   }

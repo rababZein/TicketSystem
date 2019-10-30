@@ -124,13 +124,6 @@ class PermissionsController extends BaseController
         if (is_null($permission)) {
             throw new ItemNotFoundException($id);
         }
-
-        $roles = $permission->roles->pluck('name', 'id');
-
-        // revoke(remove) this permission from all role
-        if (!empty($permissions)) {
-            $permission->removeRole($roles);
-        }
         
         try {
             $permission->delete();

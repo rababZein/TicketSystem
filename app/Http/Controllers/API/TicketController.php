@@ -85,11 +85,8 @@ class TicketController extends BaseController
     } catch (\Throwable $th) {
       throw new ItemNotCreatedException('Ticket');
     }
-
-    $ticket->project->owner;
     
     return $this->sendResponse(new TicketResource($ticket), 'Ticket created successfully.');
-    
   }
 
   /**

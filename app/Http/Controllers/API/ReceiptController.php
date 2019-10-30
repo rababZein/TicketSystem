@@ -18,7 +18,6 @@ use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Receipt\ReceiptCollection;
 use App\Http\Resources\Receipt\ReceiptResource;
-use App\Jobs\Receipt\ReceiptPaidJob;
 
 class ReceiptController extends BaseController 
 {
@@ -82,10 +81,6 @@ class ReceiptController extends BaseController
       throw new ItemNotCreatedException('Receipt');
     }
 
-    if ($input['is_paid']) {
-      ReceiptPaidJob::dispatch($receipt);
-    }
-
     return $this->sendResponse(new ReceiptResource($receipt), 'Receipt created successfully.');
   }
 
@@ -133,10 +128,6 @@ class ReceiptController extends BaseController
 
     if (!$updated)
       throw new ItemNotUpdatedException('Receipt');
-
-    if (isset($input['is_paid']) && $input['is_paid']) {
-      ReceiptPaidJob::dispatch($receipt);
-    }
 
     return $this->sendResponse(new ReceiptResource($receipt), 'Receipt updated successfully.');  
   }
