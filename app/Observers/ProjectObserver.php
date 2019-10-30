@@ -23,11 +23,13 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        $employees = User::find($this->input['project_assign']);
-        $project->assigns()->attach($employees);
-        $project->assigns;
+        if (isset($this->input['project_assign'])) {
+            $employees = User::find($this->input['project_assign']);
+            $project->assigns()->attach($employees);
+            $project->assigns;
 
-        ProjectAssignJob::dispatch($employees, $project);
+            ProjectAssignJob::dispatch($employees, $project);
+        }
     }
 
     /**
