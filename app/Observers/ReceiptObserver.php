@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Receipt;
+use App\Models\Receipt;
 use \Illuminate\Http\Request;
 use App\Jobs\Receipt\ReceiptPaidJob;
 

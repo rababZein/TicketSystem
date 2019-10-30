@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Ticket;
+use App\Models\Ticket;
 
 class TicketObserver
 {

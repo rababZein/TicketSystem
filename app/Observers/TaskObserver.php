@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\Task;
+use App\Models\Task;
 use \Illuminate\Http\Request;
 use App\Jobs\Task\TaskAssignJob;
 

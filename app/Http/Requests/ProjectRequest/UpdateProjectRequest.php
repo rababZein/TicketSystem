@@ -45,7 +45,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'string',
+            'name' => 'required|string|unique:projects',
             'description' => 'string',
             'owner_id' => 'integer|exists:users,id',
             'task_rate' => 'integer',

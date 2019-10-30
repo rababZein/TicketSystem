@@ -23,7 +23,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        if (isset($this->input['project_assign'])) {
+        if (isset($this->input['project_assign']) && $this->input['project_assign']) {
             $employees = User::find($this->input['project_assign']);
             $project->assigns()->attach($employees);
             $project->assigns;

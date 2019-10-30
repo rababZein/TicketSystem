@@ -52,7 +52,7 @@ class ProjectController extends BaseController
    * @return Response
    */
 
-  public function list(ListProjectRequest $request)
+  public function index(ListProjectRequest $request)
   {
     if (auth()->user()->isAdmin()) {
       $projects = Project::with('owner')->paginate();
@@ -180,5 +180,4 @@ class ProjectController extends BaseController
     
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
   }
-  
 }

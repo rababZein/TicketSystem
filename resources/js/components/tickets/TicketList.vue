@@ -1,72 +1,67 @@
 <template>
-  <div class="row">
-    <div class="col-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Tickets Table</h3>
+  <div class>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Tickets Table</h3>
 
-          <div class="card-tools">
-            <button type="submit" class="btn btn-success btn-sm" @click="newModel">
-              <i class="fas fa-plus fa-fw"></i>
-              <span class="d-none d-lg-inline">New Ticket</span>
-            </button>
-          </div>
+        <div class="card-tools">
+          <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+            <i class="fas fa-plus fa-fw"></i>
+            <span class="d-none d-lg-inline">New Ticket</span>
+          </button>
         </div>
-        <!-- /.card-header -->
-        <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th width="10">ID</th>
-                <th width="20%">Name</th>
-                <th width="40%">Description</th>
-                <th width="20%">Client</th>
-                <th width="20%">Project</th>
-                <th width="10%">Read</th>
-                <th>action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="ticket in tickets" :key="ticket.id">
-                <td>{{ ticket.id }}</td>
-                <td><router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link></td>
-                <td>{{ ticket.description }}</td>
-                <td>{{ ticket.project.owner.name }}</td>
-                <td>{{ ticket.project.name }}</td>
-                <td v-if="!ticket.read">Not Read</td>
-                <td v-else>Read</td>
-                <td>
-                  <a href="#" @click="editModel(ticket)" class="btn btn-primary btn-xs">
-                    <i class="fas fa-edit fa-fw"></i>
-                  </a>
-                  <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
-                    <i class="fas fa-trash fa-fw"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer clear-fix">
-          <pagination
-            align="right"
-            size="small"
-            :show-disabled="true"
-            :data="tickets"
-            @pagination-change-page="getResults"
-          ></pagination>
-        </div>
-        <!-- /.card-body -->
       </div>
-      <!-- /.card -->
+      <!-- /.card-header -->
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th width="2%">ID</th>
+              <th width="15%">Name</th>
+              <th width="30%">Description</th>
+              <th width="20%">Client</th>
+              <th width="10%">Project</th>
+              <th width="10%">Read</th>
+              <th width="10%">action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="ticket in activeTickets" :key="ticket.id">
+              <td>{{ ticket.id }}</td>
+              <td>
+                <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
+              </td>
+              <td>{{ ticket.description }}</td>
+              <td>
+                <span v-if="ticket.project">{{ ticket.project.owner.name }}</span>
+              </td>
+              <td>
+                <span v-if="ticket.project">{{ ticket.project.name }}</span>
+              </td>
+              <td v-if="!ticket.read">Not Read</td>
+              <td v-else>Read</td>
+              <td>
+                <a href="#" @click="editModel(ticket)" class="btn btn-primary btn-xs">
+                  <i class="fas fa-edit fa-fw"></i>
+                </a>
+                <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash fa-fw"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- /.card-body -->
     </div>
+    <!-- /.card -->
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newTicket"
+      id="Modal"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="newTicketLabel"
+      aria-labelledby="newModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog" role="document">
@@ -79,7 +74,7 @@
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editTicket(form.id) : createTicket()"
+            @submit.prevent="editMode ? editTicket(form) : createTicket(form)"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
@@ -105,12 +100,12 @@
                 />
                 <has-error :form="form" field="description"></has-error>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="!isDisabled">
                 <label for="name">Client</label>
                 <multiselect
-                  v-model="form.project.owner"
+                  v-model="form.owner"
                   :options="owners"
-                  @input="getProjects(form.project.owner.id)"
+                  @input="getProjectsByOwner(form.owner.id)"
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
@@ -140,6 +135,8 @@
                   label="name"
                   track-by="name"
                   :preselect-first="true"
+                  @input="opt => form.project_id = opt.id"
+                  :disabled="isDisabled"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -164,131 +161,123 @@
 </template>
 
 <script>
+import { mapGetters, mapState } from "vuex";
+
 export default {
   data() {
     return {
       editMode: false,
+      isDisabled: false,
       form: new Form({
         id: "",
         name: "",
         description: "",
+        owner: "",
         project: {
           id: "",
-          name: "",
-          owner: ""
-        },
-        project_id: ""
-      }),
-      tickets: {},
-      projects: [],
-      owners: []
+          name: ""
+        }
+      })
     };
   },
+  props: {
+    tickets: {
+      type: Object,
+      required: true
+    },
+    singlePage: false
+  },
+  computed: {
+    ...mapGetters("ticket", {
+      owners: "ticketsOwners",
+      projects: "projectByOwners",
+    }),
+    ...mapGetters("project", {
+      project: "activeSingleProject",
+      ownerOfPorject: "ownerOfProject"
+    }),
+    activeTickets() {
+      return this.tickets.data;
+    }
+  },
+  mounted() {},
   methods: {
     newModel() {
       this.editMode = false;
       this.form.reset();
-      $("#newTicket").modal("show");
+      this.form.clear();
+      if (this.singlePage) {
+        this.form.project = this.project;
+        this.form.project_id = this.project.id;
+        this.isDisabled = true;
+      }
+      $("#Modal").modal("show");
     },
     editModel(ticket) {
       this.editMode = true;
       this.form.reset();
-      $("#newTicket").modal("show");
+      $("#Modal").modal("show");
       this.form.fill(ticket);
-      this.getProjects(ticket.project.owner.id);
-
-      this.form.selected = _.map(this.form.projects, function(value, key) {
-        return value.name;
-      });
+      if (this.singlePage) {
+        this.form.project = this.project;
+        this.form.owner = this.ownerOfPorject;
+        this.form.project_id = this.project.id;
+        this.isDisabled = false;
+      }
     },
-    getResults(page = 1) {
-      this.$Progress.start();
-      this.$api.tickets
-        .get()
-        .then(response => {
-          this.tickets = response.data.data.data;
-                   
-          // convert array to object for paginate
-          this.tickets = Object.assign({}, this.tickets);
 
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    getOwners() {
-      this.$api.owners
-        .getAll()
-        .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
+    getProjectsByOwner(ownerId) {
+      this.form.project = [];
+      if (ownerId !== null && ownerId !== "") {
+        this.$store
+          .dispatch("ticket/getProjectsByOwner", ownerId)
+          .then(() => {
+            this.$Progress.finish();
+          })
+          .catch(error => {
+            this.$Progress.fail();
           });
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
+      }
     },
-    getProjects(owner_id) {
-      this.$api.projects
-        .getAllByOwner(owner_id)
-        .then(response => {
-          this.projects = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name, owner:key.owner };
-          });
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    createTicket() {
+    createTicket(data) {
       this.$Progress.start();
-      // need to be enhance
-      this.form.project_id = this.form.project.id;
-
-      this.form
-        .post("/v-api/tickets")
+      this.$store
+        .dispatch("ticket/createTicket", data)
         .then(response => {
-          $("#newTicket").modal("hide");
+          $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
+          // this.getTickets();
           Toast.fire({
             type: "success",
-            title: "Ticket created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: "can't create new Ticket"
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
-    editTicket(id) {
-      this.$Progress.start();
 
-      this.form.project_id = this.form.project.id;
-      
-      this.form
-        .patch("/v-api/tickets/" + id)
+    editTicket(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("ticket/editTicket", data)
         .then(response => {
-          $("#newTicket").modal("hide");
+          $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
-            title: "Ticket updated successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
+          console.log(error);
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: "can't update the ticket"
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     deleteTicket(id) {
@@ -303,35 +292,23 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.tickets
-            .delete(id)
+          this.$store
+            .dispatch("ticket/deleteTicket", id)
             .then(response => {
               this.$Progress.finish();
-              this.getResults();
-              Swal.fire("Deleted!", "The ticket has been deleted.", "success");
+              Swal.fire("Deleted!", response.data.message, "success");
             })
             .catch(error => {
+              console.log(error);
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the ticket"
+                title: error.response.data.message
               });
             });
         }
       });
     }
-  },
-  mounted() {
-    this.getResults();
-    this.getOwners();
-    // this.getProjects();
-    console.log(this.owners);
   }
 };
 </script>
-<style scoped>
-.invalid-feedback {
-  display: inline;
-}
-</style>
-

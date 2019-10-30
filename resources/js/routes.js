@@ -33,22 +33,22 @@ let routes = [
     },
     {
         path: '/projects',
-        component: require('./components/ProjectsComponent.vue').default,
+        component: require('./pages/ProjectPage/ProjectsComponent.vue').default,
         meta: { title: 'Projects' }
     },
     {
         path: '/project/:id',
-        component: require('./components/SingleProjectComponent.vue').default,
+        component: require('./pages/ProjectPage/SingleProjectComponent.vue').default,
         meta: { title: 'Project' }
     },
     {
         path: '/tickets',
-        component: require('./components/TicketsComponent.vue').default,
+        component: require('./pages/TicketPage/TicketsComponent.vue').default,
         meta: { title: 'Tickets' }
     },
     {
         path: '/ticket/:id',
-        component: require('./components/SingleTicketComponent.vue').default,
+        component: require('./pages/TicketPage/SingleTicketComponent.vue').default,
         meta: { title: 'Ticket' }
     },
     {

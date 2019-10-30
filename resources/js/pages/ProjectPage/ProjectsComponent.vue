@@ -1,45 +1,83 @@
 <template>
   <div class="row">
     <div class="col-12 mb-3">
-      <div class="input-group input-group-sm">
-        <input
-          class="form-control form-control-navbar"
-          type="search"
-          placeholder="Search"
-          aria-label="Search"
-        />
-        <div class="input-group-append">
-          <button class="btn btn-dark" type="submit">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-    <div v-for="project in projects" :key="project.id" v-show="project" class="col-lg-3 col-6">
-      <!-- small card -->
-      <div class="small-box bg-blue">
-        <div class="inner">
-          <h3>{{ project.name }}</h3>
+      <div class="card card-default">
+        <div class="card-header">
+          <div class="card-tools">
+            <div class="input-group input-group-sm" style="width: 150px;">
+              <input
+                type="text"
+                name="table_search"
+                class="form-control float-right"
+                placeholder="Search"
+              />
 
-          <p>{{ project.name }}</p>
-          <a href="#" @click="editModal(project)" class="btn btn-light btn-xs"><i class="fas fa-edit fa-fw"></i></a>
-          <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light"><i class="fas fa-trash fa-fw"></i></a>
+              <div class="input-group-append">
+                <button type="submit" class="btn btn-default">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="icon">
-          <i class="fas fa-briefcase"></i>
+        <div class="card-body">
+          <div class="container">
+            <div class="row">
+              <div
+                v-for="project in projects.data"
+                :key="project.id"
+                v-show="project"
+                class="col-lg-3 col-6"
+              >
+                <!-- small card -->
+                <div class="small-box bg-blue">
+                  <div class="inner">
+                    <h3>{{ project.name }}</h3>
+
+                    <p>{{ project.owner.name }}</p>
+                    <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
+                      <i class="fas fa-edit fa-fw"></i>
+                    </a>
+                    <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+                      <i class="fas fa-trash fa-fw"></i>
+                    </a>
+                  </div>
+                  <div class="icon">
+                    <i class="fas fa-briefcase"></i>
+                  </div>
+                  <router-link :to="'/project/' + project.id" class="small-box-footer">
+                    More info
+                    <i class="fas fa-arrow-circle-right"></i>
+                  </router-link>
+                </div>
+              </div>
+              <div class="col-lg-3 col-6">
+                <button
+                  @click="newModal"
+                  class="btn btn-dark btn-block"
+                  style="display: block; height:90%;"
+                >
+                  <i class="fas fa-plus fa-2x"></i>
+                  <p>create new project</p>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <router-link :to="'/project/' + project.id" class="small-box-footer">
-          More info
-          <i class="fas fa-arrow-circle-right"></i>
-        </router-link>
+        <div class="card-footer">
+          <div class="col-12">
+            <pagination
+              align="right"
+              size="small"
+              :show-disabled="true"
+              :data="projects"
+              @pagination-change-page="getProjects"
+            ></pagination>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="col-lg-3 col-6">
-      <button @click="newModal" class="btn btn-dark btn-block" style="display: block; height:90%;">
-        <i class="fas fa-plus fa-2x"></i>
-        <p>create new project</p>
-      </button>
-    </div>
+
     <!-- Modal -->
     <div
       class="modal fade"
@@ -58,7 +96,10 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <form @submit.prevent="editMode ? editProject(form.id) : createProject()" @keydown="form.onKeydown($event)">
+          <form
+            @submit.prevent="editMode ? editProject(form.id) : createProject()"
+            @keydown="form.onKeydown($event)"
+          >
             <div class="modal-body">
               <div class="form-group">
                 <label for="name">name</label>
@@ -83,9 +124,9 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
-                <label for="name">Client</label>
+                <label for="client">Client</label>
                 <multiselect
-                  v-model="owner_id"
+                  v-model="form.owner"
                   :options="owners"
                   :searchable="true"
                   :close-on-select="true"
@@ -96,9 +137,7 @@
                   track-by="name"
                   :preselect-first="true"
                   @input="opt => form.owner_id = opt.id"
-                >
-
-                </multiselect>
+                ></multiselect>
                 <has-error :form="form" field="owner_id"></has-error>
               </div>
               <div class="form-group">
@@ -140,31 +179,30 @@
 </template>
 
 <script>
+import { mapGetters, mapState, mapActions } from "vuex";
+
 export default {
   data() {
     return {
       editMode: false,
-      projects: {},
       form: new Form({
         id: "",
         name: "",
-        owner_id: "",
+        owner: "",
         description: "",
         task_rate: "",
         budget_hours: "",
         project_assign: []
       }),
-      owners: [],
       owner_id: ""
     };
   },
   methods: {
-    getResults(page = 1) {
+    getProjects(page = 1) {
       this.$Progress.start();
-      this.$api.projects
-        .get({ page: page })
-        .then(response => {
-          this.projects = response.data.data.data;
+      this.$store
+        .dispatch("project/getProjects", page)
+        .then(() => {
           this.$Progress.finish();
         })
         .catch(error => {
@@ -172,39 +210,36 @@ export default {
         });
     },
     getOwners() {
-      this.$api.owners
-        .getAll()
-        .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
+      this.$Progress.start();
+      this.$store
+        .dispatch("project/getOwners")
+        .then(() => {
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
     },
-    selectOwnerId(opt) {
-      opt => form.owner_id = opt.id
-    },
     newModal() {
       this.editMode = false;
       this.form.reset();
+      this.form.clear();
       $("#Modal").modal("show");
     },
     editModal(item) {
       this.editMode = true;
       this.form.reset();
+      this.form.clear();
       $("#Modal").modal("show");
       this.form.fill(item);
     },
     createProject() {
-      this.form
-        .post("/v-api/projects")
+      this.$Progress.start();
+      this.$store
+        .dispatch("project/createProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -212,21 +247,19 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
-          this.form.errors.errors = error.response.data.data;
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     editProject(id) {
       this.$Progress.start();
-      this.form
-        .put("/v-api/projects/" + id)
+      this.$store
+        .dispatch("project/editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
+          this.getProjects();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -234,10 +267,9 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     deleteProject(id) {
@@ -252,18 +284,18 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.projects
-            .delete(id)
+          this.$store
+            .dispatch("project/deleteProject", id)
             .then(response => {
               this.$Progress.finish();
-              this.getResults();
+              this.getProjects();
               Swal.fire("Deleted!", response.data.message, "success");
             })
             .catch(error => {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the project"
+                title: error.response.data.message
               });
             });
         }
@@ -271,14 +303,14 @@ export default {
     }
   },
   mounted() {
-    this.getResults();
+    this.getProjects();
     this.getOwners();
+  },
+  computed: {
+    ...mapGetters("project", {
+      projects: "activeProjects",
+      owners: "projectsOwners"
+    })
   }
 };
 </script>
-
-<style scoped>
-.invalid-feedback {
-  display: inline;
-}
-</style>

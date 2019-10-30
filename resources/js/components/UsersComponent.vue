@@ -35,7 +35,7 @@
                   <div
                     v-show="user.roles"
                     v-for="role in user.roles"
-                    :key="role"
+                    :key="role.id"
                     class="badge badge-primary mr-1"
                   >{{ role.name }}</div>
                 </td>

@@ -53,68 +53,57 @@
       </div>
     </div>
     <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">
-            Tickets in
-            <strong>{{ project.name }}</strong>
-          </h3>
-
-          <div class="card-tools"></div>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th width="10">ID</th>
-                <th width="40%">Name</th>
-                <th width="40%">Description</th>
-                <th width="10%">Read</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="ticket in project.tickets" :key="ticket.id">
-                <td>{{ ticket.id }}</td>
-                <td>
-                  <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
-                </td>
-                <td>{{ ticket.description }}</td>
-                <td v-if="!ticket.read">Not Read</td>
-                <td v-else>Read</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer clear-fix">
-          <!-- <pagination
-            align="right"
-            size="small"
-            :show-disabled="true"
-            :data="project.tickets"
-            @pagination-change-page="getResults"
-          ></pagination>-->
-        </div>
-        <!-- /.card-body -->
-      </div>
+      <ticket-list v-if="showTickets" :tickets="tickets" :singlePage="true"></ticket-list>
     </div>
+    <pagination
+      align="center"
+      size="small"
+      :show-disabled="true"
+      :data="tickets"
+      @pagination-change-page="getTicketsByProjectId"
+    ></pagination>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
       projectId: this.$route.params.id,
-      project: {}
+      showTickets: false
     };
   },
   methods: {
-    getPrject(project_id) {
-      this.$api.projects
-        .show(project_id)
+    getPrjectById(id) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("project/getProjectById", id)
         .then(response => {
-          this.project = response.data.data;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getTicketsByProjectId(page = 1) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("ticket/getTicketsByProjectId", {id: this.projectId, page: page})
+        .then(response => {
+          this.showTickets = true;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getOwners() {
+      this.$Progress.start();
+      this.$store
+        .dispatch("ticket/getOwners")
+        .then(() => {
           this.$Progress.finish();
         })
         .catch(error => {
@@ -123,10 +112,15 @@ export default {
     }
   },
   mounted() {
-    console.log("Component mounted.");
+    this.getPrjectById(this.projectId);
+    this.getTicketsByProjectId();
+    this.getOwners();
   },
-  created() {
-    this.getPrject(this.projectId);
+  computed: {
+    ...mapGetters({
+      project: "project/activeSingleProject",
+      tickets: "ticket/activeTickets"
+    })
   }
 };
 </script>
