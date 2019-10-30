@@ -22,11 +22,13 @@ class RoleObserver
      */
     public function created(Role $role)
     {
-        $permissionData = $this->input['permissions'];
-        unset($this->input['permissions']);
+        if (isset($this->input['permissions'])) {
+            $permissionData = $this->input['permissions'];
+            unset($this->input['permissions']);
 
-        // insert permissions for role
-        $role->syncPermissions($permissionData);
+            // insert permissions for role
+            $role->syncPermissions($permissionData);
+        }
     }
 
     /**
@@ -40,7 +42,7 @@ class RoleObserver
         if (isset($this->input['permissions'])) {
             $permissionIds = array_column($this->input['permissions'], 'id');
             unset($this->input['permissions']);
-    
+
             $role->syncPermissions($permissionIds);
         }
     }
