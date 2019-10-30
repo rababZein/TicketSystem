@@ -5,11 +5,16 @@ namespace App\Observers;
 use App\Models\Project;
 use App\Models\User;
 use App\Jobs\Project\ProjectAssignJob;
-use App\Http\Requests\ProjectRequest\AddProjectRequest;
-use App\Http\Requests\ProjectRequest\UpdateProjectRequest;
+use \Illuminate\Http\Request;
 
 class ProjectObserver
 {
+    private $input;
+
+    public function __construct(Request $request)
+    {
+        $this->input = $request->all();
+    }
     /**
      * Handle the project "created" event.
      *
@@ -18,10 +23,7 @@ class ProjectObserver
      */
     public function created(Project $project)
     {
-        $request = new AddProjectRequest();
-        $input = $request->validated();
-
-        $employees = User::find($input['project_assign']);
+        $employees = User::find($this->input['project_assign']);
         $project->assigns()->attach($employees);
         $project->assigns;
 
@@ -36,11 +38,8 @@ class ProjectObserver
      */
     public function updated(Project $project)
     {
-        $request = new UpdateProjectRequest();
-        $input = $request->validated();
-
-        if (isset($input['project_assign'])) {
-            $employees = User::find($input['project_assign']);
+        if (isset($this->input['project_assign'])) {
+            $employees = User::find($this->input['project_assign']);
             $project->assigns()->sync($employees);
             $project->assigns;
       

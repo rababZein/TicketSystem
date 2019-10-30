@@ -3,11 +3,17 @@
 namespace App\Observers;
 
 use App\Role;
-use App\Http\Requests\RoleRequest\AddRoleRequest;
-use App\Http\Requests\RoleRequest\UpdateRoleRequest;
+use \Illuminate\Http\Request;
 
 class RoleObserver
 {
+    private $input;
+
+    public function __construct(Request $request)
+    {
+        $this->input = $request->all();
+    }
+
     /**
      * Handle the role "created" event.
      *
@@ -16,11 +22,8 @@ class RoleObserver
      */
     public function created(Role $role)
     {
-        $request = new AddRoleRequest();
-        $input = $request->validated();
-
-        $permissionData = $input['permissions'];
-        unset($input['permissions']);
+        $permissionData = $this->input['permissions'];
+        unset($this->input['permissions']);
 
         // insert permissions for role
         $role->syncPermissions($permissionData);
@@ -34,11 +37,8 @@ class RoleObserver
      */
     public function updated(Role $role)
     {
-        $request = new UpdateRoleRequest();
-        $input = $request->validated();
-
-        $permissionIds = array_column($input['permissions'], 'id');
-        unset($input['permissions']);
+        $permissionIds = array_column($this->input['permissions'], 'id');
+        unset($this->input['permissions']);
         $role->syncPermissions($permissionIds);
     }
 
