@@ -7,8 +7,7 @@ export default {
             id: project.id,
             name: project.name,
             description: project.description,
-            // TODO:owner didn't return after create project
-            owner: project.owner_id,
+            owner: project.owner,
             task_rate: project.task_rate,
             budget_hours: project.budget_hours
         };
