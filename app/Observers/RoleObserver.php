@@ -37,9 +37,12 @@ class RoleObserver
      */
     public function updated(Role $role)
     {
-        $permissionIds = array_column($this->input['permissions'], 'id');
-        unset($this->input['permissions']);
-        $role->syncPermissions($permissionIds);
+        if (isset($this->input['permissions'])) {
+            $permissionIds = array_column($this->input['permissions'], 'id');
+            unset($this->input['permissions']);
+    
+            $role->syncPermissions($permissionIds);
+        }
     }
 
     /**
