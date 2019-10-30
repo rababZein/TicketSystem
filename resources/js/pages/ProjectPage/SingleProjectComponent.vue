@@ -21,18 +21,12 @@
                 ></textarea>
               </div>
             </div>
-            <div class="col-sm-6" v-if="project.tickets">
+            <div class="col-sm-6">
               <table
                 class="table table-borderless table-sm table-hover table-responsive-lg mt-2"
                 style="width: 70%"
               >
                 <tbody>
-                  <tr>
-                    <td>
-                      <small>Tickets:</small>
-                    </td>
-                    <td>{{ project.tickets.length }}</td>
-                  </tr>
                   <tr>
                     <td>
                       <small>Budget hours:</small>

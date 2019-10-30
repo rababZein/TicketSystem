@@ -194,7 +194,7 @@ export default {
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
-      ownerOfPorject: "ownerOfProject"
+      ownerOfProject: "ownerOfProject"
     }),
     activeTickets() {
       return this.tickets.data;
@@ -220,9 +220,11 @@ export default {
       this.form.fill(ticket);
       if (this.singlePage) {
         this.form.project = this.project;
-        this.form.owner = this.ownerOfPorject;
+        this.form.owner = this.ownerOfProject;
         this.form.project_id = this.project.id;
         this.isDisabled = false;
+      } else {
+        this.form.owner = this.form.project.owner;
       }
     },
 
