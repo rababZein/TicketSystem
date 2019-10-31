@@ -7,5 +7,5 @@ export default {
     editTicket: params => API.put('/tickets/' + params.id, params),
     delete: params => API.delete('/tickets/' + params),
     show: params => API.get('/tickets/' + params),
-    getByProjectId: params => API.get('/tickets/byProject/' + params.id, {params})
+    getByProjectId: params => API.get('/projects/' + params.id + '/tickets/' , {params})
 }

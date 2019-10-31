@@ -61,6 +61,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::post('/', 'API\TicketController@store');
         Route::patch('/{ticket_id}', 'API\TicketController@update');
         Route::delete('/{ticket_id}', 'API\TicketController@destroy');
+        Route::get('/projects/{project_id}/tickets/', 'TicketController@getTicketsByProjectId');
     });
 
     Route::group(['prefix' => 'task'], function () {
