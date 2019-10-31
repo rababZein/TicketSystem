@@ -75,7 +75,6 @@ export default {
     },
     getTicketsByProjectId({commit}, params) {
         return new Promise((resolve, reject) => {
-            console.log(params.page);
             tickets.getByProjectId(params).then(response => {
                 commit('setTickets', response.data.data);
                 resolve(response);

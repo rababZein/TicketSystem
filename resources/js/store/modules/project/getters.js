@@ -1,9 +1,6 @@
 export default {
-    activeProjects(state, getters, rootState) {
+    activeProjects(state) {
         return state.items;
-    },
-    projectsOwners(state) {
-        return state.owners;
     },
     activeSingleProject(state) {
         return state.singleProject;

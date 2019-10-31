@@ -188,9 +188,9 @@ export default {
     singlePage: false
   },
   computed: {
-    ...mapGetters("ticket", {
-      owners: "ticketsOwners",
-      projects: "projectByOwners",
+    ...mapGetters({
+      owners: "owner/activeOwners",
+      projects: "ticket/projectByOwners"
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
@@ -200,7 +200,9 @@ export default {
       return this.tickets.data;
     }
   },
-  mounted() {},
+  mounted() {
+    this.getOwners();
+  },
   methods: {
     newModel() {
       this.editMode = false;
@@ -218,13 +220,11 @@ export default {
       this.form.reset();
       $("#Modal").modal("show");
       this.form.fill(ticket);
+      this.form.owner = this.form.project.owner;
       if (this.singlePage) {
         this.form.project = this.project;
-        this.form.owner = this.ownerOfProject;
         this.form.project_id = this.project.id;
         this.isDisabled = false;
-      } else {
-        this.form.owner = this.form.project.owner;
       }
     },
 
@@ -310,6 +310,14 @@ export default {
             });
         }
       });
+    },
+    getOwners() {
+      this.$store
+        .dispatch("owner/getOwners")
+        .then(() => {})
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 };

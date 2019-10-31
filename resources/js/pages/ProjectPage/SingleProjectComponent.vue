@@ -93,22 +93,11 @@ export default {
           this.$Progress.fail();
         });
     },
-    getOwners() {
-      this.$Progress.start();
-      this.$store
-        .dispatch("ticket/getOwners")
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    }
+
   },
   mounted() {
     this.getPrjectById(this.projectId);
     this.getTicketsByProjectId();
-    this.getOwners();
   },
   computed: {
     ...mapGetters({

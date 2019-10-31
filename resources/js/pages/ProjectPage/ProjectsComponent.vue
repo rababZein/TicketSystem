@@ -212,7 +212,7 @@ export default {
     getOwners() {
       this.$Progress.start();
       this.$store
-        .dispatch("project/getOwners")
+        .dispatch("owner/getOwners")
         .then(() => {
           this.$Progress.finish();
         })
@@ -307,9 +307,9 @@ export default {
     this.getOwners();
   },
   computed: {
-    ...mapGetters("project", {
-      projects: "activeProjects",
-      owners: "projectsOwners"
+    ...mapGetters({
+      projects: "project/activeProjects",
+      owners: "owner/activeOwners"
     })
   }
 };
