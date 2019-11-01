@@ -6,15 +6,15 @@ export default {
         items: [],
     },
     getters: {
-        activeOwners(state) {
+        activeRegularUser(state) {
             return state.items;
         }
     },
     actions: {
-        getOwners({ commit }) {
+        getRegularUser({ commit }) {
             return new Promise((resolve, reject) => {
-                users.getOwners().then(response => {
-                    commit('setOwners', response.data.data)
+                users.getRegularUsers().then(response => {
+                    commit('setRegularUsers', response.data.data)
                     resolve(response);
                 })
                     .catch(error => {
@@ -24,8 +24,8 @@ export default {
         }
     },
     mutations: {
-        setOwners(state, owners) {
-            state.items = _.map(owners, function (key) {
+        setRegularUsers(state, users) {
+            state.items = _.map(users, function (key) {
                 return { id: key.id, name: key.name };
             });;
         }

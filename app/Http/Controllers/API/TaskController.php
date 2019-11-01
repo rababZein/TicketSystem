@@ -43,7 +43,14 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    return view('pages.tasks.index');
+    if (auth()->user()->isAdmin()) {
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
+    } else {
+      $taskModel = new Task();
+      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
+    }
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**
@@ -56,18 +63,6 @@ class TaskController extends BaseController
     $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
 
     return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
-  }
-
-  public function list()
-  {
-    if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
-    } else {
-      $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id);
-    }
-
-    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
   /**

@@ -5,7 +5,7 @@
         <h3 class="card-title">Tickets Table</h3>
 
         <div class="card-tools">
-          <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+          <button type="submit" class="btn btn-success btn-sm" @click="newModal">
             <i class="fas fa-plus fa-fw"></i>
             <span class="d-none d-lg-inline">New Ticket</span>
           </button>
@@ -41,7 +41,7 @@
               <td v-if="!ticket.read">Not Read</td>
               <td v-else>Read</td>
               <td>
-                <a href="#" @click="editModel(ticket)" class="btn btn-primary btn-xs">
+                <a href="#" @click="editModal(ticket)" class="btn btn-primary btn-xs">
                   <i class="fas fa-edit fa-fw"></i>
                 </a>
                 <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
@@ -109,17 +109,11 @@
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Select one"
+                  :allow-empty="false"
                   label="name"
-                  track-by="name"
-                  :preselect-first="true"
+                  deselect-label="Can't remove this value"
+                  placeholder="Select one"
                 >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
                 </multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
@@ -133,17 +127,9 @@
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
-                  :preselect-first="true"
                   @input="opt => form.project_id = opt.id"
                   :disabled="isDisabled"
                 >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
                 </multiselect>
                 <has-error :form="form" field="project_id"></has-error>
               </div>
@@ -190,7 +176,7 @@ export default {
   computed: {
     ...mapGetters({
       owners: "owner/activeOwners",
-      projects: "ticket/projectByOwners"
+      projects: "project/projectByOwners"
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
@@ -204,7 +190,7 @@ export default {
     this.getOwners();
   },
   methods: {
-    newModel() {
+    newModal() {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
@@ -215,9 +201,10 @@ export default {
       }
       $("#Modal").modal("show");
     },
-    editModel(ticket) {
+    editModal(ticket) {
       this.editMode = true;
       this.form.reset();
+      this.form.clear();
       $("#Modal").modal("show");
       this.form.fill(ticket);
       this.form.owner = this.form.project.owner;
@@ -232,7 +219,7 @@ export default {
       this.form.project = [];
       if (ownerId !== null && ownerId !== "") {
         this.$store
-          .dispatch("ticket/getProjectsByOwner", ownerId)
+          .dispatch("project/getProjectsByOwner", ownerId)
           .then(() => {
             this.$Progress.finish();
           })

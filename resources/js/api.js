@@ -40,7 +40,6 @@ const responsibles = {
     getAll: params => API.get('/user/getAllResponsibles'),
 }
 
-// tasks end point
 const tasks = {
     get: params => API.get('/tasks/list/'),
     getById: params => API.get('/tasks/' + params),
@@ -87,5 +86,6 @@ export default {
     responsibles,
     receipts,
     track,
-    status
+    status,
+    tasks
 }

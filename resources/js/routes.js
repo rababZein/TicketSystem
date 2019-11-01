@@ -53,7 +53,7 @@ let routes = [
     },
     {
         path: '/tasks',
-        component: require('./components/TasksComponent.vue').default,
+        component: require('./pages/TaskPage/TasksComponent.vue').default,
         meta: { title: 'Tasks' }
     },
     {

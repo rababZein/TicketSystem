@@ -19,25 +19,27 @@
               <tr>
                 <th width="10">ID</th>
                 <th width="20%">Name</th>
-                <th width="40%">Description</th>
-                <th width="40%">Status</th>
-                <th width="20%">Client</th>
-                <th width="20%">Project</th>
-                <th width="10%">Ticket</th>
+                <th width="30%">Description</th>
+                <th width="10%">Status</th>
+                <th width="10%">Project</th>
                 <th width="10%">Responsible</th>
-                <th>action</th>
+                <th width="10%">action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="task in tasks" :key="task.id">
+              <tr v-for="task in tasks.data" :key="task.id">
                 <td>{{ task.id }}</td>
-                <td><router-link :to="'/task/' + task.id">{{ task.name }}</router-link></td>
+                <td>
+                  <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
+                </td>
                 <td>{{ task.description }}</td>
                 <td>{{ task.status.name }}</td>
-                <td>{{ task.project.owner.name }}</td>
-                <td>{{ task.project.name }}</td>
-                <td><p v-if="task.ticket">{{ task.ticket.name }}</p></td>
-                <td><p v-if="task.ticket">{{ task.responsible.name }}</p></td>
+                <td>
+                  <span v-if="task.project">{{ task.project.name }}</span>
+                </td>
+                <td>
+                  <p v-if="task.responsible">{{ task.responsible.name }}</p>
+                </td>
                 <td>
                   <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
                     <i class="fas fa-edit fa-fw"></i>
@@ -56,7 +58,7 @@
             size="small"
             :show-disabled="true"
             :data="tasks"
-            @pagination-change-page="getResults"
+            @pagination-change-page="getTasks"
           ></pagination>
         </div>
         <!-- /.card-body -->
@@ -82,7 +84,7 @@
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editTask(form.id) : createTask()"
+            @submit.prevent="editMode ? editTask(form) : createTask(form)"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
@@ -113,21 +115,12 @@
                 <multiselect
                   v-model="form.status"
                   :options="status"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  :preserve-search="true"
                   placeholder="Select one"
                   label="name"
                   track-by="name"
-                  :preselect-first="true"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                  @input="opt => form.status_id = opt.id"
+                ></multiselect>
+
                 <has-error :form="form" field="status_id"></has-error>
               </div>
               <div class="form-group">
@@ -141,8 +134,9 @@
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
                   :preselect-first="true"
+                  :allow-empty="false"
+                  deselect-label="Can't remove this value"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -163,8 +157,10 @@
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
                   :preselect-first="true"
+                  :allow-empty="false"
+                  deselect-label="Can't remove this value"
+                  @input="opt => form.project_id = opt.id"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -175,40 +171,29 @@
                 </multiselect>
                 <has-error :form="form" field="project_id"></has-error>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="form.project.tickets">
                 <label for="name">Ticket</label>
                 <multiselect
                   v-model="form.ticket"
-                  :options="tickets"
-                  :close-on-select="true"
-                  :clear-on-select="false"
-                  :preserve-search="true"
+                  :options="form.project.tickets"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
-                  :preselect-first="true"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                  @input="opt => form.ticket_id = opt.id"
+                ></multiselect>
                 <has-error :form="form" field="ticket_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Responsible</label>
                 <multiselect
                   v-model="form.responsible"
-                  :options="responsibles"
+                  :options="responsible"
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
                   :preselect-first="true"
+                  @input="opt => form.responsible_id = opt.id"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -233,6 +218,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -241,48 +228,27 @@ export default {
         id: "",
         name: "",
         description: "",
-        status: {
-          id: "",
-          name: ""
-        },
-        status_id: "",
-        project: {
-          id: "",
-          name: "",
-          owner: {
-            id: "",
-            name: ""
-          }
-        },
+        status: {},
+        project: {},
         project_id: "",
-        ticket: {
-          id: "",
-          name: ""
-        },
+        ticket: [],
         ticket_id: "",
-        responsible: {
-          id: "",
-          name: ""
-        },
-        responsible_id: "",
-      }),
-      tasks: {},
-      responsibles: [],
-      tickets: [],
-      projects: [],
-      owners: [],
-      status: []
+        responsible: {},
+        responsible_id: ""
+      })
     };
   },
   methods: {
     newModel() {
       this.editMode = false;
       this.form.reset();
+      this.form.clear();
       $("#newTask").modal("show");
     },
     editModel(task) {
       this.editMode = true;
       this.form.reset();
+      this.form.clear();
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
@@ -291,17 +257,11 @@ export default {
         return value.name;
       });
     },
-    getResults(page = 1) {
+    getTasks(page = 1) {
       this.$Progress.start();
-      this.$api.tasks
-        .get()
+      this.$store
+        .dispatch("task/getTasks", page)
         .then(response => {
-          console.log(response);
-          this.tasks = response.data.data.data;
-          
-          // convert array to object for paginate
-          this.tasks = Object.assign({}, this.tasks);
-
           this.$Progress.finish();
         })
         .catch(error => {
@@ -309,123 +269,73 @@ export default {
         });
     },
     getStatus() {
-      this.$api.status
-        .getAll()
-        .then(response => {
-          this.status = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
-          this.$Progress.finish();
-        })
+      this.$store
+        .dispatch("task/getStatus")
+        .then(response => {})
         .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    getTickets() {
-      this.$api.tickets
-        .getAll()
-        .then(response => {
-          this.tickets = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    getResponsibles() {
-      this.$api.responsibles
-        .getAll()
-        .then(response => {
-          this.responsibles = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
+          console.log(error);
         });
     },
     getOwners() {
-      this.$api.owners
-        .getAll()
-        .then(response => {
-          this.owners = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
-          this.$Progress.finish();
-        })
+      this.$store
+        .dispatch("owner/getOwners")
+        .then(response => {})
         .catch(error => {
-          this.$Progress.fail();
+          console.log(error);
         });
     },
     getProjects(owner_id) {
-      this.$api.projects
-        .getAllByOwner(owner_id)
-        .then(response => {
-          this.projects = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name, owner:key.owner };
-          });
-          this.$Progress.finish();
-        })
+      this.$store
+        .dispatch("project/getProjectsByOwner", owner_id)
+        .then()
         .catch(error => {
-          this.$Progress.fail();
+          console.log(error);
         });
     },
-    createTask() {
+    getResponsibles() {
+      this.$store
+        .dispatch("regularUser/getRegularUser")
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    createTask(data) {
       this.$Progress.start();
-      // need to be enhance
-      this.form.project_id = this.form.project.id;
-      this.form.ticket_id = this.form.ticket.id;
-      this.form.responsible_id = this.form.responsible.id;
-      this.form.status_id = this.form.status.id;
-
-      this.form
-        .post("/v-api/tasks/" + this.form.project_id)
+      this.$store
+        .dispatch("task/createTask", data)
         .then(response => {
           $("#newTask").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
-            title: "Task created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: "can't create new Task"
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
-    editTask(id) {
+    editTask(data) {
       this.$Progress.start();
-      // need to be enhance
-      console.log('edit',this.form);
-      this.form.project_id = this.form.project.id;
-      this.form.ticket_id = this.form.ticket.id;
-      this.form.responsible_id = this.form.responsible.id;
-      this.form.status_id = this.form.status.id;
-
-      this.form
-        .patch("/v-api/tasks/" + id)
+      this.$store
+        .dispatch("task/editTask", data)
         .then(response => {
           $("#newTask").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
-            title: "Task updated successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: "can't update the task"
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     deleteTask(id) {
@@ -440,18 +350,20 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.tasks
-            .delete(id)
-            .then(response => {
+          this.$store
+            .dispatch("task/deleteTask", id)
+            .then(
+              response => {
               this.$Progress.finish();
-              this.getResults();
-              Swal.fire("Deleted!", "The task has been deleted.", "success");
+              this.getTasks();
+              Swal.fire("Deleted!", response.data.message, "success");
             })
             .catch(error => {
               this.$Progress.fail();
+                console.log(error);
               Toast.fire({
                 type: "error",
-                title: "can't delete the task"
+                title: error.response.data.message
               });
             });
         }
@@ -459,18 +371,19 @@ export default {
     }
   },
   mounted() {
-    this.getResults();
+    this.getTasks();
+    this.getStatus();
     this.getOwners();
     this.getResponsibles();
-    this.getTickets();
-    this.getStatus();
-    console.log('xx',this.tasks);
+  },
+  computed: {
+    ...mapGetters({
+      tasks: "task/activeTasks",
+      status: "task/activeStatus",
+      owners: "owner/activeOwners",
+      projects: "project/projectByOwners",
+      responsible: "regularUser/activeRegularUser"
+    })
   }
 };
 </script>
-
-<style scoped>
-.invalid-feedback {
-  display: inline;
-}
-</style>

@@ -23,7 +23,7 @@ class TaskObserver
      */
     public function created(Task $task)
     {
-        TaskAssignJob::dispatch($input['responsible_id'], $task);
+        TaskAssignJob::dispatch($this->input['responsible_id'], $task);
     }
 
     /**
@@ -35,7 +35,7 @@ class TaskObserver
     public function updated(Task $task)
     {
         if (isset($this->input['responsible_id'])) {
-            TaskAssignJob::dispatch($input['responsible_id'], $task);
+            TaskAssignJob::dispatch($this->input['responsible_id'], $task);
           }
     }
 

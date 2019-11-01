@@ -56,11 +56,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
-    Route::get('/tasks/list', 'TaskController@list');
     Route::get('/tasks/getall', 'TaskController@getAll');
-    Route::post('/tasks/{project_id}', 'TaskController@store');
-    Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
-    Route::resource('/tasks', 'TaskController')->except('create', 'store');
+    Route::resource('/tasks', 'TaskController')->except('create');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');

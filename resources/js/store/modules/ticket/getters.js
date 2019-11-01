@@ -5,9 +5,7 @@ export default {
     ticketsOwners(state) {
         return state.owners;
     },
-    projectByOwners(state) {
-        return state.projects;
-    },
+    
     activeTicket(state) {
         return state.singleTicket;
     },

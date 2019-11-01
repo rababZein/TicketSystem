@@ -14,5 +14,8 @@ export default {
         } else {
             return {}
         }
-    }
+    },
+    projectByOwners(state) {
+        return Object.values(state.items);
+    },
 }
