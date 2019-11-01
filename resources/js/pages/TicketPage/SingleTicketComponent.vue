@@ -48,47 +48,7 @@
     </div>
     <!-- tasks for this ticket -->
     <div class="col-md-12">
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">
-            Tasks in
-            <strong>{{ ticket.name }}</strong>
-          </h3>
-
-          <div class="card-tools"></div>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th width="10">ID</th>
-                <th width="40%">Name</th>
-                <th width="50%">Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="task in ticket.tasks" :key="task.id">
-                <td>{{ task.id }}</td>
-                <td>
-                  <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
-                </td>
-                <td>{{ task.description }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer clear-fix">
-          <!-- <pagination
-            align="right"
-            size="small"
-            :show-disabled="true"
-            :data="project.tickets"
-            @pagination-change-page="getResults"
-          ></pagination>-->
-        </div>
-        <!-- /.card-body -->
-      </div>
+      <task-list :tasks="tasks"></task-list>
     </div>
   </div>
 </template>
@@ -113,15 +73,27 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
+    },
+    getTasksByTicketId(page = 1) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("task/getTasksByTicketId", {id: this.ticketId, page: page})
+        .then(response => {
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
     }
   },
   mounted() {
     this.getTicketById(this.ticketId);
+    this.getTasksByTicketId();
   },
   computed: {
-    ...mapGetters("ticket", {
-      ticket: "activeTicket",
-      tasks: "activeTasks"
+    ...mapGetters({
+      ticket: "ticket/activeTicket",
+      tasks: "task/activeTasks"
     })
   }
 };

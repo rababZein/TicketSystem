@@ -1,0 +1,374 @@
+<template>
+  <div class>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Tasks Table</h3>
+
+        <div class="card-tools">
+          <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+            <i class="fas fa-plus fa-fw"></i>
+            <span class="d-none d-lg-inline">New Task</span>
+          </button>
+        </div>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body table-responsive p-0">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th width="10">ID</th>
+              <th width="20%">Name</th>
+              <th width="30%">Description</th>
+              <th width="10%">Status</th>
+              <th width="10%">Project</th>
+              <th width="10%">Responsible</th>
+              <th width="10%">action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="task in tasks.data" :key="task.id">
+              <td>{{ task.id }}</td>
+              <td>
+                <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
+              </td>
+              <td>{{ task.description }}</td>
+              <td>{{ task.status.name }}</td>
+              <td>
+                <span v-if="task.project">{{ task.project.name }}</span>
+              </td>
+              <td>
+                <p v-if="task.responsible">{{ task.responsible.name }}</p>
+              </td>
+              <td>
+                <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
+                  <i class="fas fa-edit fa-fw"></i>
+                </a>
+                <a href="#" @click="deleteTask(task.id)" class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash fa-fw"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- /.card-body -->
+    </div>
+    <!-- /.card -->
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="newTask"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="newTaskLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 v-show="!editMode" class="modal-title" id="newTaskLabel">Create New Task</h5>
+            <h5 v-show="editMode" class="modal-title" id="newTaskLabel">Edit Task</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <form
+            @submit.prevent="editMode ? editTask(form) : createTask(form)"
+            @keydown="form.onKeydown($event)"
+          >
+            <div class="modal-body">
+              <div class="form-group">
+                <label for="name">Task Name</label>
+                <input
+                  v-model="form.name"
+                  type="text"
+                  name="name"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('name') }"
+                />
+                <has-error :form="form" field="name"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="description">Task Description</label>
+                <input
+                  v-model="form.description"
+                  type="text"
+                  name="description"
+                  class="form-control"
+                  :class="{ 'is-invalid': form.errors.has('description') }"
+                />
+                <has-error :form="form" field="description"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Status</label>
+                <multiselect
+                  v-model="form.status"
+                  :options="status"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                  @input="opt => form.status_id = opt.id"
+                ></multiselect>
+
+                <has-error :form="form" field="status_id"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Client</label>
+                <multiselect
+                  v-model="form.project.owner"
+                  :options="owners"
+                  @input="getProjects(form.project.owner.id)"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  label="name"
+                  :preselect-first="true"
+                  :allow-empty="false"
+                  deselect-label="Can't remove this value"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="client_id"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Project</label>
+                <multiselect
+                  v-model="form.project"
+                  :options="projects"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  label="name"
+                  :preselect-first="true"
+                  :allow-empty="false"
+                  deselect-label="Can't remove this value"
+                  @input="opt => form.project_id = opt.id"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="project_id"></has-error>
+              </div>
+              <div class="form-group" v-if="form.project.tickets">
+                <label for="name">Ticket</label>
+                <multiselect
+                  v-model="form.ticket"
+                  :options="form.project.tickets"
+                  placeholder="Select one"
+                  label="name"
+                  @input="opt => form.ticket_id = opt.id"
+                ></multiselect>
+                <has-error :form="form" field="ticket_id"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Responsible</label>
+                <multiselect
+                  v-model="form.responsible"
+                  :options="responsible"
+                  :close-on-select="true"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Select one"
+                  label="name"
+                  :preselect-first="true"
+                  @input="opt => form.responsible_id = opt.id"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="responsible_id"></has-error>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+              <button v-show="!editMode" type="submit" class="btn btn-primary">Save</button>
+              <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { mapGetters, mapActions } from "vuex";
+
+export default {
+  data() {
+    return {
+      editMode: false,
+      form: new Form({
+        id: "",
+        name: "",
+        description: "",
+        status: {},
+        project: {},
+        project_id: "",
+        ticket: [],
+        ticket_id: "",
+        responsible: {},
+        responsible_id: ""
+      })
+    };
+  },
+  methods: {
+    newModel() {
+      this.editMode = false;
+      this.form.reset();
+      this.form.clear();
+      $("#newTask").modal("show");
+    },
+    editModel(task) {
+      this.editMode = true;
+      this.form.reset();
+      this.form.clear();
+      $("#newTask").modal("show");
+      this.form.fill(task);
+      this.getProjects(task.project.owner.id);
+
+      this.form.selected = _.map(this.form.projects, function(value, key) {
+        return value.name;
+      });
+    },
+    getStatus() {
+      this.$store
+        .dispatch("task/getStatus")
+        .then(response => {})
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getOwners() {
+      this.$store
+        .dispatch("owner/getOwners")
+        .then(response => {})
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getProjects(owner_id) {
+      this.$store
+        .dispatch("project/getProjectsByOwner", owner_id)
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    getResponsibles() {
+      this.$store
+        .dispatch("regularUser/getRegularUser")
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
+    },
+    createTask(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("task/createTask", data)
+        .then(response => {
+          $("#newTask").modal("hide");
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    editTask(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("task/editTask", data)
+        .then(response => {
+          $("#newTask").modal("hide");
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    deleteTask(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("task/deleteTask", id)
+            .then(response => {
+              this.$Progress.finish();
+              Swal.fire("Deleted!", response.data.message, "success");
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              console.log(error);
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
+    }
+  },
+  mounted() {
+    this.getStatus();
+    this.getOwners();
+    this.getResponsibles();
+  },
+  computed: {
+    ...mapGetters({
+      status: "task/activeStatus",
+      owners: "owner/activeOwners",
+      projects: "project/projectByOwners",
+      responsible: "regularUser/activeRegularUser"
+    })
+  },
+  props: {
+    tasks: {
+      type: Object,
+      required: true
+    },
+    singlePage: false
+  },
+};
+</script>
+
+<style>
+</style>

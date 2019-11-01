@@ -58,6 +58,16 @@ export default {
                     reject(error);
                 })
             });
+        },
+        getTasksByTicketId({commit}, params) {
+            return new Promise((resolve, reject) => {
+                tasks.getTasksByTicketId(params).then(response => {
+                    commit('setTasks', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
         }
     },
     mutations: {
@@ -69,10 +79,9 @@ export default {
                 id: task.id,
                 name: task.name,
                 description: task.description,
-                status: task.status.name,
-                // TODO: make sure to return this data when create task
-                // project: task.project.name,
-                // responsible: task.responsible.name
+                status: task.status,
+                project: task.project,
+                responsible: task.responsible
             };
             state.items.data.unshift(taskObj);
         },
