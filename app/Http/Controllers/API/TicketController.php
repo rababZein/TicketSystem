@@ -80,7 +80,7 @@ class TicketController extends BaseController
    */
   public function show(ViewTicketRequest $request, $id)
   {
-    $ticket = Ticket::with('tasks', 'project')->get();
+    $ticket = Ticket::with('tasks', 'project.tickets')->get();
     $ticket = $ticket->find($id);
 
     if (is_null($ticket)) {

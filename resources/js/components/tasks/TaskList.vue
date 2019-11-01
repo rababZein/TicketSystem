@@ -127,14 +127,8 @@
                   :preselect-first="true"
                   :allow-empty="false"
                   deselect-label="Can't remove this value"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                  :disabled="isDisabled"
+                ></multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
               <div class="form-group">
@@ -151,14 +145,8 @@
                   :allow-empty="false"
                   deselect-label="Can't remove this value"
                   @input="opt => form.project_id = opt.id"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                  :disabled="isDisabled"
+                ></multiselect>
                 <has-error :form="form" field="project_id"></has-error>
               </div>
               <div class="form-group" v-if="form.project.tickets">
@@ -214,6 +202,7 @@ export default {
   data() {
     return {
       editMode: false,
+      isDisabled: false,
       form: new Form({
         id: "",
         name: "",
@@ -233,6 +222,11 @@ export default {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
+      if (this.singlePage) {
+        this.form.project = this.ticket.project;
+        this.form.project_id = this.ticket.project.id;
+        this.isDisabled = true;
+      }
       $("#newTask").modal("show");
     },
     editModel(task) {
@@ -242,10 +236,11 @@ export default {
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
-
-      this.form.selected = _.map(this.form.projects, function(value, key) {
-        return value.name;
-      });
+      if (this.singlePage) {
+        this.form.project = this.ticket.project;
+        this.form.project_id = this.ticket.project.id;
+        this.isDisabled = true;
+      }
     },
     getStatus() {
       this.$store
@@ -357,7 +352,9 @@ export default {
       status: "task/activeStatus",
       owners: "owner/activeOwners",
       projects: "project/projectByOwners",
-      responsible: "regularUser/activeRegularUser"
+      responsible: "regularUser/activeRegularUser",
+      ticket: "ticket/activeTicket",
+      tickets: "ticket/activeTickets"
     })
   },
   props: {
@@ -366,7 +363,7 @@ export default {
       required: true
     },
     singlePage: false
-  },
+  }
 };
 </script>
 

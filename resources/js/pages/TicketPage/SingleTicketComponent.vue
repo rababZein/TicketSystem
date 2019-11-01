@@ -48,7 +48,7 @@
     </div>
     <!-- tasks for this ticket -->
     <div class="col-md-12">
-      <task-list :tasks="tasks"></task-list>
+      <task-list :tasks="tasks" :singlePage="true"></task-list>
     </div>
   </div>
 </template>

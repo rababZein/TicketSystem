@@ -39,16 +39,6 @@ class ProjectController extends BaseController
   /**
    * Display a listing of the resource.
    *
-   * @return \Illuminate\Http\Response
-   */
-  public function view()
-  {
-    return view('pages.projects.index');
-  }
-
-  /**
-   * Display a listing of the resource.
-   *
    * @return Response
    */
 
