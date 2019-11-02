@@ -32,7 +32,7 @@
                 <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
               </td>
               <td>{{ task.description }}</td>
-              <td>{{ task.status.name }}</td>
+              <td><div class="badge bg-primary">{{ task.status.name }}</div></td>
               <td>
                 <span v-if="task.project">{{ task.project.name }}</span>
               </td>

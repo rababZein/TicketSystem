@@ -29,6 +29,12 @@
                 <tbody>
                   <tr>
                     <td>
+                      <small>Tickets:</small>
+                    </td>
+                    <td>{{ tickets.total }}</td>
+                  </tr>
+                  <tr>
+                    <td>
                       <small>Budget hours:</small>
                     </td>
                     <td>{{ project.budget_hours }}</td>

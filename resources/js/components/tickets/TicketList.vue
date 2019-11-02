@@ -117,7 +117,7 @@
                 </multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="form.owner">
                 <label for="name">Project</label>
                 <multiselect
                   v-model="form.project"
