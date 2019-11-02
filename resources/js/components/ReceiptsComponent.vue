@@ -109,14 +109,14 @@
                 <label for="name">Task</label>
                 <multiselect
                   v-model="form.task"
-                  :options="tasks"
+                  :options="tasks.data"
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
                   :preselect-first="true"
+                  @input="opt => form.task_id = opt.id"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -166,6 +166,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   data() {
     return {
@@ -182,7 +184,6 @@ export default {
         },
         task_id: ""
       }),
-      tasks: [],
       receipts: {}
     };
   },
@@ -215,17 +216,12 @@ export default {
         });
     },
     getTasks() {
-      this.$api.tasks
-        .getAll()
-        .then(response => {
-          this.tasks = _.map(response.data.data, function(key, value) {
-            return { id: key.id, name: key.name };
-          });
-          this.$Progress.finish();
-        })
+      this.$store
+        .dispatch("task/getTasks")
+        .then()
         .catch(error => {
-          this.$Progress.fail();
-        });
+          console.log(error);
+        })
     },
     createReceipt() {
       this.$Progress.start();
@@ -309,12 +305,11 @@ export default {
   mounted() {
     this.getResults();
     this.getTasks();
+  },
+  computed: {
+    ...mapGetters({
+      tasks: "task/activeTasks"
+    })
   }
 };
 </script>
-
-<style scoped>
-.invalid-feedback {
-  display: inline;
-}
-</style>
