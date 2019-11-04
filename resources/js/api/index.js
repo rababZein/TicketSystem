@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '../routes';
 
 // share a common base URL and configuration
 export const API = axios.create({
@@ -29,6 +30,9 @@ const errorHandler = (error) => {
                 type: "error",
                 title: "This action is unauthorized"
             });
+        }
+        if (error.response.status === 404) {
+            router.push('/404')
         }
     }
     return Promise.reject({ ...error })
