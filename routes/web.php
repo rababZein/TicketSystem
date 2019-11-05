@@ -75,4 +75,4 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/status/getAll', 'StatusController@getAll');
 });
 
-Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');
+// Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');

@@ -52,10 +52,16 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        // dd(($exception instanceof ValidationException));
         // override the API error handling to return a proper JSON.
-        if ($exception instanceof NotFoundHttpException && $request->wantsJson()) {
-            return response()->json(['error' => 'Not Found'], 404);
-        } elseif ($exception instanceof ValidationException && $request->wantsJson()) {
+        if ($exception instanceof NotFoundHttpException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Route not found',
+                'type' => 'NotFoundHttpException',
+                ]
+                , 404); //bad request
+        } elseif ($exception instanceof ValidationException) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation Errors',
