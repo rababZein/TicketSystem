@@ -17,13 +17,13 @@ Vue.use( VueRouter )
 let routes = [
     {
         path: '/home',
-        component: require('./components/DashboardComponent.vue').default,
+        component: require('./pages/DashboardPage/DashboardComponent.vue').default,
         alias: '',
         meta: { title: 'Dashboard' }
     },
     {
         path: '/dashboard',
-        component: require('./components/DashboardComponent.vue').default,
+        component: require('./pages/DashboardPage/DashboardComponent.vue').default,
         meta: { title: 'Dashboard' }
     },
     {
@@ -77,8 +77,12 @@ let routes = [
         meta: { title: 'Roles' }
     },
     {
+        path: '/404',
+        component: require('./pages/PartialPage/NotFound.vue').default
+    },
+    {
         path: '*',
-        component: require('./components/DashboardComponent.vue').default
+        redirect: '/404'
     }
 ]
 
