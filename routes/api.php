@@ -97,5 +97,19 @@ Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function ()
 });
 
 
+Route::get('/getMailBox', function () {
+    $oClient = Client::account('default');
+    $oClient->connect();
+    $aFolder = $oClient->getFolder('INBOX');
+    $aMessage = $aFolder->query()->limit(10)->setFetchAttachment(false)->get();
+    foreach($aMessage as $oMessage){
+        $outbut[]= $oMessage->getSubject();
+        // echo 'Attachments: '.$oMessage->getAttachments()->count().'<br />';
+        $outbut[]=  $oMessage->getHTMLBody(true);
+    }
+    dd($outbut);
+});
+
+
 
 
