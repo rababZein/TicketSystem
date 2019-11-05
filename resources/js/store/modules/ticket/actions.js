@@ -23,16 +23,7 @@ export default {
             })
         });
     },
-    getProjectsByOwner({ commit }, ownerId) {
-        return new Promise((resolve, reject) => {
-            projects.getAllByOwner(ownerId).then(response => {
-                commit('setProjectByOwners', response.data.data);
-                resolve(response);
-            }).catch(error => {
-                reject(error);
-            })
-        });
-    },
+    
     createTicket({ commit }, data) {
         return new Promise((resolve, reject) => {
             tickets.createTicket(data).then(response => {
@@ -75,7 +66,6 @@ export default {
     },
     getTicketsByProjectId({commit}, params) {
         return new Promise((resolve, reject) => {
-            console.log(params.page);
             tickets.getByProjectId(params).then(response => {
                 commit('setTickets', response.data.data);
                 resolve(response);

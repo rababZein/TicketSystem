@@ -39,16 +39,6 @@ class ProjectController extends BaseController
   /**
    * Display a listing of the resource.
    *
-   * @return \Illuminate\Http\Response
-   */
-  public function view()
-  {
-    return view('pages.projects.index');
-  }
-
-  /**
-   * Display a listing of the resource.
-   *
    * @return Response
    */
 
@@ -72,7 +62,7 @@ class ProjectController extends BaseController
    */
   public function getAllByOwner(ListProjectRequest $request, $owner_id)
   {
-    $projects = Project::whereHas('owner', function ($query)  use ($owner_id) {
+    $projects = Project::with('tickets')->whereHas('owner', function ($query)  use ($owner_id) {
       $query->where('owner_id','=', $owner_id);
     })->with('owner')->get();
 

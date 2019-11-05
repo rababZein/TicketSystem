@@ -52,15 +52,12 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/tracking/history/{task_id}', 'Tracking_taskController@getHistory');
 
     // tickets
-    Route::get('/tickets/byProject/{project_id}', 'TicketController@getTicketsByProjectId');
+    Route::get('/projects/{project_id}/tickets/', 'TicketController@getTicketsByProjectId');
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
-    Route::get('/tasks/list', 'TaskController@list');
-    Route::get('/tasks/getall', 'TaskController@getAll');
-    Route::post('/tasks/{project_id}', 'TaskController@store');
-    Route::patch('/changeStatus/{task_id}', 'TaskController@changeStatus');
-    Route::resource('/tasks', 'TaskController')->except('create', 'store');
+    Route::get('/tickets/{ticket_id}/tasks/', 'TaskController@getTasksByTicketId');
+    Route::resource('/tasks', 'TaskController')->except('create');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');

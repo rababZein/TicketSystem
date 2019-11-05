@@ -1,14 +1,14 @@
 <template>
   <div class="row justify-content-center">
     <div class="col-12">
-      <ticket-list :tickets="tickets"></ticket-list>
+      <task-list :tasks="tasks"></task-list>
     </div>
     <pagination
-      align="center"
+      align="right"
       size="small"
       :show-disabled="true"
-      :data="tickets"
-      @pagination-change-page="getTickets"
+      :data="tasks"
+      @pagination-change-page="getTasks"
     ></pagination>
   </div>
 </template>
@@ -17,30 +17,26 @@
 import { mapGetters } from "vuex";
 
 export default {
-  data() {
-    return {};
-  },
   methods: {
-    getTickets(page = 1) {
+    getTasks(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("ticket/getTickets", page)
-        .then(() => {
+        .dispatch("task/getTasks", page)
+        .then(response => {
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
-    },
+    }
   },
   mounted() {
-    this.getTickets();
+    this.getTasks();
   },
   computed: {
-    ...mapGetters("ticket", {
-      tickets: "activeTickets"
+    ...mapGetters({
+      tasks: "task/activeTasks"
     })
   }
 };
 </script>
-

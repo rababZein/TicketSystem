@@ -21,7 +21,7 @@
                 ></textarea>
               </div>
             </div>
-            <div class="col-sm-6" v-if="project.tickets">
+            <div class="col-sm-6">
               <table
                 class="table table-borderless table-sm table-hover table-responsive-lg mt-2"
                 style="width: 70%"
@@ -31,7 +31,7 @@
                     <td>
                       <small>Tickets:</small>
                     </td>
-                    <td>{{ project.tickets.length }}</td>
+                    <td>{{ tickets.total }}</td>
                   </tr>
                   <tr>
                     <td>
@@ -99,22 +99,11 @@ export default {
           this.$Progress.fail();
         });
     },
-    getOwners() {
-      this.$Progress.start();
-      this.$store
-        .dispatch("ticket/getOwners")
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    }
+
   },
   mounted() {
     this.getPrjectById(this.projectId);
     this.getTicketsByProjectId();
-    this.getOwners();
   },
   computed: {
     ...mapGetters({

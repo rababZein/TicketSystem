@@ -43,28 +43,11 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    return view('pages.tasks.index');
-  }
-
-  /**
-   * Display data listing of the resource.
-   *
-   * @return Response
-   */
-  public function getAll(ListTaskRequest $request)
-  {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
-
-    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
-  }
-
-  public function list()
-  {
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id);
+      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
     }
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
@@ -190,7 +173,18 @@ class TaskController extends BaseController
 
     return $this->sendResponse(new TaskResource($task), 'task updated successfully.');
   }
+
+  public function getTasksByTicketId($id, ListTaskRequest $request)
+  {
+    $tasks = Task::with('project.owner', 'responsible')->whereHas('ticket', function ($query) use ($id) {
+      $query->where('id', $id);
+    })->latest()->paginate();
+
+    if (is_null($tasks)) {
+      throw new ItemNotFoundException($id);
+    }
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+  }
   
 }
-
-?>

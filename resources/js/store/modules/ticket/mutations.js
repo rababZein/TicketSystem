@@ -2,16 +2,8 @@ export default {
     setTickets(state, tickets) {
         state.items = Object.assign({}, tickets);
     },
-    setTicketsOwners(state, owners) {
-        state.owners = _.map(owners, function (key, value) {
-            return { id: key.id, name: key.name };
-        });;
-    },
-    setProjectByOwners(state, projects) {
-        state.projects = _.map(projects, function (key, value) {
-            return { id: key.id, name: key.name, owner: key.owner };
-        });;
-    },
+
+
     deleteTicket(state, ticket) {
         state.items.data = state.items.data.filter(items => items.id != ticket.id);
     },

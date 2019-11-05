@@ -80,7 +80,7 @@ class TicketController extends BaseController
    */
   public function show(ViewTicketRequest $request, $id)
   {
-    $ticket = Ticket::with('tasks', 'project')->get();
+    $ticket = Ticket::with('tasks', 'project.tickets')->get();
     $ticket = $ticket->find($id);
 
     if (is_null($ticket)) {
@@ -153,7 +153,7 @@ class TicketController extends BaseController
 
   public function getTicketsByProjectId($id, ListTicketRequest $request)
   {
-    $ticket = Ticket::whereHas('project', function ($query) use ($id) {
+    $ticket = Ticket::with('project.owner')->whereHas('project', function ($query) use ($id) {
       $query->where('id', $id);
     })->latest()->paginate();
 
