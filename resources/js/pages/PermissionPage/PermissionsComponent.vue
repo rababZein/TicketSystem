@@ -30,7 +30,11 @@
                   <a href="#" @click="editModel(permission)" class="btn btn-primary btn-xs">
                     <i class="fas fa-edit fa-fw"></i>
                   </a>
-                  <a href="#" @click="deletePermission(permission.id)" class="btn btn-danger btn-xs">
+                  <a
+                    href="#"
+                    @click="deletePermission(permission.id)"
+                    class="btn btn-danger btn-xs"
+                  >
                     <i class="fas fa-trash fa-fw"></i>
                   </a>
                 </td>
@@ -100,6 +104,8 @@
 </template>
 
 <script>
+import api from "../../api/permission";
+
 export default {
   data() {
     return {
@@ -125,7 +131,7 @@ export default {
     },
     getResults(page = 1) {
       this.$Progress.start();
-      this.$api.permissions
+      api
         .get({ page: page })
         .then(response => {
           this.permissions = response.data.data;
@@ -189,7 +195,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.permissions
+          api
             .delete(id)
             .then(response => {
               this.$Progress.finish();

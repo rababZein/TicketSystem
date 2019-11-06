@@ -17,12 +17,6 @@ const roles = {
     put: params => API.put('/roles', { params }),
     delete: params => API.delete('/roles/' + params),
 }
-// permissions end point
-const permissions = {
-    get: params => API.get('/permissions/list', { params }),
-    getAll: params => API.get('/permissions/getall', { params }),
-    delete: params => API.delete('/permissions/' + params),
-}
 
 // owners end point
 const owners = {
@@ -73,7 +67,6 @@ const status = {
 
 export default {
     roles,
-    permissions,
     owners,
     tasks,
     responsibles,
