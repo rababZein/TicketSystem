@@ -67,6 +67,7 @@
         <div class="card-footer">
           <div class="col-12">
             <pagination
+              v-if="projects.data"
               align="right"
               size="small"
               :show-disabled="true"
