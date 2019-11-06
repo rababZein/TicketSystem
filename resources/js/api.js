@@ -9,15 +9,6 @@ const API = axios.create({
 
 // API.defaults.headers.common['Authorization'] = token ? `Bearer ${token}` : '';
 
-// roles end point
-const roles = {
-    get: params => API.get('/roles/list', { params }),
-    getAll: params => API.get('/roles/getall', { params }),
-    post: params => API.post('/roles', { params }),
-    put: params => API.put('/roles', { params }),
-    delete: params => API.delete('/roles/' + params),
-}
-
 // owners end point
 const owners = {
     getAll: params => API.get('/owner/getall'),
@@ -66,7 +57,6 @@ const status = {
 }
 
 export default {
-    roles,
     owners,
     tasks,
     responsibles,
