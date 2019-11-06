@@ -19,14 +19,14 @@ class everyMinute extends Command
      *
      * @var string
      */
-    protected $signature = 'minute:updateMailBox';
+    protected $signature = 'minute:refreshMailBoxToCreateTickets';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'To fetch new mails';
+    protected $description = 'To fetch new mails to create new tickets';
 
     /**
      * Create a new command instance.
