@@ -71,6 +71,7 @@
               size="small"
               :show-disabled="true"
               :data="projects"
+              :limit="3"
               @pagination-change-page="getProjects"
             ></pagination>
           </div>

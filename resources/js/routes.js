@@ -28,7 +28,7 @@ let routes = [
     },
     {
         path: '/users',
-        component: require('./components/UsersComponent.vue').default,
+        component: require('./pages/UserPage/UsersComponent.vue').default,
         meta: { title: 'Users' }
     },
     {
@@ -63,17 +63,17 @@ let routes = [
     },
     {
         path: '/receipts',
-        component: require('./components/ReceiptsComponent.vue').default,
+        component: require('./pages/ReceiptPage/ReceiptsComponent.vue').default,
         meta: { title: 'Receipts' }
     },
     {
         path: '/permissions',
-        component: require('./components/PermissionsComponent.vue').default,
+        component: require('./pages/PermissionPage/PermissionsComponent.vue').default,
         meta: { title: 'Permissions' }
     },
     {
         path: '/roles',
-        component: require('./components/RolesComponent.vue').default,
+        component: require('./pages/RolePage/RolesComponent.vue').default,
         meta: { title: 'Roles' }
     },
     {

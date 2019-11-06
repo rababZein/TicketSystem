@@ -8,6 +8,7 @@
       size="small"
       :show-disabled="true"
       :data="tasks"
+      :limit="3"
       @pagination-change-page="getTasks"
     ></pagination>
   </div>
