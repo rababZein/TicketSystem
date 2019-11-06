@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import api from "../../api/permission";
+import api from "../../api/permissions";
 
 export default {
   data() {

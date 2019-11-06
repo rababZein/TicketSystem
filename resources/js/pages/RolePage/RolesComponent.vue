@@ -131,6 +131,9 @@
 </template>
 
 <script>
+import rolesApi from '../../api/roles';
+import permissionsApi from '../../api/permissions';
+
 export default {
   data() {
     return {
@@ -149,7 +152,7 @@ export default {
   methods: {
     getResults(page = 1) {
       this.$Progress.start();  
-      this.$api.roles
+      rolesApi
         .get({ page: page })
         .then(response => {
           this.roles = response.data.data;
@@ -175,7 +178,7 @@ export default {
       });
     },
     getPermissions() {
-      this.$api.permissions
+      permissionsApi
         .getAll()
         .then(response => {
           this.permissions = _.map(response.data.data, function(key, value) {
@@ -241,7 +244,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.roles
+          rolesApi
             .delete(id)
             .then(response => {
               this.$Progress.finish();
