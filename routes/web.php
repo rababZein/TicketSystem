@@ -68,18 +68,11 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // receipt
     Route::get('/receipts/list', 'ReceiptController@list');
     Route::get('/receipts/getall', 'ReceiptController@getAll');
-    Route::resource('/receipts', 'ReceiptController')->except('create' . 'store');
+    Route::resource('/receipts', 'ReceiptController')->except('create', 'store');
     Route::post('/receipts/{project_id}', 'ReceiptController@store');
 
     // status
     Route::get('/status/getAll', 'StatusController@getAll');
 });
 
-// Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');
-Route::get('/test', function () {
-    $oClient = Client::account('default');
-    $oClient->connect();
-    $aFolder = $oClient->getFolder('INBOX');
-    $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(false)->get();
-    dd($aMessage);
-});
+Route::get('/{path}', 'Vue\VueController@index')->where('path', '^(?!v-api).*$');
