@@ -32,6 +32,11 @@ let routes = [
         meta: { title: 'Users' }
     },
     {
+        path: '/profile/:id',
+        component: require('./pages/UserPage/profileComponent.vue').default,
+        meta: { title: 'Users' }
+    },
+    {
         path: '/projects',
         component: require('./pages/ProjectPage/ProjectsComponent.vue').default,
         meta: { title: 'Projects' }
