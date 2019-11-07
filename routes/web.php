@@ -64,7 +64,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // receipt
     Route::get('/receipts/list', 'ReceiptController@list');
     Route::get('/receipts/getall', 'ReceiptController@getAll');
-    Route::resource('/receipts', 'ReceiptController')->except('create'. 'store');
+    Route::resource('/receipts', 'ReceiptController')->except('create', 'store');
     Route::post('/receipts/{project_id}', 'ReceiptController@store');
 
     // status
