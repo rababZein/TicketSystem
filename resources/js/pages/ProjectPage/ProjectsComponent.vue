@@ -34,7 +34,7 @@
                   <div class="inner">
                     <h3>{{ project.name }}</h3>
 
-                    <p>{{ project.owner.name }}</p>
+                    <p><router-link :to="'/profile/' + project.owner.id" class="text-white">{{ project.owner.name }}</router-link></p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
