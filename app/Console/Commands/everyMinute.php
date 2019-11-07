@@ -51,15 +51,21 @@ class everyMinute extends Command
         $aMessage = $aFolder->query()->unseen()->setFetchAttachment(false)->get();
         foreach($aMessage as $oMessage){
             $emailData = [];
-            $emailData['subject']= $oMessage->getSubject();
-            $emailData['mail']= $oMessage->getFrom()[0]->mail;
-            $emailData['personal']= $oMessage->getFrom()[0]->personal;
+            $emailData['email_id'] = $oMessage->getMessageId();
+            $emailData['reference'] = $oMessage->getAttributes()['references'];
+            $emailData['subject'] = $oMessage->getSubject();
+            $emailData['mail'] = $oMessage->getFrom()[0]->mail;
+            $emailData['personal'] = $oMessage->getFrom()[0]->personal;
             // echo 'Attachments: '.$oMessage->getAttachments()->count().'<br />';
-            $emailData['body']=  $oMessage->getHTMLBody(true);
+            $emailData['body'] =  $oMessage->getHTMLBody(true);
 
             $emailData['project'] = $this->getProjectByClientEmail($emailData);
 
-            $this->createTicket($emailData);
+            if ($oMessage->getInReplyTo()) {
+                $this->updateTicket($emailData);
+            } else {
+                $this->createNewTicket($emailData);
+            }
         }
     }
 
@@ -122,8 +128,9 @@ class everyMinute extends Command
         return $user;
     }
 
-    private function createTicket($emailData){
+    private function createNewTicket($emailData){
         $ticket = new Ticket();
+        $ticket->email_id = $emailData['email_id'];
         $ticket->project_id = $emailData['project']->id;
         $ticket->name = $emailData['subject'];
         $ticket->description = $emailData['body'];
@@ -134,5 +141,28 @@ class everyMinute extends Command
 
         echo nl2br('email: '.$emailData['subject'].' is inserted as a ticket id = '.$ticket->id);
         echo "<br>";
+    }
+
+    private function updateTicket($emailData)
+    {
+        $subReference = explode(' ', $emailData['reference']);
+        $subReference[0] = trim($subReference[0], '<');
+        $subReference[0] = trim($subReference[0], '>');      
+        $ticket = Ticket::where('email_id', 'like', '%' . $this->getStrBefore('.', $subReference[0]) . '%')
+                        ->first();
+        if (! $ticket) {
+            $this->createNewTicket($emailData);
+        } else {
+            $ticket->description .= ' </br> ****reply**** </br> '.$emailData['body'];
+            $ticket->save();
+
+            echo nl2br('email: '.$emailData['subject'].' is updated in the ticket id = '.$ticket->id);
+            echo "<br>";
+        }
+    }
+
+    private function getStrBefore($var, $inthat)
+    {
+        return substr($inthat, 0, strpos($inthat, $var));
     }
 }
