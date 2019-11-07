@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
 use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Http\Requests\TaskRequest\ViewTaskRequest;
@@ -34,6 +35,7 @@ class TaskController extends BaseController
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
+      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient']]);
   }
 
    /**
@@ -185,6 +187,14 @@ class TaskController extends BaseController
     }
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function getTaskCountPerClient($clientId)
+  {
+    $tasksNumber = Task::select(DB::Raw('status_id, COUNT(*) as count'))
+                          ->groupBy('status_id')->get();
+
+    return $this->sendResponse($tasksNumber->toArray(), 'Tasks Number retrieved successfully.');
   }
   
 }

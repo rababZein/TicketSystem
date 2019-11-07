@@ -34,6 +34,7 @@ class ProjectController extends BaseController
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
+      $this->middleware('permission:project-list', ['only' => ['getProjectCountPerClient']]);
   }
 
   /**
@@ -169,5 +170,12 @@ class ProjectController extends BaseController
     $projects = $project_model->search($searchKey);
     
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+  }
+
+  public function getProjectCountPerClient($clientId)
+  {
+    $projectsNumber = Project::where('owner_id', $clientId)->count();
+
+    return $this->sendResponse(['projectsNumber' => $projectsNumber], 'Projects Number retrieved successfully.');
   }
 }
