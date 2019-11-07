@@ -29,7 +29,7 @@
             <tbody>
               <tr v-for="user in users.data" :key="user.id">
                 <td>{{user.id}}</td>
-                <td>{{user.name}}</td>
+                <td><router-link :to="'/profile/' + user.id">{{user.name}}</router-link></td>
                 <td>{{user.email}}</td>
                 <td>
                   <div
@@ -59,6 +59,7 @@
             size="small"
             :show-disabled="true"
             :data="users"
+            :limit="3"
             @pagination-change-page="getResults"
           ></pagination>
         </div>
@@ -159,6 +160,9 @@
 </template>
 
 <script>
+import userApi from '../../api/users';
+import roleApi from '../../api/roles';
+
 export default {
   data() {
     return {
@@ -179,10 +183,9 @@ export default {
   methods: {
     getResults(page = 1) {
       this.$Progress.start();
-      this.$api.users
-        .get({ page: page })
+      userApi.get({ page: page })
         .then(response => {
-          this.users = response.data;
+          this.users = response.data.data;
           this.$Progress.finish();
         })
         .catch(error => {
@@ -246,14 +249,12 @@ export default {
         });
     },
     getAllRoles() {
-      this.$api.roles
+      roleApi
         .getAll()
         .then(response => {
-          console.log(response);
           this.roles = _.map(response.data.data, function(key, value) {
             return { id: key.id, name: key.name };
           });
-          console.log($this.roles);
           this.$Progress.finish();
         })
         .catch(error => {
@@ -272,7 +273,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.users
+          userApi
             .delete(id)
             .then(response => {
               this.$Progress.finish();
@@ -293,9 +294,6 @@ export default {
   mounted() {
     this.getResults();
     this.getAllRoles();
-    console.log("Component mounted.");
   }
 };
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

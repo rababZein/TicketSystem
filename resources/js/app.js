@@ -13,7 +13,6 @@ import {Form, HasError, AlertError} from 'vform';
 import moment from 'moment';
 import VueProgressBar from 'vue-progressbar';
 import Swal from 'sweetalert2';
-import api from './api';
 import router from './routes';
 import Multiselect from 'vue-multiselect';
 
@@ -22,8 +21,6 @@ Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 window.Swal = Swal;
 Vue.component('pagination', require('laravel-vue-pagination'));
-// all components will inherit that property as this.$api.
-Vue.prototype.$api = api
 Vue.component('multiselect', Multiselect)
 
 

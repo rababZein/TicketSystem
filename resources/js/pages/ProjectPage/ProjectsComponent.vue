@@ -32,9 +32,9 @@
                 <!-- small card -->
                 <div class="small-box bg-blue">
                   <div class="inner">
-                    <h3>{{ project.name }}</h3>
+                    <h3><router-link :to="'/project/' + project.id" class="text-white">{{ project.name }}</router-link></h3>
 
-                    <p>{{ project.owner.name }}</p>
+                    <p><router-link :to="'/profile/' + project.owner.id" class="text-white">{{ project.owner.name }}</router-link></p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
@@ -67,10 +67,12 @@
         <div class="card-footer">
           <div class="col-12">
             <pagination
+              v-if="projects.data"
               align="right"
               size="small"
               :show-disabled="true"
               :data="projects"
+              :limit="3"
               @pagination-change-page="getProjects"
             ></pagination>
           </div>
@@ -314,3 +316,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.col-lg-3 .small-box h3 {
+  font-size: 2.0rem;
+}
+</style>

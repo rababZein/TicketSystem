@@ -23,7 +23,9 @@ class TaskObserver
      */
     public function created(Task $task)
     {
-        TaskAssignJob::dispatch($this->input['responsible_id'], $task);
+        if (isset($this->input['responsible_id'])) {
+            TaskAssignJob::dispatch($this->input['responsible_id'], $task);
+        }
         $task->project;
         $task->responsible;
     }

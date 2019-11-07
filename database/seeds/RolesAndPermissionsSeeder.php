@@ -20,7 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
          $admin = factory(User::class)->create([
             'name' => 'admin',
             'email' => 'admin@admin.com',
-            // default password "password"
+            'type' => 'regular-user'
         ]);
 
         // create regular-user
