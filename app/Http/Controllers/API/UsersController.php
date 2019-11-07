@@ -33,21 +33,11 @@ class UsersController extends BaseController
         $this->middleware('permission:user-edit', ['only' => ['update']]);
         $this->middleware('permission:user-delete', ['only' => ['destroy']]);
     }
-    
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index(ListUserRequest $request)
     {
-        return view('pages.users.index');
-    }
-
-    public function list(ListUserRequest $request)
-    {
-        $users = UserResource::collection(User::with('roles')->paginate(10));
-        return $this->sendResponse(UserResource::collection($users), 'users retrieved successfully.');
+        $users = User::with('roles')->paginate();
+        return $this->sendResponse(new UserCollection($users), 'users retrieved successfully.');
     }
 
      /**

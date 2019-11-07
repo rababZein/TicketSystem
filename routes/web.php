@@ -33,9 +33,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::resource('/permissions', 'PermissionsController')->except('show', 'create');
 
     // users
-    Route::get('/users/list', 'UsersController@list');
     Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
-    Route::resource('/users', 'UsersController')->except('show', 'create');
+    Route::resource('/users', 'UsersController')->except('create');
 
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
@@ -68,7 +67,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     // receipt
     Route::get('/receipts/list', 'ReceiptController@list');
     Route::get('/receipts/getall', 'ReceiptController@getAll');
-    Route::resource('/receipts', 'ReceiptController')->except('create'. 'store');
+    Route::resource('/receipts', 'ReceiptController')->except('create', 'store');
     Route::post('/receipts/{project_id}', 'ReceiptController@store');
 
     // status

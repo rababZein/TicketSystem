@@ -16,7 +16,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th width="10">ID</th>
+              <th width="2%">ID</th>
               <th width="20%">Name</th>
               <th width="30%">Description</th>
               <th width="10%">Status</th>
@@ -31,13 +31,21 @@
               <td>
                 <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
               </td>
-              <td>{{ task.description }}</td>
-              <td><div class="badge bg-primary">{{ task.status.name }}</div></td>
+              <td v-trim="4">{{ task.description }}</td>
               <td>
-                <span v-if="task.project">{{ task.project.name }}</span>
+                <div class="badge bg-primary">{{ task.status.name }}</div>
               </td>
               <td>
-                <p v-if="task.responsible">{{ task.responsible.name }}</p>
+                <span v-if="task.project">
+                  <router-link :to="'/project/' + task.project.id">{{ task.project.name }}</router-link>
+                </span>
+              </td>
+              <td>
+                <p v-if="task.responsible">
+                  <router-link
+                    :to="'/profile/' + task.responsible.id"
+                  >{{ task.responsible.name }}</router-link>
+                </p>
               </td>
               <td>
                 <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
@@ -363,6 +371,19 @@ export default {
       required: true
     },
     singlePage: false
+  },
+  directives: {
+    trim: {
+      inserted: function(el, maxWords = 4) {
+        var str = el.innerHTML;
+        var resultString =
+          str
+            .split(" ")
+            .slice(0, maxWords.value)
+            .join(" ") + "...";
+        el.innerHTML = resultString;
+      }
+    }
   }
 };
 </script>

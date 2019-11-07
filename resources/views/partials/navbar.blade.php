@@ -80,9 +80,9 @@
             <i class="far fa-user"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <a href="#" class="dropdown-item">
+            <router-link :to="'/profile/' + {{ Auth::user()->id }}" class="dropdown-item">
                 <i class="fas fa-user mr-2"></i> profile
-            </a>
+            </router-link>
             <div class="dropdown-divider"></div>
             <a href="{{ route('logout') }}"
                 onclick="event.preventDefault(); document.getElementById('frm-logout').submit();" class="dropdown-item">

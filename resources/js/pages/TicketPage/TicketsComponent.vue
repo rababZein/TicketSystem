@@ -8,6 +8,7 @@
       size="small"
       :show-disabled="true"
       :data="tickets"
+      :limit="3"
       @pagination-change-page="getTickets"
     ></pagination>
   </div>

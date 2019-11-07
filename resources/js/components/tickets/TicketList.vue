@@ -31,12 +31,18 @@
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
-              <td>{{ ticket.description }}</td>
+              <td v-trim="4">{{ ticket.description }}</td>
               <td>
-                <span v-if="ticket.project">{{ ticket.project.owner.name }}</span>
+                <span v-if="ticket.project">
+                  <router-link
+                    :to="'/profile/' + ticket.project.owner.id"
+                  >{{ ticket.project.owner.name }}</router-link>
+                </span>
               </td>
               <td>
-                <span v-if="ticket.project">{{ ticket.project.name }}</span>
+                <span v-if="ticket.project">
+                  <router-link :to="'/project/' + ticket.project.id">{{ ticket.project.name }}</router-link>
+                </span>
               </td>
               <td v-if="!ticket.read">Not Read</td>
               <td v-else>Read</td>
@@ -113,8 +119,7 @@
                   label="name"
                   deselect-label="Can't remove this value"
                   placeholder="Select one"
-                >
-                </multiselect>
+                ></multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
               <div class="form-group" v-if="form.owner">
@@ -129,8 +134,7 @@
                   label="name"
                   @input="opt => form.project_id = opt.id"
                   :disabled="isDisabled"
-                >
-                </multiselect>
+                ></multiselect>
                 <has-error :form="form" field="project_id"></has-error>
               </div>
             </div>
@@ -305,6 +309,19 @@ export default {
         .catch(error => {
           console.log(error);
         });
+    }
+  },
+  directives: {
+    trim: {
+      inserted: function(el, maxWords = 4) {
+        var str = el.innerHTML;
+        var resultString =
+          str
+            .split(" ")
+            .slice(0, maxWords.value)
+            .join(" ") + "...";
+        el.innerHTML = resultString;
+      }
     }
   }
 };

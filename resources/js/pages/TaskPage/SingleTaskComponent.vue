@@ -207,6 +207,8 @@
 <script>
 import moment from "moment";
 import DatePicker from "vue2-datepicker";
+import trackApi from '../../api/tracks';
+import taskApi from '../../api/tasks';
 
 export default {
   components: { DatePicker },
@@ -234,7 +236,7 @@ export default {
       this.counted_time = null;
       // show timer before send request
       this.activeTimerString = this.humanReadableFromSecounds(this.duration);
-      this.$api.track
+      trackApi
         .post({
           comment: "new tracking",
           start_at: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -264,7 +266,7 @@ export default {
     },
     stopTracking() {
       this.$Progress.start();
-      this.$api.track
+      trackApi
         .put({
           track_id: this.tracking_task.id,
           end_at: moment().format("YYYY-MM-DD HH:mm:ss"),
@@ -306,7 +308,7 @@ export default {
 
     // Count Duration for a specfic task.
     countTaskDuration(task_id) {
-      this.$api.track
+      trackApi
         .countDuration(task_id)
         .then(response => {
           this.duration = response.data.data.tracking;
@@ -321,20 +323,20 @@ export default {
     },
     // fun to check if this track is in progress
     checkTrackingInProgress(task_id) {
-      this.$api.track
+      trackApi
         .checkTrackingInProgress(task_id)
         .then(response => {
           this.tracking_task = response.data.data;
           this.startTimer();
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
         });
     },
     // list all Tracking_Task for this task
     listTrackingTask(task_id) {
       this.$Progress.start();
-      this.$api.track
+      trackApi
         .getHistory(task_id)
         .then(response => {
           this.listTracking_Task = response.data.data;
@@ -384,7 +386,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.track
+          trackApi
             .delete({ task_id, track_id })
             .then(response => {
               this.$Progress.finish();
@@ -408,8 +410,8 @@ export default {
     // check if this track is in progress
     this.checkTrackingInProgress(this.task_id);
 
-    this.$api.tasks
-      .getById(this.task_id)
+    taskApi
+      .show(this.task_id)
       .then(response => {
         this.task = response.data.data;
         this.$Progress.finish();

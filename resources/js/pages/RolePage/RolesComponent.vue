@@ -3,12 +3,12 @@
     <div class="col-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Receipts Table</h3>
+          <h3 class="card-title">Roles Table</h3>
 
           <div class="card-tools">
             <button type="submit" class="btn btn-success btn-sm" @click="newModel">
               <i class="fas fa-plus fa-fw"></i>
-              <span class="d-none d-lg-inline">New Receipt</span>
+              <span class="d-none d-lg-inline">New role</span>
             </button>
           </div>
         </div>
@@ -18,28 +18,27 @@
             <thead>
               <tr>
                 <th width="10">ID</th>
-                <th width="20%">Name</th>
-                <th width="40%">Description</th>
-                <th width="20%">Task</th>
-                <th width="20%">Total</th>
-                <th width="10%">Is Paid</th>
+                <th width="20%">name</th>
+                <th width="60%">permissions</th>
                 <th>action</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="receipt in receipts" :key="receipt.id">
-                <td>{{ receipt.id }}</td>
-                <td>{{ receipt.name }}</td>
-                <td>{{ receipt.description }}</td>
-                <td>{{ receipt.task.name }}</td>
-                <td>{{ receipt.total }}</td>
-                <td v-if="!receipt.is_paid">Not Paid</td>
-                <td v-else>Paid</td>
+              <tr v-for="role in roles.data" :key="role.id">
+                <td>{{ role.id }}</td>
+                <td>{{ role.name }}</td>
                 <td>
-                  <a href="#" @click="editModel(receipt)" class="btn btn-primary btn-xs">
+                  <span
+                    v-for="item in role.permissions"
+                    :key="item.id"
+                    class="badge badge-danger mr-1"
+                  >{{ item.name }}</span>
+                </td>
+                <td>
+                  <a href="#" @click="editModel(role)" class="btn btn-info btn-sm">
                     <i class="fas fa-edit fa-fw"></i>
                   </a>
-                  <a href="#" @click="deleteReceipt(receipt.id)" class="btn btn-danger btn-xs">
+                  <a href="#" @click="deleteRole(role.id)" class="btn btn-danger btn-sm">
                     <i class="fas fa-trash fa-fw"></i>
                   </a>
                 </td>
@@ -52,7 +51,8 @@
             align="right"
             size="small"
             :show-disabled="true"
-            :data="receipts"
+            :data="roles"
+            :limit="3"
             @pagination-change-page="getResults"
           ></pagination>
         </div>
@@ -63,28 +63,28 @@
     <!-- Modal -->
     <div
       class="modal fade"
-      id="newReceipt"
+      id="newRole"
       tabindex="-1"
       role="dialog"
-      aria-labelledby="newReceiptLabel"
+      aria-labelledby="newRoleLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 v-show="!editMode" class="modal-title" id="newReceiptLabel">Create New Receipt</h5>
-            <h5 v-show="editMode" class="modal-title" id="newReceiptLabel">Edit Receipt</h5>
+            <h5 v-show="!editMode" class="modal-title" id="newRoleLabel">Create New role</h5>
+            <h5 v-show="editMode" class="modal-title" id="newRoleLabel">Edit role</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editReceipt(form.id) : createReceipt()"
+            @submit.prevent="editMode ? editRole(form.id) : createRole()"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
               <div class="form-group">
-                <label for="name">Receipt Name</label>
+                <label for="name">Role Name</label>
                 <input
                   v-model="form.name"
                   type="text"
@@ -95,28 +95,18 @@
                 <has-error :form="form" field="name"></has-error>
               </div>
               <div class="form-group">
-                <label for="description">Receipt Description</label>
-                <input
-                  v-model="form.description"
-                  type="text"
-                  name="description"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('description') }"
-                />
-                <has-error :form="form" field="description"></has-error>
-              </div>
-              <div class="form-group">
-                <label for="name">Task</label>
+                <label for="permissions">Permissions</label>
                 <multiselect
-                  v-model="form.task"
-                  :options="tasks.data"
-                  :close-on-select="true"
+                  v-model="form.permissions"
+                  :options="permissions"
+                  :multiple="true"
+                  :close-on-select="false"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Select one"
+                  placeholder="Pick some"
                   label="name"
+                  track-by="name"
                   :preselect-first="true"
-                  @input="opt => form.task_id = opt.id"
                 >
                   <template slot="selection" slot-scope="{ values, search, isOpen }">
                     <span
@@ -125,32 +115,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="task_id"></has-error>
-              </div>
-              <div class="form-group">
-                <label for="total">Total</label>
-                <input
-                  v-model="form.total"
-                  type="text"
-                  name="total"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('total') }"
-                />
-                <has-error :form="form" field="total"></has-error>
-              </div>
-              <div class="form-group">
-                <div class="custom-control custom-switch">
-                  <input
-                    v-model="form.is_paid"
-                    type="checkbox"
-                    name="is_paid"
-                    class="custom-control-input"
-                    :class="{ 'is-invalid': form.errors.has('is_paid') }"
-                    id="is_paid"
-                  />
-                  <label class="custom-control-label" for="is_paid">Is Paid</label>
-                  <has-error :form="form" field="is_paid"></has-error>
-                </div>
+                <has-error :form="form" field="permissions"></has-error>
               </div>
             </div>
 
@@ -166,113 +131,108 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import rolesApi from '../../api/roles';
+import permissionsApi from '../../api/permissions';
 
 export default {
   data() {
     return {
       editMode: false,
+      roles: {},
       form: new Form({
         id: "",
         name: "",
-        description: "",
-        total: "",
-        is_paid: false,
-        task: {
-          id: "",
-          name: ""
-        },
-        task_id: ""
+        permissions: [],
+        selected: null
       }),
-      receipts: {}
+      selected: null,
+      permissions: []
     };
   },
   methods: {
+    getResults(page = 1) {
+      this.$Progress.start();  
+      rolesApi
+        .get({ page: page })
+        .then(response => {
+          this.roles = response.data.data;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
     newModel() {
       this.editMode = false;
       this.form.reset();
-      $("#newReceipt").modal("show");
+      $("#newRole").modal("show");
     },
-    editModel(receipt) {
+    editModel(role) {
       this.editMode = true;
       this.form.reset();
-      $("#newReceipt").modal("show");
-      this.form.fill(receipt);
+      $("#newRole").modal("show");
+      this.form.fill(role);
+
+      this.form.selected = _.map(this.form.permissions, function(value, key) {
+        return value.name;
+      });
     },
-    getResults(page = 1) {
-      this.$Progress.start();
-      this.$api.receipts
+    getPermissions() {
+      permissionsApi
         .getAll()
         .then(response => {
-          this.receipts = response.data.data;
-
-          // convert array to object for paginate
-          this.receipts = Object.assign({}, this.receipts);
-
+          this.permissions = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
         });
     },
-    getTasks() {
-      this.$store
-        .dispatch("task/getTasks")
-        .then()
-        .catch(error => {
-          console.log(error);
-        })
-    },
-    createReceipt() {
+    createRole() {
       this.$Progress.start();
-
-      // need to be enhance
-      this.form.task_id = this.form.task.id;
-
       this.form
-        .post("/v-api/receipts")
+        .post("/v-api/roles/")
         .then(response => {
-          $("#newReceipt").modal("hide");
+          $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Receipt created successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't create new Receipt"
+            title: error.response.data.message
           });
         });
     },
-    editReceipt(id) {
+    editRole(id) {
       this.$Progress.start();
-
-      this.form.task_id = this.form.task.id;
-
       this.form
-        .patch("/v-api/receipts/" + id)
+        .put("/v-api/roles/" + id)
         .then(response => {
-          $("#newReceipt").modal("hide");
+          $("#newRole").modal("hide");
           this.$Progress.finish();
           this.getResults();
           Toast.fire({
             type: "success",
-            title: "Receipt updated successfully"
+            title: response.data.message
           });
         })
         .catch(error => {
           this.$Progress.fail();
           Toast.fire({
             type: "error",
-            title: "can't update the Receipt"
+            title: error.response.data.message
           });
         });
     },
-    deleteReceipt(id) {
+    deleteRole(id) {
       Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -284,18 +244,18 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.receipts
+          rolesApi
             .delete(id)
             .then(response => {
               this.$Progress.finish();
               this.getResults();
-              Swal.fire("Deleted!", "The Receipt has been deleted.", "success");
+              Swal.fire("Deleted!", "The role has been deleted.", "success");
             })
             .catch(error => {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the Receipt"
+                title: "can't delete the role"
               });
             });
         }
@@ -304,12 +264,10 @@ export default {
   },
   mounted() {
     this.getResults();
-    this.getTasks();
-  },
-  computed: {
-    ...mapGetters({
-      tasks: "task/activeTasks"
-    })
+    this.getPermissions();
+    console.log("Component mounted.");
   }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

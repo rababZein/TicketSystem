@@ -99,4 +99,3 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
 Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
     Route::get('/getAll', 'API\StatusController@getAll');
 });
-
