@@ -32,7 +32,7 @@
                 <!-- small card -->
                 <div class="small-box bg-blue">
                   <div class="inner">
-                    <h3>{{ project.name }}</h3>
+                    <h3><router-link :to="'/project/' + project.id" class="text-white">{{ project.name }}</router-link></h3>
 
                     <p><router-link :to="'/profile/' + project.owner.id" class="text-white">{{ project.owner.name }}</router-link></p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
@@ -316,3 +316,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.col-lg-3 .small-box h3 {
+  font-size: 2.0rem;
+}
+</style>

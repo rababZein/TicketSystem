@@ -313,7 +313,7 @@ export default {
   },
   directives: {
     trim: {
-      inserted: function(el, maxWords) {
+      inserted: function(el, maxWords = 4) {
         var str = el.innerHTML;
         var resultString =
           str
