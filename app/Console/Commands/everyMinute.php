@@ -148,7 +148,7 @@ class everyMinute extends Command
         $subReference = explode(' ', $emailData['reference']);
         $subReference[0] = trim($subReference[0], '<');
         $subReference[0] = trim($subReference[0], '>');      
-        $ticket = Ticket::where('email_id', 'like', '%' . $this->getStrBefore('.', $subReference[0]) . '%')
+        $ticket = Ticket::where('email_id', 'like', '%' . getStrBefore('.', $subReference[0]) . '%')
                         ->first();
         if (! $ticket) {
             $this->createNewTicket($emailData);
@@ -159,10 +159,5 @@ class everyMinute extends Command
             echo nl2br('email: '.$emailData['subject'].' is updated in the ticket id = '.$ticket->id);
             echo "<br>";
         }
-    }
-
-    private function getStrBefore($var, $inthat)
-    {
-        return substr($inthat, 0, strpos($inthat, $var));
     }
 }
