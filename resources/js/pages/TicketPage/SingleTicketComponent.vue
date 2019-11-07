@@ -1,5 +1,5 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="!loading">
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
@@ -10,37 +10,12 @@
 
         <div class="card-body">
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-12">
               <div class="form-group">
                 <label for="Description" class="col-form-label">Description:</label>
-                <textarea
-                  v-model="ticket.description"
-                  class="form-control"
-                  id="Description"
-                  disabled
-                ></textarea>
+                <div class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light" v-html="ticket.description" style="min-height:100px; max-height: 600px;">
+                </div>
               </div>
-            </div>
-            <div class="col-sm-6" v-if="ticket.tasks">
-              <table
-                class="table table-borderless table-sm table-hover table-responsive-lg mt-4"
-                style="width: 70%"
-              >
-                <tbody>
-                  <tr>
-                    <td>
-                      <small>Tasks:</small>
-                    </td>
-                    <td>{{ ticket.tasks.length }}</td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <small>Project:</small>
-                    </td>
-                    <td>{{ ticket.project.name }}</td>
-                  </tr>
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
@@ -51,6 +26,7 @@
       <task-list :tasks="tasks" :singlePage="true"></task-list>
     </div>
   </div>
+  <div class="card" v-else><div class="card-body  justify-content-center">loading...</div></div>
 </template>
 
 <script>
@@ -59,7 +35,8 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      ticketId: this.$route.params.id
+      ticketId: this.$route.params.id,
+      loading: true
     };
   },
   methods: {
@@ -69,6 +46,7 @@ export default {
         .dispatch("ticket/getTicketById", id)
         .then(response => {
           this.$Progress.finish();
+          this.loading = false;
         })
         .catch(error => {
           this.$Progress.fail();
