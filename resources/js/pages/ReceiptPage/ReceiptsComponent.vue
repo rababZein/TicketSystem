@@ -168,6 +168,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import receiptApi from "../../api/receipts";
 
 export default {
   data() {
@@ -202,7 +203,7 @@ export default {
     },
     getResults(page = 1) {
       this.$Progress.start();
-      this.$api.receipts
+      receiptApi
         .getAll()
         .then(response => {
           this.receipts = response.data.data;
@@ -285,7 +286,7 @@ export default {
       }).then(result => {
         if (result.value) {
           this.$Progress.start();
-          this.$api.receipts
+          receiptApi
             .delete(id)
             .then(response => {
               this.$Progress.finish();
