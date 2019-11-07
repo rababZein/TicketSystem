@@ -41,6 +41,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
     Route::get('/projects/list', 'ProjectController@list');
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
+    Route::get('/clients/{client_id}/projectsNumber', 'ProjectController@getProjectCountPerClient');
     Route::resource('/projects', 'ProjectController')->except('create');
 
     // tracking tasks
