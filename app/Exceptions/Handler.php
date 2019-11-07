@@ -52,6 +52,7 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        dd($exception);
         // override the API error handling to return a proper JSON.
         if ($exception instanceof NotFoundHttpException && $request->wantsJson()) {
             return response()->json(['error' => 'Not Found'], 404);

@@ -53,10 +53,12 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // tickets
     Route::get('/projects/{project_id}/tickets/', 'TicketController@getTicketsByProjectId');
+    Route::get('/clients/{client_id}/ticketsNumber', 'TicketController@getTicketCountPerClient');
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
     Route::get('/tickets/{ticket_id}/tasks/', 'TaskController@getTasksByTicketId');
+    Route::get('/clients/{client_id}/tasksNumber', 'TaskController@getTaskCountPerClient');
     Route::resource('/tasks', 'TaskController')->except('create');
 
     // owner

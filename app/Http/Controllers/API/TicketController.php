@@ -33,6 +33,7 @@ class TicketController extends BaseController
     $this->middleware('permission:ticket-create', ['only' => ['store']]);
     $this->middleware('permission:ticket-edit', ['only' => ['update']]);
     $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
+    $this->middleware('permission:ticket-list', ['only' => ['getTicketCountPerClient']]);
   }
 
   /**
@@ -162,5 +163,14 @@ class TicketController extends BaseController
     }
 
     return $this->sendResponse(new TicketCollection($ticket), 'Tickets retrieved successfully.');
+  }
+
+  public function getTicketCountPerClient($clientId)
+  {
+    $ticketsNumber = Ticket::with(array('project' => function($query) {
+        $query->where('projects.owner_id', $clientId);
+    }))->count();
+
+    return $this->sendResponse(['ticketsNumber' => $ticketsNumber], 'Tickets Number retrieved successfully.');
   }
 }
