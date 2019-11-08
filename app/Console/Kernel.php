@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('minute:updateMailBox')
+        $schedule->command('minute:refreshMailBoxToCreateTickets')
                  ->everyFiveMinutes();
     }
 
