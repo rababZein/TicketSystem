@@ -17,8 +17,8 @@
           <thead>
             <tr>
               <th width="2%">ID</th>
-              <th width="15%">Name</th>
-              <th width="30%">Description</th>
+              <th width="45%">Name</th>
+              <!-- <th width="30%">Description</th> -->
               <th width="20%">Client</th>
               <th width="10%">Project</th>
               <th width="10%">Read</th>
@@ -31,7 +31,7 @@
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
-              <td v-trim="4">{{ ticket.description }}</td>
+              <!-- <td v-trim="4">{{ ticket.description }}</td> -->
               <td>
                 <span v-if="ticket.project">
                   <router-link
