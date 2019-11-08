@@ -209,7 +209,7 @@ export default {
     createUser() {
       this.$Progress.start();
       this.form
-        .post("/v-api/users/")
+        .post("/v-api/users")
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
