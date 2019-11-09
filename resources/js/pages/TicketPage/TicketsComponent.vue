@@ -24,8 +24,8 @@ export default {
   methods: {
     onPaginate(page) {
       this.$router.push({
-        'name': 'tickets.list',
-        'params': {page}
+        name: "tickets.list",
+        params: { page }
       });
     },
     getTickets(page = 1) {
@@ -38,7 +38,7 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
-    },
+    }
   },
   mounted() {
     this.getTickets(this.$route.params.page || 1);

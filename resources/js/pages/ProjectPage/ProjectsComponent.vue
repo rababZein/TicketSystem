@@ -32,9 +32,19 @@
                 <!-- small card -->
                 <div class="small-box bg-blue">
                   <div class="inner">
-                    <h3><router-link :to="'/project/' + project.id" class="text-white">{{ project.name }}</router-link></h3>
+                    <h3>
+                      <router-link
+                        :to="'/project/' + project.id"
+                        class="text-white"
+                      >{{ project.name }}</router-link>
+                    </h3>
 
-                    <p><router-link :to="'/profile/' + project.owner.id" class="text-white">{{ project.owner.name }}</router-link></p>
+                    <p>
+                      <router-link
+                        :to="'/profile/' + project.owner.id"
+                        class="text-white"
+                      >{{ project.owner.name }}</router-link>
+                    </p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
@@ -202,8 +212,8 @@ export default {
   methods: {
     onPaginate(page) {
       this.$router.push({
-        'name': 'projects.list',
-        'params': {page}
+        name: "projects.list",
+        params: { page }
       });
     },
     getProjects(page = 1) {
@@ -328,6 +338,6 @@ export default {
 </script>
 <style scoped>
 .col-lg-3 .small-box h3 {
-  font-size: 2.0rem;
+  font-size: 2rem;
 }
 </style>

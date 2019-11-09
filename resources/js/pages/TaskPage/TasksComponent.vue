@@ -21,8 +21,8 @@ export default {
   methods: {
     onPaginate(page) {
       this.$router.push({
-        'name': 'tasks.list',
-        'params': {page}
+        name: "tasks.list",
+        params: { page }
       });
     },
     getTasks(page = 1) {
