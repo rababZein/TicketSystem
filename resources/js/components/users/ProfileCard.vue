@@ -13,8 +13,6 @@
 
         <h3 class="profile-username text-center">Nina Mcintire</h3>
 
-        <p class="text-muted text-center">status</p>
-
         <ul class="list-group list-group-unbordered mb-3">
           <li class="list-group-item">
             <b>Projects</b>
