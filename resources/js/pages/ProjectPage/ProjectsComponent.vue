@@ -73,7 +73,7 @@
               :show-disabled="true"
               :data="projects"
               :limit="3"
-              @pagination-change-page="getProjects"
+              @pagination-change-page="onPaginate"
             ></pagination>
           </div>
         </div>
@@ -200,6 +200,12 @@ export default {
     };
   },
   methods: {
+    onPaginate(page) {
+      this.$router.push({
+        'name': 'projects.list',
+        'params': {page}
+      });
+    },
     getProjects(page = 1) {
       this.$Progress.start();
       this.$store
@@ -305,8 +311,12 @@ export default {
     }
   },
   mounted() {
-    this.getProjects();
+    this.getProjects(this.$route.params.page || 1);
     this.getOwners();
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.getProjects(to.params.page);
+    next();
   },
   computed: {
     ...mapGetters({
