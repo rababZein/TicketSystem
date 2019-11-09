@@ -9,7 +9,7 @@
       :show-disabled="true"
       :data="tasks"
       :limit="3"
-      @pagination-change-page="getTasks"
+      @pagination-change-page="onPaginate"
     ></pagination>
   </div>
 </template>
@@ -19,6 +19,12 @@ import { mapGetters } from "vuex";
 
 export default {
   methods: {
+    onPaginate(page) {
+      this.$router.push({
+        'name': 'tasks.list',
+        'params': {page}
+      });
+    },
     getTasks(page = 1) {
       this.$Progress.start();
       this.$store
@@ -32,7 +38,11 @@ export default {
     }
   },
   mounted() {
-    this.getTasks();
+    this.getTasks(this.$route.params.page || 1);
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.getTasks(to.params.page);
+    next();
   },
   computed: {
     ...mapGetters({
