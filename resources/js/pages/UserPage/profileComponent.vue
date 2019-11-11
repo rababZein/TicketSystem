@@ -3,7 +3,7 @@
     <div class="row">
       <!-- card box -->
       <card-box :count="projectCount" title="Project" cardBg="bg-info" icon="fas fa-briefcase"></card-box>
-      <card-box :count="projectCount" title="Tickets" cardBg="bg-success" icon="fas fa-chart-pie"></card-box>
+      <card-box :count="ticketCount" title="Tickets" cardBg="bg-success" icon="fas fa-chart-pie"></card-box>
       <card-box :count="projectCount" title="open Tasks" cardBg="bg-warning" icon="fas fa-tasks"></card-box>
       <card-box :count="projectCount" title="closed tasks" cardBg="bg-danger" icon="fas fa-list-ul"></card-box>
     </div>
@@ -49,6 +49,17 @@ export default {
         .dispatch("project/getProjectCountPerClient", id)
         .then(response => {
           this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    getTicketCountPerClient(id) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("ticket/getTicketCountPerClient", id)
+        .then(response => {
+          this.$Progress.finish();
           this.loading = false;
         })
         .catch(error => {
@@ -59,11 +70,13 @@ export default {
   created() {
     this.getUserById(this.userId);
     this.getProjectCountPerClient(this.userId);
+    this.getTicketCountPerClient(this.userId);
   },
   computed: {
     ...mapGetters({
       user: "user/activeSingleUser",
-      projectCount: "project/ProjectCountPerClient"
+      projectCount: "project/ProjectCountPerClient",
+      ticketCount: "ticket/TicketCountPerClient"
     })
   }
 };

@@ -73,6 +73,16 @@ export default {
                 reject(error);
             })
         });
+    },
+    getTicketCountPerClient({commit}, userId) {
+        return new Promise((resolve, reject) => {
+            tickets.getTicketCountPerClient(userId).then(response => {
+                commit('getTicketCountPerClient', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
     }
 
 }

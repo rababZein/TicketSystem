@@ -5,8 +5,10 @@ export default {
     ticketsOwners(state) {
         return state.owners;
     },
-    
     activeTicket(state) {
         return state.singleTicket;
     },
+    TicketCountPerClient(state) {
+        return state.ticketCoutPerUser;
+    }
 }

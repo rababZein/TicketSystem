@@ -25,5 +25,8 @@ export default {
     },
     getTicketById(state, ticket) {
         state.singleTicket = ticket;
+    },
+    getTicketCountPerClient(state, count) {
+        state.ticketCoutPerUser = count.ticketsNumber;
     }
 }

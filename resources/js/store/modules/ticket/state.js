@@ -1,5 +1,6 @@
 export default {
     items: {},
     projects: [],
-    singleTicket: {}
+    singleTicket: {},
+    ticketCoutPerUser: null
 };
