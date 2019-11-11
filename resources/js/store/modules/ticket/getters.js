@@ -7,8 +7,5 @@ export default {
     },
     activeTicket(state) {
         return state.singleTicket;
-    },
-    TicketCountPerClient(state) {
-        return state.ticketCoutPerUser;
     }
 }

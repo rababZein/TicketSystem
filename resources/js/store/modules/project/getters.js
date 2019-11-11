@@ -17,8 +17,5 @@ export default {
     },
     projectByOwners(state) {
         return Object.values(state.items);
-    },
-    ProjectCountPerClient(state) {
-        return state.projectCoutPerUser;
     }
 }

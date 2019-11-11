@@ -1,5 +1,4 @@
 export default {
     items: {},
-    singleProject: {},
-    projectCoutPerUser: null
+    singleProject: {}
 };

@@ -77,7 +77,7 @@ export default {
     getTicketCountPerClient({commit}, userId) {
         return new Promise((resolve, reject) => {
             tickets.getTicketCountPerClient(userId).then(response => {
-                commit('getTicketCountPerClient', response.data.data);
+                commit('user/getTicketCountPerClient', response.data.data, { root: true });
                 resolve(response);
             }).catch(error => {
                 reject(error);

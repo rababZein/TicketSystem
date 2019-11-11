@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      projectCount: "project/ProjectCountPerClient",
+      projectCount: "user/ProjectCountPerClient",
     })
   }
 };
