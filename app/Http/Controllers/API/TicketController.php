@@ -33,7 +33,7 @@ class TicketController extends BaseController
     $this->middleware('permission:ticket-create', ['only' => ['store']]);
     $this->middleware('permission:ticket-edit', ['only' => ['update']]);
     $this->middleware('permission:ticket-delete', ['only' => ['destroy']]);
-    $this->middleware('permission:ticket-list', ['only' => ['getTicketCountPerClient']]);
+    $this->middleware('permission:ticket-list', ['only' => ['getTicketsCountPerClient', 'getTicketsPerClient']]);
   }
 
   /**
@@ -165,12 +165,21 @@ class TicketController extends BaseController
     return $this->sendResponse(new TicketCollection($ticket), 'Tickets retrieved successfully.');
   }
 
-  public function getTicketCountPerClient($clientId)
+  public function getTicketsCountPerClient($clientId)
   {
-    $ticketsNumber = Ticket::with(array('project' => function($query) {
+    $ticketsNumber = Ticket::with(array('project' => function($query) use ($clientId) {
         $query->where('projects.owner_id', $clientId);
     }))->count();
 
     return $this->sendResponse(['ticketsNumber' => $ticketsNumber], 'Tickets Number retrieved successfully.');
+  }
+
+  public function getTicketsPerClient($clientId)
+  {
+    $tickets = Ticket::with(array('project' => function($query) use ($clientId) {
+        $query->where('projects.owner_id', $clientId);
+    }))->paginate();
+
+    return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
 }
