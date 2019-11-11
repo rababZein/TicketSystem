@@ -16,7 +16,7 @@
         <ul class="list-group list-group-unbordered mb-3">
           <li class="list-group-item">
             <b>Projects</b>
-            <a class="float-right">2</a>
+            <a class="float-right">{{ projectCount }}</a>
           </li>
           <li class="list-group-item">
             <b>Tickets</b>
@@ -35,13 +35,20 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-    props: {
+  props: {
     user: {
       type: Object,
       required: true
-    },
+    }
   },
+  computed: {
+    ...mapGetters({
+      projectCount: "project/ProjectCountPerClient",
+    })
+  }
 };
 </script>
 

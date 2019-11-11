@@ -74,4 +74,14 @@ export default {
             })
         });
     },
+    getProjectCountPerClient({ commit }, clientId) {
+        return new Promise((resolve, reject) => {
+            projects.getProjectCountPerClient(clientId).then(response => {
+                commit('setProjectCoutPerUser', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    }
 }

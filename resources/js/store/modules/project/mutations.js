@@ -34,4 +34,7 @@ export default {
             return { id: key.id, name: key.name, owner: key.owner, tickets: key.tickets };
         });
     },
+    setProjectCoutPerUser(state, count) {
+        state.projectCoutPerUser = count.projectsNumber;
+    }
 }
