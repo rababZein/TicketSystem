@@ -32,9 +32,19 @@
                 <!-- small card -->
                 <div class="small-box bg-blue">
                   <div class="inner">
-                    <h3>{{ project.name }}</h3>
+                    <h3>
+                      <router-link
+                        :to="'/project/' + project.id"
+                        class="text-white"
+                      >{{ project.name }}</router-link>
+                    </h3>
 
-                    <p>{{ project.owner.name }}</p>
+                    <p>
+                      <router-link
+                        :to="'/profile/' + project.owner.id"
+                        class="text-white"
+                      >{{ project.owner.name }}</router-link>
+                    </p>
                     <a href="#" @click="editModal(project)" class="btn btn-light btn-xs">
                       <i class="fas fa-edit fa-fw"></i>
                     </a>
@@ -67,11 +77,13 @@
         <div class="card-footer">
           <div class="col-12">
             <pagination
+              v-if="projects.data"
               align="right"
               size="small"
               :show-disabled="true"
               :data="projects"
-              @pagination-change-page="getProjects"
+              :limit="3"
+              @pagination-change-page="onPaginate"
             ></pagination>
           </div>
         </div>
@@ -198,6 +210,12 @@ export default {
     };
   },
   methods: {
+    onPaginate(page) {
+      this.$router.push({
+        name: "projects.list",
+        params: { page }
+      });
+    },
     getProjects(page = 1) {
       this.$Progress.start();
       this.$store
@@ -212,7 +230,7 @@ export default {
     getOwners() {
       this.$Progress.start();
       this.$store
-        .dispatch("project/getOwners")
+        .dispatch("owner/getOwners")
         .then(() => {
           this.$Progress.finish();
         })
@@ -303,14 +321,23 @@ export default {
     }
   },
   mounted() {
-    this.getProjects();
+    this.getProjects(this.$route.params.page || 1);
     this.getOwners();
   },
+  beforeRouteUpdate(to, from, next) {
+    this.getProjects(to.params.page);
+    next();
+  },
   computed: {
-    ...mapGetters("project", {
-      projects: "activeProjects",
-      owners: "projectsOwners"
+    ...mapGetters({
+      projects: "project/activeProjects",
+      owners: "owner/activeOwners"
     })
   }
 };
 </script>
+<style scoped>
+.col-lg-3 .small-box h3 {
+  font-size: 2rem;
+}
+</style>

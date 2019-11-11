@@ -27,8 +27,8 @@
                with font-awesome or any other icon font library -->
             <li class="nav-item">
                 <router-link to="/dashboard" class="nav-link">
+                    <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
                         Dashboard
                     </p>
                 </router-link>
@@ -106,8 +106,8 @@
                     </li>
                     <li class="nav-item">
                         <router-link to="/users" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
                             <p>
-                                <i class="nav-icon fas fa-list"></i>
                                 Users
                             </p>
                         </router-link>

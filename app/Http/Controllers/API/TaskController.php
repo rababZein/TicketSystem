@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use DB;
 use App\Http\Requests\TaskRequest\AddTaskRequest;
 use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Http\Requests\TaskRequest\ViewTaskRequest;
@@ -34,6 +35,7 @@ class TaskController extends BaseController
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
+      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient']]);
   }
 
    /**
@@ -43,28 +45,11 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    return view('pages.tasks.index');
-  }
-
-  /**
-   * Display data listing of the resource.
-   *
-   * @return Response
-   */
-  public function getAll(ListTaskRequest $request)
-  {
-    $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
-
-    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
-  }
-
-  public function list()
-  {
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id);
+      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
     }
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
@@ -190,7 +175,26 @@ class TaskController extends BaseController
 
     return $this->sendResponse(new TaskResource($task), 'task updated successfully.');
   }
+
+  public function getTasksByTicketId($id, ListTaskRequest $request)
+  {
+    $tasks = Task::with('project.owner', 'responsible')->whereHas('ticket', function ($query) use ($id) {
+      $query->where('id', $id);
+    })->latest()->paginate();
+
+    if (is_null($tasks)) {
+      throw new ItemNotFoundException($id);
+    }
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function getTaskCountPerClient($clientId)
+  {
+    $tasksNumber = Task::select(DB::Raw('status_id, COUNT(*) as count'))
+                          ->groupBy('status_id')->get();
+
+    return $this->sendResponse($tasksNumber->toArray(), 'Tasks Number retrieved successfully.');
+  }
   
 }
-
-?>

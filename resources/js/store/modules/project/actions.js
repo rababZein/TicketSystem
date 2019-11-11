@@ -63,5 +63,15 @@ export default {
                     reject(error);
                 })
         });
-    }
+    },
+    getProjectsByOwner({ commit }, ownerId) {
+        return new Promise((resolve, reject) => {
+            projects.getAllByOwner(ownerId).then(response => {
+                commit('setProjectByOwners', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
 }

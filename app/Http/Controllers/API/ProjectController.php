@@ -34,16 +34,7 @@ class ProjectController extends BaseController
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
-  }
-
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function view()
-  {
-    return view('pages.projects.index');
+      $this->middleware('permission:project-list', ['only' => ['getProjectCountPerClient']]);
   }
 
   /**
@@ -72,7 +63,7 @@ class ProjectController extends BaseController
    */
   public function getAllByOwner(ListProjectRequest $request, $owner_id)
   {
-    $projects = Project::whereHas('owner', function ($query)  use ($owner_id) {
+    $projects = Project::with('tickets')->whereHas('owner', function ($query)  use ($owner_id) {
       $query->where('owner_id','=', $owner_id);
     })->with('owner')->get();
 
@@ -179,5 +170,12 @@ class ProjectController extends BaseController
     $projects = $project_model->search($searchKey);
     
     return $this->sendResponse($projects->toArray(), 'Projects retrieved successfully.');
+  }
+
+  public function getProjectCountPerClient($clientId)
+  {
+    $projectsNumber = Project::where('owner_id', $clientId)->count();
+
+    return $this->sendResponse(['projectsNumber' => $projectsNumber], 'Projects Number retrieved successfully.');
   }
 }

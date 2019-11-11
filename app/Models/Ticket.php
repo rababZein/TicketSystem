@@ -9,7 +9,7 @@ class Ticket extends Model
 
     protected $table = 'tickets';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'status_id', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'status_id', 'email_id', 'created_by', 'updated_by');
 
     public function project()
     {

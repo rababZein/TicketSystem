@@ -53,6 +53,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::get('/list', 'API\ProjectController@list');
         Route::get('/{search_key}', 'API\ProjectController@search');
     });
+    Route::get('/clients/{client_id}/projectsNumber', 'API\ProjectController@getProjectCountPerClient');
 
     Route::group(['prefix' => 'ticket'], function () {
         Route::get('/list', 'API\TicketController@list');
@@ -62,6 +63,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::patch('/{ticket_id}', 'API\TicketController@update');
         Route::delete('/{ticket_id}', 'API\TicketController@destroy');
     });
+    Route::get('/projects/{project_id}/tickets', 'API\TicketController@getTicketsByProjectId');
+    Route::get('/clients/{client_id}/ticketsNumber', 'API\TicketController@getTicketCountPerClient');
 
     Route::group(['prefix' => 'task'], function () {
         Route::get('/', 'API\TaskController@getAll');
@@ -72,6 +75,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::patch('/changeStatus/{task_id}', 'API\TaskController@changeStatus');
         Route::delete('/{task_id}', 'API\TaskController@destroy');
     });
+    Route::get('/clients/{client_id}/tasksNumber', 'API\TaskController@getTaskCountPerClient');
 
     Route::group(['prefix' => 'receipt'], function () {
         Route::get('/', 'API\ReceiptController@getAll');
@@ -95,7 +99,3 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
 Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
     Route::get('/getAll', 'API\StatusController@getAll');
 });
-
-
-
-

@@ -8,7 +8,8 @@
       size="small"
       :show-disabled="true"
       :data="tickets"
-      @pagination-change-page="getTickets"
+      :limit="3"
+      @pagination-change-page="onPaginate"
     ></pagination>
   </div>
 </template>
@@ -21,6 +22,12 @@ export default {
     return {};
   },
   methods: {
+    onPaginate(page) {
+      this.$router.push({
+        name: "tickets.list",
+        params: { page }
+      });
+    },
     getTickets(page = 1) {
       this.$Progress.start();
       this.$store
@@ -31,22 +38,14 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
-    },
-    getOwners() {
-      this.$Progress.start();
-      this.$store
-        .dispatch("ticket/getOwners")
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
     }
   },
   mounted() {
-    this.getTickets();
-    this.getOwners();
+    this.getTickets(this.$route.params.page || 1);
+  },
+  beforeRouteUpdate(to, from, next) {
+    this.getTickets(to.params.page);
+    next();
   },
   computed: {
     ...mapGetters("ticket", {

@@ -5,7 +5,7 @@
         <h3 class="card-title">Tickets Table</h3>
 
         <div class="card-tools">
-          <button type="submit" class="btn btn-success btn-sm" @click="newModel">
+          <button type="submit" class="btn btn-success btn-sm" @click="newModal">
             <i class="fas fa-plus fa-fw"></i>
             <span class="d-none d-lg-inline">New Ticket</span>
           </button>
@@ -17,8 +17,8 @@
           <thead>
             <tr>
               <th width="2%">ID</th>
-              <th width="15%">Name</th>
-              <th width="30%">Description</th>
+              <th width="45%">Name</th>
+              <!-- <th width="30%">Description</th> -->
               <th width="20%">Client</th>
               <th width="10%">Project</th>
               <th width="10%">Read</th>
@@ -31,17 +31,23 @@
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
-              <td>{{ ticket.description }}</td>
+              <!-- <td v-trim="4">{{ ticket.description }}</td> -->
               <td>
-                <span v-if="ticket.project">{{ ticket.project.owner.name }}</span>
+                <span v-if="ticket.project">
+                  <router-link
+                    :to="'/profile/' + ticket.project.owner.id"
+                  >{{ ticket.project.owner.name }}</router-link>
+                </span>
               </td>
               <td>
-                <span v-if="ticket.project">{{ ticket.project.name }}</span>
+                <span v-if="ticket.project">
+                  <router-link :to="'/project/' + ticket.project.id">{{ ticket.project.name }}</router-link>
+                </span>
               </td>
               <td v-if="!ticket.read">Not Read</td>
               <td v-else>Read</td>
               <td>
-                <a href="#" @click="editModel(ticket)" class="btn btn-primary btn-xs">
+                <a href="#" @click="editModal(ticket)" class="btn btn-primary btn-xs">
                   <i class="fas fa-edit fa-fw"></i>
                 </a>
                 <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
@@ -109,21 +115,14 @@
                   :close-on-select="true"
                   :clear-on-select="false"
                   :preserve-search="true"
-                  placeholder="Select one"
+                  :allow-empty="false"
                   label="name"
-                  track-by="name"
-                  :preselect-first="true"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                  deselect-label="Can't remove this value"
+                  placeholder="Select one"
+                ></multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
-              <div class="form-group">
+              <div class="form-group" v-if="form.owner">
                 <label for="name">Project</label>
                 <multiselect
                   v-model="form.project"
@@ -133,18 +132,9 @@
                   :preserve-search="true"
                   placeholder="Select one"
                   label="name"
-                  track-by="name"
-                  :preselect-first="true"
                   @input="opt => form.project_id = opt.id"
                   :disabled="isDisabled"
-                >
-                  <template slot="selection" slot-scope="{ values, search, isOpen }">
-                    <span
-                      class="multiselect__single"
-                      v-if="values.length &amp;&amp; !isOpen"
-                    >{{ values.length }} options selected</span>
-                  </template>
-                </multiselect>
+                ></multiselect>
                 <has-error :form="form" field="project_id"></has-error>
               </div>
             </div>
@@ -188,21 +178,23 @@ export default {
     singlePage: false
   },
   computed: {
-    ...mapGetters("ticket", {
-      owners: "ticketsOwners",
-      projects: "projectByOwners",
+    ...mapGetters({
+      owners: "owner/activeOwners",
+      projects: "project/projectByOwners"
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
-      ownerOfPorject: "ownerOfProject"
+      ownerOfProject: "ownerOfProject"
     }),
     activeTickets() {
       return this.tickets.data;
     }
   },
-  mounted() {},
+  mounted() {
+    this.getOwners();
+  },
   methods: {
-    newModel() {
+    newModal() {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
@@ -213,14 +205,15 @@ export default {
       }
       $("#Modal").modal("show");
     },
-    editModel(ticket) {
+    editModal(ticket) {
       this.editMode = true;
       this.form.reset();
+      this.form.clear();
       $("#Modal").modal("show");
       this.form.fill(ticket);
+      this.form.owner = this.form.project.owner;
       if (this.singlePage) {
         this.form.project = this.project;
-        this.form.owner = this.ownerOfPorject;
         this.form.project_id = this.project.id;
         this.isDisabled = false;
       }
@@ -230,7 +223,7 @@ export default {
       this.form.project = [];
       if (ownerId !== null && ownerId !== "") {
         this.$store
-          .dispatch("ticket/getProjectsByOwner", ownerId)
+          .dispatch("project/getProjectsByOwner", ownerId)
           .then(() => {
             this.$Progress.finish();
           })
@@ -308,6 +301,27 @@ export default {
             });
         }
       });
+    },
+    getOwners() {
+      this.$store
+        .dispatch("owner/getOwners")
+        .then(() => {})
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  },
+  directives: {
+    trim: {
+      inserted: function(el, maxWords = 4) {
+        var str = el.innerHTML;
+        var resultString =
+          str
+            .split(" ")
+            .slice(0, maxWords.value)
+            .join(" ") + "...";
+        el.innerHTML = resultString;
+      }
     }
   }
 };
