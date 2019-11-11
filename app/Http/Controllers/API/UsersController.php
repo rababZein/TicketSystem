@@ -40,7 +40,7 @@ class UsersController extends BaseController
         return $this->sendResponse(new UserCollection($users), 'users retrieved successfully.');
     }
 
-     /**
+    /**
      * Display a data listing of the resource.
      *
      * @return Response
@@ -78,6 +78,17 @@ class UsersController extends BaseController
     }
 
     /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     */
+    public function show(User $user, ViewUserRequest $request)
+    {
+        return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -107,7 +118,7 @@ class UsersController extends BaseController
         } catch (Exception $th) {
             throw new ItemNotUpdatedException('User');
         }
-        
+
         return $this->sendResponse($user->toArray(), 'users updated successfully.');
     }
 
@@ -132,12 +143,11 @@ class UsersController extends BaseController
         }
 
         return $this->sendResponse(new UserResource($user), 'users deleted successfully.');
-
     }
 
     public function getAllResponsibles(ListUserRequest $request)
     {
-        $users = User::where('type','regular-user')->get();
+        $users = User::where('type', 'regular-user')->get();
 
         return $this->sendResponse(UserResource::collection($users), 'Users retrieved successfully.');
     }

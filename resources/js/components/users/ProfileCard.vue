@@ -11,8 +11,8 @@
           />
         </div>
 
-        <h3 class="profile-username text-center">Nina Mcintire</h3>
-
+        <h3 class="profile-username text-center">{{ user.name }}</h3>
+        <p class="text-muted text-center">{{ user.type }}</p>
         <ul class="list-group list-group-unbordered mb-3">
           <li class="list-group-item">
             <b>Projects</b>
@@ -36,7 +36,12 @@
 
 <script>
 export default {
-    
+    props: {
+    user: {
+      type: Object,
+      required: true
+    },
+  },
 };
 </script>
 
