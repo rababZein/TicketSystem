@@ -35,7 +35,7 @@ class TaskController extends BaseController
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update', 'changeStatus']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
-      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient']]);
+      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient', 'getTaskPerClient']]);
   }
 
    /**
@@ -189,12 +189,22 @@ class TaskController extends BaseController
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
-  public function getTaskCountPerClient($clientId)
+  public function getTasksCountPerClient($clientId)
   {
-    $tasksNumber = Task::select(DB::Raw('status_id, COUNT(*) as count'))
-                          ->groupBy('status_id')->get();
+    $tasksNumber = Task::with(array('project' => function($query) use ($clientId) {
+                    $query->where('projects.owner_id', $clientId);
+                  }))->select(DB::Raw('status_id, COUNT(*) as count'))
+                  ->groupBy('status_id')->get();
 
     return $this->sendResponse($tasksNumber->toArray(), 'Tasks Number retrieved successfully.');
   }
   
+  public function getTasksPerClient($clientId)
+  {
+    $tasks = Task::with(array('project' => function($query) use ($clientId) {
+              $query->where('projects.owner_id', $clientId);
+            }))->paginate();
+
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+    }
 }
