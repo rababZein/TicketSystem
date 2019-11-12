@@ -20,11 +20,11 @@
           </li>
           <li class="list-group-item">
             <b>Tickets</b>
-            <a class="float-right">543</a>
+            <a class="float-right">{{ ticketCount }}</a>
           </li>
           <li class="list-group-item">
             <b>Tasks</b>
-            <a class="float-right">100</a>
+            <a class="float-right">{{ taskCount }}</a>
           </li>
         </ul>
       </div>
@@ -47,6 +47,8 @@ export default {
   computed: {
     ...mapGetters({
       projectCount: "user/ProjectCountPerClient",
+      ticketCount: "user/TicketCountPerClient",
+      taskCount: "user/TotlaTaskCountPerClient",
     })
   }
 };

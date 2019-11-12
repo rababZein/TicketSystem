@@ -2,10 +2,34 @@
   <div class="justify-content-center" v-if="!loading">
     <div class="row">
       <!-- card box -->
-      <card-box :count="projectCount" title="Project" cardBg="bg-info" icon="fas fa-briefcase"></card-box>
-      <card-box :count="ticketCount" title="Tickets" cardBg="bg-success" icon="fas fa-chart-pie"></card-box>
-      <card-box :count="openTaskCount" title="open Tasks" cardBg="bg-warning" icon="fas fa-tasks"></card-box>
-      <card-box :count="closedTaskCount" title="closed tasks" cardBg="bg-danger" icon="fas fa-list-ul"></card-box>
+      <card-box cardBg="bg-info">
+        <template v-slot:count>{{ projectCount }}</template>
+        <template v-slot:title>projects</template>
+        <template v-slot:icon>
+          <i class="fas fa-briefcase"></i>
+        </template>
+      </card-box>
+      <card-box cardBg="bg-success">
+        <template v-slot:count>{{ ticketCount }}</template>
+        <template v-slot:title>Tickets</template>
+        <template v-slot:icon>
+          <i class="fas fa-chart-pie"></i>
+        </template>
+      </card-box>
+      <card-box cardBg="bg-warning">
+        <template v-slot:count>{{ openTaskCount }}</template>
+        <template v-slot:title>open Tasks</template>
+        <template v-slot:icon>
+          <i class="fas fa-tasks"></i>
+        </template>
+      </card-box>
+      <card-box cardBg="bg-danger">
+        <template v-slot:count>{{ closedTaskCount }}</template>
+        <template v-slot:title>closed tasks</template>
+        <template v-slot:icon>
+          <i class="fas fa-list-ul"></i>
+        </template>
+      </card-box>
     </div>
     <div class="row">
       <!-- profile card -->
@@ -90,7 +114,7 @@ export default {
       projectCount: "user/ProjectCountPerClient",
       ticketCount: "user/TicketCountPerClient",
       openTaskCount: "user/OpenTaskCountPerClient",
-      closedTaskCount: "user/closedTaskCountPerClient"
+      closedTaskCount: "user/ClosedTaskCountPerClient"
     })
   }
 };

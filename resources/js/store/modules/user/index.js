@@ -23,8 +23,11 @@ export default {
         OpenTaskCountPerClient(state) {
             return state.openTaskCountPerUser;
         },
-        closedTaskCountPerClient(state) {
+        ClosedTaskCountPerClient(state) {
             return state.closedTaskCountPerUser;
+        },
+        TotlaTaskCountPerClient(state) {
+            return state.openTaskCountPerUser + state.closedTaskCountPerUser;
         }
     },
     actions: {

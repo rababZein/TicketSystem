@@ -3,12 +3,14 @@
     <!-- small card -->
     <div class="small-box" :class="cardBg">
       <div class="inner">
-        <h3>{{ count }}</h3>
+        <h3>
+          <slot name="count"></slot>
+        </h3>
 
-        <p>{{ title }}</p>
+        <p><slot name="title"></slot></p>
       </div>
       <div class="icon">
-        <i :class="icon"></i>
+        <slot name="icon"></slot>
       </div>
       <a href="#" class="small-box-footer"></a>
     </div>
@@ -18,21 +20,9 @@
 <script>
 export default {
   props: {
-    count: {
-      type: Number,
-      default: 0
-    },
     cardBg: {
       type: String,
       default: "bg-info"
-    },
-    icon: {
-      type: String,
-      default: "fas fa-chart-pie"
-    },
-    title: {
-      type: String,
-      required: true
     }
   }
 };
