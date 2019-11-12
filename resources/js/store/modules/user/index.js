@@ -54,8 +54,8 @@ export default {
             state.ticketCountPerUser = count.ticketsNumber;
         },
         setTaskCountPerClient(state, taskCount) {
-            
-            let openTasksCount = taskCount.filter(o => [1,2,3].includes(o.status_id) );
+            // status_id of closed task = 4
+            let openTasksCount = taskCount.filter( (item) => item.status_id !== 4 );
             let closedTasksCount = taskCount.filter(o => [4].includes(o.status_id) );
 
             Array.prototype.sum = function (prop) {
