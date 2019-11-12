@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ task.name }}</span>
-          <div class="float-right font-weight-light">{{ task.created_at | myDate }}</div>
+          <div class="float-right font-weight-light">{{ task.created_at | DateOnly }}</div>
         </div>
 
         <div class="card-body">
@@ -431,6 +431,9 @@ export default {
   filters: {
     DateWithTime(data) {
       return moment(data).format(" DD/MM/YYYY - hh:mm:ss a");
+    },
+    DateOnly(data) {
+      return moment(data).format(' DD/MM/YYYY');
     }
   }
 };
