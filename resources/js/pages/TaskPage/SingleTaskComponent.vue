@@ -112,6 +112,7 @@
           <i class="fas fa-stop fa-fw"></i>
         </button>
       </center>
+      <task-comment></task-comment>
       <div class="card" id="listTracking" v-show="listTracking_Task.length > 0">
         <div class="card-header">
           <h5 class="card-title m-0">History</h5>
