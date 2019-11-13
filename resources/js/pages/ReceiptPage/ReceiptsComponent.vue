@@ -232,7 +232,7 @@ export default {
       this.form.task_id = this.form.task.id;
 
       this.form
-        .post("/v-api/receipts")
+        .post("/v-api/receipts/" + this.form.task.project.id)
         .then(response => {
           $("#newReceipt").modal("hide");
           this.$Progress.finish();
