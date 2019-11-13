@@ -78,6 +78,16 @@ export default {
                     reject(error);
                 })
             });
+        },
+        getTasksPerClient({commit}, userId) {
+            return new Promise((resolve, reject) => {
+                tasks.getTasksPerClient(userId).then(response => {
+                    commit('user/setTasksPerClient', response.data.data, {root: true});
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
         }
     },
     mutations: {
