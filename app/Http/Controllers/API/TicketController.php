@@ -167,19 +167,19 @@ class TicketController extends BaseController
 
   public function getTicketsCountPerClient($clientId)
   {
-    $ticketsNumber = Ticket::with(array('project' => function($query) use ($clientId) {
-        $query->where('projects.owner_id', $clientId);
-    }))->count();
+    $ticketsNumber = Ticket::with('project')->whereHas('project', function ($query)  use ($clientId) {
+      $query->where('owner_id', $clientId);
+    })->count();
 
     return $this->sendResponse(['ticketsNumber' => $ticketsNumber], 'Tickets Number retrieved successfully.');
   }
 
   public function getTicketsPerClient($clientId)
   {
-    $tickets = Ticket::with(array('project' => function($query) use ($clientId) {
-        $query->where('projects.owner_id', $clientId);
-    }))->paginate();
-
+    $tickets = Ticket::with('project')->whereHas('project', function ($query)  use ($clientId) {
+      $query->where('owner_id', $clientId);
+    })->paginate();
+    
     return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }
 }
