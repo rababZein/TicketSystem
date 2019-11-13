@@ -33,7 +33,7 @@ class ClientCommentController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('permission:clientComment-list|clientComment-create|clientComment-edit|clientComment-delete', ['only' => ['index', 'show', 'getclientCommentsPerClient']]);
+        $this->middleware('permission:clientComment-list|clientComment-create|clientComment-edit|clientComment-delete', ['only' => ['index', 'show', 'getCommentsPerClient']]);
         $this->middleware('permission:clientComment-create', ['only' => ['store']]);
         $this->middleware('permission:clientComment-edit', ['only' => ['update']]);
         $this->middleware('permission:clientComment-delete', ['only' => ['destroy']]);
@@ -126,7 +126,7 @@ class ClientCommentController extends BaseController
      * @param $clientId
      * @return Response
      */
-    public function getclientCommentsPerClient($clientId)
+    public function getCommentsPerClient($clientId)
     {
         $clientComments = ClientComment::where('client_id', $clientId)
                                        ->paginate();

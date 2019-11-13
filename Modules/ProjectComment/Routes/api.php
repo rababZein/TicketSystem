@@ -13,6 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/projectcomment', function (Request $request) {
-    return $request->user();
-});
+Route::resource('/projectComments', 'ProjectCommentController')->except('create', 'edit');
+Route::get('/commentsPerProject/{project_id}', 'ProjectCommentController@getCommentsPerProject');

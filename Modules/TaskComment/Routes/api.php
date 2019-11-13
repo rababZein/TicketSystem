@@ -13,6 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/taskcomment', function (Request $request) {
-    return $request->user();
-});
+Route::resource('/taskComments', 'TaskCommentController')->except('create', 'edit');
+Route::get('/commentsPerTask/{task_id}', 'TaskCommentController@getCommentsPerTask');

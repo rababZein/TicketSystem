@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('ticketcomment')->group(function() {
-    Route::get('/', 'TicketCommentController@index');
-});
+Route::resource('/ticketComments', 'TicketCommentController')->except('create', 'edit');
+Route::get('/commentsPerTicket/{ticket_id}', 'TicketCommentController@getCommentsPerTicket');
+

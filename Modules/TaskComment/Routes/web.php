@@ -11,6 +11,6 @@
 |
 */
 
-Route::prefix('taskcomment')->group(function() {
-    Route::get('/', 'TaskCommentController@index');
-});
+Route::resource('/taskComments', 'TaskCommentController')->except('create', 'edit');
+Route::get('/commentsPerTask/{task_id}', 'TaskCommentController@getCommentsPerTask');
+

@@ -11,6 +11,5 @@
 |
 */
 
-Route::prefix('projectcomment')->group(function() {
-    Route::get('/', 'ProjectCommentController@index');
-});
+Route::resource('/projectComments', 'ProjectCommentController')->except('create', 'edit');
+Route::get('/commentsPerProject/{project_id}', 'ProjectCommentController@getCommentsPerProject');

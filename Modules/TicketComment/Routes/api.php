@@ -13,6 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/ticketcomment', function (Request $request) {
-    return $request->user();
-});
+Route::resource('/ticketComments', 'TicketCommentController')->except('create', 'edit');
+Route::get('/commentsPerTicket/{ticket_id}', 'TicketCommentController@getCommentsPerTicket');

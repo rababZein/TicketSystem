@@ -12,4 +12,4 @@
 */
 
 Route::resource('/clientComments', 'ClientCommentController')->except('create', 'edit');
-Route::get('/commentsPerClient/{client_id}', 'ClientCommentController@getclientCommentsPerClient');
+Route::get('/commentsPerClient/{client_id}', 'ClientCommentController@getCommentsPerClient');
