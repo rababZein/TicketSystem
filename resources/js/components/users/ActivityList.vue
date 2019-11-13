@@ -12,7 +12,7 @@
       <div class="card-body p-0">
         <div class="tab-content">
           <div class="active tab-pane" id="activity">
-            <ul class="panel-body list-group" style="height:276px;overflow-y:auto;">
+            <ul class="panel-body list-group" style="height:330px;overflow-y:auto;">
               <li class="list-group-item" v-for="activity in activities.data" :key="activity.id">
                 <span style="color:#888;font-style:italic">{{ activity.create_at }}</span>
                 {{ activity.subject }}
