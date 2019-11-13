@@ -56,8 +56,7 @@ class Task extends Model
         return Task::with('project.owner', 'ticket', 'responsible', 'task_status')
                     ->select('tasks.*')
                     ->where('tasks.responsible_id', $id)
-                    ->orWhere('tasks.created_by', $id)
-                    ->paginate();
+                    ->orWhere('tasks.created_by', $id);
 
     }
 
