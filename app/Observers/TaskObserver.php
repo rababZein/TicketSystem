@@ -5,14 +5,17 @@ namespace App\Observers;
 use App\Models\Task;
 use \Illuminate\Http\Request;
 use App\Jobs\Task\TaskAssignJob;
+use Modules\Activity\Http\Controllers\ActivityController;
 
 class TaskObserver
 {
     private $input;
+    private $activityLog;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, ActivityController $activityLog)
     {
         $this->input = $request->all();
+        $this->activityLog = $activityLog;
     }
     
     /**
@@ -28,6 +31,13 @@ class TaskObserver
         }
         $task->project;
         $task->responsible;
+
+        $ticket_id = null;
+        if ($task->ticket) {
+            $ticket_id = $task->ticket->id;
+        }
+
+        $this->activityLog->addToLog('Create task: '.$task->name, $task->project->owner->id, $task->project->id, $ticket_id, $task->id);
     }
 
     /**
@@ -40,7 +50,14 @@ class TaskObserver
     {
         if (isset($this->input['responsible_id'])) {
             TaskAssignJob::dispatch($this->input['responsible_id'], $task);
-          }
+        }
+
+        $ticket_id = null;
+        if ($task->ticket) {
+            $ticket_id = $task->ticket->id;
+        }
+
+        $this->activityLog->addToLog('Update task: '.$task->name, $task->project->owner->id, $task->project->id, $ticket_id, $task->id);
     }
 
     /**
@@ -51,7 +68,13 @@ class TaskObserver
      */
     public function deleted(Task $task)
     {
-        //
+        
+        $ticket_id = null;
+        if ($task->ticket) {
+            $ticket_id = $task->ticket->id;
+        }
+
+        $this->activityLog->addToLog('Delete task: '.$task->name, $task->project->owner->id, $task->project->id, $ticket_id, $task->id);
     }
 
     /**
