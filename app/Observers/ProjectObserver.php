@@ -6,14 +6,17 @@ use App\Models\Project;
 use App\Models\User;
 use App\Jobs\Project\ProjectAssignJob;
 use \Illuminate\Http\Request;
+use Modules\Activity\Http\Controllers\ActivityController;
 
 class ProjectObserver
 {
     private $input;
+    private $activityLog;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, ActivityController $activityLog)
     {
         $this->input = $request->all();
+        $this->activityLog = $activityLog;
     }
     /**
      * Handle the project "created" event.
@@ -32,6 +35,8 @@ class ProjectObserver
         }
 
         $project->owner;
+
+        $this->activityLog->addToLog('Create project: '.$project->name, $project->owner->id, $project->id);
     }
 
     /**
@@ -51,6 +56,8 @@ class ProjectObserver
         }
 
         $project->owner;
+
+        $this->activityLog->addToLog('Update project: '.$project->name, $project->owner->id, $project->id);
     }
 
     /**
@@ -61,7 +68,7 @@ class ProjectObserver
      */
     public function deleted(Project $project)
     {
-        //
+        $this->activityLog->addToLog('Delete project: '.$project->name, $project->owner->id, $project->id);
     }
 
     /**

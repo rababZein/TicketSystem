@@ -3,9 +3,16 @@
 namespace App\Observers;
 
 use App\Models\Ticket;
+use Modules\Activity\Http\Controllers\ActivityController;
 
 class TicketObserver
 {
+    private $activityLog;
+
+    public function __construct(ActivityController $activityLog)
+    {
+        $this->activityLog = $activityLog;
+    }
     /**
      * Handle the ticket "created" event.
      *
@@ -15,6 +22,8 @@ class TicketObserver
     public function created(Ticket $ticket)
     {
         $ticket->project->owner;
+
+        $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }
 
     /**
@@ -26,6 +35,8 @@ class TicketObserver
     public function updated(Ticket $ticket)
     {
         $ticket->project->owner;
+
+        $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }
 
     /**
@@ -36,7 +47,7 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket)
     {
-        //
+        $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }
 
     /**

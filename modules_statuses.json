@@ -1,5 +1,6 @@
 {
     "Category": true,
     "Topic": true,
-    "File": true
+    "File": true,
+    "Activity": true
 }
