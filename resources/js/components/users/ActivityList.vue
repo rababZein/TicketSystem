@@ -14,7 +14,7 @@
           <div class="active tab-pane" id="activity">
             <ul class="panel-body list-group" style="height:330px;overflow-y:auto;">
               <li class="list-group-item" v-for="activity in activities.data" :key="activity.id">
-                <span style="color:#888;font-style:italic">{{ activity.create_at }}</span>
+                <span style="color:#888;font-style:italic">{{ activity.created_at | DateWithTime }}</span>
                 {{ activity.subject }}
               </li>
               
@@ -33,6 +33,7 @@
 
 <script>
 import { mapGetters } from "vuex";
+import moment from "moment";
 
 export default {
   props: {
@@ -60,6 +61,11 @@ export default {
     ...mapGetters({
       activities: "activity/activityList",
     })
+  },
+  filters: {
+    DateWithTime(date) {
+      return moment(date).format(" DD/MM/YY - hh:mm a");
+    }
   }
 };
 </script>
