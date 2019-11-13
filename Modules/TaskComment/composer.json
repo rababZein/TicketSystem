@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/taskcomment",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TaskComment\\Providers\\TaskCommentServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TaskComment\\": ""
+        }
+    }
+}

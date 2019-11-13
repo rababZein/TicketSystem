@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Activity\Providers;
+namespace Modules\ClientComment\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
@@ -12,7 +12,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    protected $moduleNamespace = 'Modules\Activity\Http\Controllers';
+    protected $moduleNamespace = 'Modules\ClientComment\Http\Controllers';
 
     /**
      * Called before routes are registered.
