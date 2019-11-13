@@ -83,5 +83,15 @@ export default {
                 reject(error);
             })
         });
+    },
+    getProjectPerClient({commit}, clientId) {
+        return new Promise((resolve, reject) => {
+            projects.getProjectPerClient(clientId).then(response => {
+                commit('user/setProjectPerUser', response.data.data, { root: true });
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
     }
 }

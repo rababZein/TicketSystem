@@ -36,7 +36,7 @@
       <profile-card :user="user"></profile-card>
       <!-- /profile card -->
       <!-- activity list -->
-      <activity-list :userId="userId"></activity-list>
+      <tab-panel></tab-panel>
       <!-- /activity list -->
     </div>
   </div>

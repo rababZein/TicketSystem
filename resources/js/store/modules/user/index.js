@@ -4,7 +4,9 @@ export default {
     namespaced: true,
     state: {
         items: {},
-        singleUser: {},
+        singleUser: {
+        },
+        projectsPerUser: {},
         projectCountPerUser: null,
         ticketCountPerUser: null,
         openTaskCountPerUser: null,
@@ -28,6 +30,9 @@ export default {
         },
         TotlaTaskCountPerClient(state) {
             return state.openTaskCountPerUser + state.closedTaskCountPerUser;
+        },
+        ProjectPerClient(state) {
+            return state.projectsPerUser;
         }
     },
     actions: {
@@ -68,6 +73,9 @@ export default {
             
             state.openTaskCountPerUser = openTasksCount.sum("count");
             state.closedTaskCountPerUser = closedTasksCount.sum("count");
+        },
+        setProjectPerUser(state, projects) {
+            state.projectsPerUser = projects;
         }
     }
 }
