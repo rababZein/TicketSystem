@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ task.name }}</span>
-          <div class="float-right font-weight-light">{{ task.created_at | myDate }}</div>
+          <div class="float-right font-weight-light">{{ task.created_at | DateOnly }}</div>
         </div>
 
         <div class="card-body">
@@ -112,6 +112,7 @@
           <i class="fas fa-stop fa-fw"></i>
         </button>
       </center>
+      <task-comment></task-comment>
       <div class="card" id="listTracking" v-show="listTracking_Task.length > 0">
         <div class="card-header">
           <h5 class="card-title m-0">History</h5>
@@ -431,6 +432,9 @@ export default {
   filters: {
     DateWithTime(data) {
       return moment(data).format(" DD/MM/YYYY - hh:mm:ss a");
+    },
+    DateOnly(data) {
+      return moment(data).format(' DD/MM/YYYY');
     }
   }
 };

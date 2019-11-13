@@ -13,7 +13,7 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body table-responsive p-0">
-        <table class="table table-hover">
+        <table class="table table-hover table-sm">
           <thead>
             <tr>
               <th width="2%">ID</th>
@@ -41,11 +41,11 @@
                 </span>
               </td>
               <td>
-                <p v-if="task.responsible">
+                <span v-if="task.responsible">
                   <router-link
                     :to="'/profile/' + task.responsible.id"
                   >{{ task.responsible.name }}</router-link>
-                </p>
+                </span>
               </td>
               <td>
                 <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
