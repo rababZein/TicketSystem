@@ -7,6 +7,7 @@ export default {
         singleUser: {
         },
         projectsPerUser: {},
+        ticketsPerUser: {},
         projectCountPerUser: null,
         ticketCountPerUser: null,
         openTaskCountPerUser: null,
@@ -33,6 +34,9 @@ export default {
         },
         ProjectPerClient(state) {
             return state.projectsPerUser;
+        },
+        TicketsPerClient(state) {
+            return state.ticketsPerUser;
         }
     },
     actions: {
@@ -76,6 +80,9 @@ export default {
         },
         setProjectPerUser(state, projects) {
             state.projectsPerUser = projects;
+        },
+        getTicketsPerClient(state, tickets) {
+            state.ticketsPerUser = tickets;
         }
     }
 }

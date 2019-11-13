@@ -25,7 +25,8 @@ export default {
     return {
       tabs: [
             {component: "ActivityList", title: "activity"},
-            {component: "ProjectsListPerUser",  title: "projects"}
+            {component: "ProjectsListPerUser",  title: "projects"},
+            {component: "TicketsListPerUser",  title: "tickets"}
       ],
       selected: "ActivityList"
     };
