@@ -191,9 +191,9 @@ class TaskController extends BaseController
 
   public function getTasksCountPerClient($clientId)
   {
-    $tasksNumber = Task::with(array('project' => function($query) use ($clientId) {
-                    $query->where('projects.owner_id', $clientId);
-                  }))->select(DB::Raw('status_id, COUNT(*) as count'))
+    $tasksNumber = Task::with('project')->whereHas('project', function ($query)  use ($clientId) {
+                      $query->where('owner_id', $clientId);
+                  })->select(DB::Raw('status_id, COUNT(*) as count'))
                   ->groupBy('status_id')->get();
 
     return $this->sendResponse($tasksNumber->toArray(), 'Tasks Number retrieved successfully.');
@@ -201,9 +201,9 @@ class TaskController extends BaseController
   
   public function getTasksPerClient($clientId)
   {
-    $tasks = Task::with(array('project' => function($query) use ($clientId) {
-              $query->where('projects.owner_id', $clientId);
-            }))->paginate();
+    $tasks = Task::with('project')->whereHas('project', function ($query)  use ($clientId) {
+                $query->where('owner_id', $clientId);
+              })->paginate();
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
     }
