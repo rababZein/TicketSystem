@@ -1,5 +1,6 @@
 <template>
   <div class="col-md-9">
+    <router-view :key="userId" />
     <div class="card">
       <div class="card-header p-2">
         <ul class="nav nav-pills">
@@ -14,10 +15,13 @@
           <div class="active tab-pane" id="activity">
             <ul class="panel-body list-group" style="height:330px;overflow-y:auto;">
               <li class="list-group-item" v-for="activity in activities.data" :key="activity.id">
-                <span style="color:#888;font-style:italic">{{ activity.created_at | DateWithTime }}</span>
+                <span
+                  style="color:#888;font-style:italic"
+                >{{ activity.created_at | DateWithTime }} |</span>
+                <router-link :to="'/profile/' + activity.user.id">{{ activity.user.name }}</router-link>
+
                 {{ activity.subject }}
               </li>
-              
             </ul>
           </div>
           <!-- /.tab-pane -->
@@ -47,8 +51,7 @@ export default {
       this.$Progress.start();
       this.$store
         .dispatch("activity/getlogActivityListByClientId", id)
-        .then(response => {
-        })
+        .then(response => {})
         .catch(error => {
           console.log(error);
         });
@@ -59,8 +62,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      activities: "activity/activityList",
+      activities: "activity/activityList"
     })
+  },
+  beforeRouteUpdate(to, from, next) {
+    console.log(to.params);
+    this.getlogActivityListsByClientId(to.params.uid);
+    next();
   },
   filters: {
     DateWithTime(date) {

@@ -31,7 +31,7 @@
             <!-- Main content -->
             <div class="content">
                 <div class="container-fluid">
-                    <router-view></router-view>
+                    <router-view :key="$route.path"></router-view>
                     <vue-progress-bar></vue-progress-bar>
                 </div>
                 {{-- <div class="container-fluid">
