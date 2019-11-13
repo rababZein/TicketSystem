@@ -6,6 +6,7 @@ import task from './modules/task/index';
 import regularUser from './modules/regularUser/index';
 import owner from './modules/owner/index';
 import user from './modules/user/index';
+import activity from './modules/activity/index';
 
 Vue.use(Vuex);
 
@@ -18,7 +19,8 @@ export default new Vuex.Store({
         task,
         regularUser,
         owner,
-        user
+        user,
+        activity
     },
     strict: debug,
 })

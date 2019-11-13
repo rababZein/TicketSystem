@@ -36,7 +36,7 @@
       <profile-card :user="user"></profile-card>
       <!-- /profile card -->
       <!-- activity list -->
-      <activity-list></activity-list>
+      <activity-list :userId="userId"></activity-list>
       <!-- /activity list -->
     </div>
   </div>
@@ -102,7 +102,7 @@ export default {
         });
     }
   },
-  created() {
+  mounted() {
     this.getUserById(this.userId);
     this.getProjectCountPerClient(this.userId);
     this.getTicketCountPerClient(this.userId);
