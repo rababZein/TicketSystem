@@ -8,7 +8,7 @@ class Activity extends Model
 {
 
     protected $table = 'activities';
-    public $timestamps = false;
+    public $timestamps = true;
     protected $fillable = array('subject', 'url', 'method', 'ip', 'agent', 'user_id', 'project_id', 'client_id', 'ticket_id', 'task_id');
 
     public function user()

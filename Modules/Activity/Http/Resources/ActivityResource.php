@@ -26,6 +26,7 @@ class ActivityResource extends JsonResource
             "project" => new ProjectResource($this->whenLoaded('project')),
             "ticket" => new TicketResource($this->whenLoaded('ticket')),
             "task" => new TaskResource($this->whenLoaded('task')),
+            "created_at" => $this->created_at,
         ];
     }
 }
