@@ -24,4 +24,8 @@ export default {
         delete: params => API.delete('/projects/' + params),
         show: params => API.get('/projects/' + params),
         getOwners: () => API.get('/owner/getall'),
+
+        
+        getProjectCountPerClient: params => API.get('/clients/'+ params +'/projectsNumber'),
+        getProjectPerClient: params => API.get('/clients/'+ params +'/projects'),
 }

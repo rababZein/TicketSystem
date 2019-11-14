@@ -11,20 +11,20 @@
           />
         </div>
 
-        <h3 class="profile-username text-center">Nina Mcintire</h3>
-
+        <h3 class="profile-username text-center">{{ user.name }}</h3>
+        <p class="text-muted text-center">{{ user.type }}</p>
         <ul class="list-group list-group-unbordered mb-3">
           <li class="list-group-item">
             <b>Projects</b>
-            <a class="float-right">2</a>
+            <a class="float-right">{{ projectCount }}</a>
           </li>
           <li class="list-group-item">
             <b>Tickets</b>
-            <a class="float-right">543</a>
+            <a class="float-right">{{ ticketCount }}</a>
           </li>
           <li class="list-group-item">
             <b>Tasks</b>
-            <a class="float-right">100</a>
+            <a class="float-right">{{ taskCount }}</a>
           </li>
         </ul>
       </div>
@@ -35,8 +35,22 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
-    
+  props: {
+    user: {
+      type: Object,
+      required: true
+    }
+  },
+  computed: {
+    ...mapGetters({
+      projectCount: "user/ProjectCountPerClient",
+      ticketCount: "user/TicketCountPerClient",
+      taskCount: "user/TotlaTaskCountPerClient",
+    })
+  }
 };
 </script>
 
