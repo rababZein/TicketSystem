@@ -21,7 +21,7 @@ class ActivityResource extends JsonResource
         return [
             "id" => $this->id,
             "subject" => $this->subject,
-            "user" => new UserResource($this->whenLoaded('user')->first()),
+            "user" => new UserResource($this->whenLoaded('user')),
             "client" => new UserResource($this->whenLoaded('client')),
             "project" => new ProjectResource($this->whenLoaded('project')),
             "ticket" => new TicketResource($this->whenLoaded('ticket')),
