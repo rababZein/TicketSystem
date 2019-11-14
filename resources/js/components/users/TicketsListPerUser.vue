@@ -20,6 +20,15 @@
         </tbody>
       </table>
     </div>
+    <pagination
+      class="mt-1"
+      align="center"
+      size="small"
+      :show-disabled="true"
+      :data="tickets"
+      :limit="3"
+      @pagination-change-page="getTicketsPerClient"
+    ></pagination>
   </div>
   <!-- /.tab-pane -->
 </template>
@@ -35,10 +44,10 @@ export default {
     }
   },
   methods: {
-    getTicketsPerClient(id) {
+    getTicketsPerClient(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("ticket/getTicketsPerClient", id)
+        .dispatch("ticket/getTicketsPerClient", { id: this.userId, page: page })
         .then(() => {
           this.$Progress.finish();
         })
@@ -48,7 +57,7 @@ export default {
     }
   },
   mounted() {
-    this.getTicketsPerClient(this.userId);
+    this.getTicketsPerClient();
   },
   computed: {
     ...mapGetters({

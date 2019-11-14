@@ -24,6 +24,15 @@
         </tbody>
       </table>
     </div>
+    <pagination
+      class="mt-1"
+      align="center"
+      size="small"
+      :show-disabled="true"
+      :data="tasks"
+      :limit="3"
+      @pagination-change-page="getTasksPerClient"
+    ></pagination>
   </div>
   <!-- /.tab-pane -->
 </template>
@@ -39,10 +48,10 @@ export default {
     }
   },
   methods: {
-    getTasksPerClient(id) {
+    getTasksPerClient(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("task/getTasksPerClient", id)
+        .dispatch("task/getTasksPerClient", { id: this.userId, page: page })
         .then(() => {
           this.$Progress.finish();
         })
@@ -52,7 +61,7 @@ export default {
     }
   },
   mounted() {
-    this.getTasksPerClient(this.userId);
+    this.getTasksPerClient();
   },
   computed: {
     ...mapGetters({

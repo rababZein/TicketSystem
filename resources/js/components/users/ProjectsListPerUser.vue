@@ -18,6 +18,15 @@
         </tbody>
       </table>
     </div>
+    <pagination
+      class="mt-1"
+      align="center"
+      size="small"
+      :show-disabled="true"
+      :data="projects"
+      :limit="3"
+      @pagination-change-page="getProjectPerClient"
+    ></pagination>
   </div>
   <!-- /.tab-pane -->
 </template>
@@ -33,10 +42,10 @@ export default {
     }
   },
   methods: {
-    getProjectPerClient(id) {
+    getProjectPerClient(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("project/getProjectPerClient", id)
+        .dispatch("project/getProjectPerClient", { id: this.userId, page: page })
         .then(() => {
           this.$Progress.finish();
         })
@@ -46,7 +55,7 @@ export default {
     }
   },
   mounted() {
-    this.getProjectPerClient(this.userId);
+    this.getProjectPerClient();
   },
   computed: {
     ...mapGetters({

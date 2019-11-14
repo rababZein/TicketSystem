@@ -79,9 +79,9 @@ export default {
                 })
             });
         },
-        getTasksPerClient({commit}, userId) {
+        getTasksPerClient({commit}, params) {
             return new Promise((resolve, reject) => {
-                tasks.getTasksPerClient(userId).then(response => {
+                tasks.getTasksPerClient(params).then(response => {
                     commit('user/setTasksPerClient', response.data.data, {root: true});
                     resolve(response);
                 }).catch(error => {

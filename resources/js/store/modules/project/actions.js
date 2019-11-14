@@ -84,9 +84,9 @@ export default {
             })
         });
     },
-    getProjectPerClient({commit}, clientId) {
+    getProjectPerClient({commit}, params) {
         return new Promise((resolve, reject) => {
-            projects.getProjectPerClient(clientId).then(response => {
+            projects.getProjectPerClient(params).then(response => {
                 commit('user/setProjectPerUser', response.data.data, { root: true });
                 resolve(response);
             }).catch(error => {
