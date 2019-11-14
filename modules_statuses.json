@@ -2,5 +2,9 @@
     "Category": true,
     "Topic": true,
     "File": true,
-    "Activity": true
+    "Activity": true,
+    "ClientComment": true,
+    "ProjectComment": true,
+    "TicketComment": true,
+    "TaskComment": true
 }

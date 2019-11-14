@@ -1,0 +1,13 @@
+{
+    "name": "ProjectComment",
+    "alias": "projectcomment",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\ProjectComment\\Providers\\ProjectCommentServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

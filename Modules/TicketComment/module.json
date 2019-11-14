@@ -1,0 +1,13 @@
+{
+    "name": "TicketComment",
+    "alias": "ticketcomment",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\TicketComment\\Providers\\TicketCommentServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

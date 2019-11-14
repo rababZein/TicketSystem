@@ -10,6 +10,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\ItemNotFoundException;
+use Illuminate\Auth\AuthenticationException;
 
 class Handler extends ExceptionHandler
 {
@@ -53,20 +54,27 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
         // override the API error handling to return a proper JSON.
-        if ($exception instanceof NotFoundHttpException && $request->isJson()) {
+        if ($exception instanceof AuthenticationException && $request->isJson()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Token expired',
+                'type' => 'AuthenticationException',
+                ]
+                , 401); //bad request
+        } elseif ($exception instanceof NotFoundHttpException && $request->isJson()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Route not found',
                 'type' => 'NotFoundHttpException',
                 ]
-                , 404); //bad request
+                , 404);
         } elseif ($exception instanceof ValidationException && $request->isJson()) {
             return response()->json([
                 'status' => false,
                 'message' => 'Validation Errors',
                 'type' => 'ValidationException',
                 'errors' => $exception->errors()]
-                , 400); //bad request
+                , 400);
         } elseif ($exception instanceof AuthorizationException) {
             return response()->json([
                 'status' => false,
