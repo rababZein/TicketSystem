@@ -206,7 +206,6 @@
 </template>
 
 <script>
-import moment from "moment";
 import DatePicker from "vue2-datepicker";
 import trackApi from '../../api/tracks';
 import taskApi from '../../api/tasks';
@@ -427,14 +426,6 @@ export default {
   computed: {
     orderedTrack: function() {
       return this.listTracking_Task.reverse();
-    }
-  },
-  filters: {
-    DateWithTime(data) {
-      return moment(data).format(" DD/MM/YYYY - hh:mm:ss a");
-    },
-    DateOnly(data) {
-      return moment(data).format(' DD/MM/YYYY');
     }
   }
 };

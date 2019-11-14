@@ -5,7 +5,7 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ ticket.name }}</span>
-          <div class="float-right font-weight-light">{{ ticket.created_at | myDate }}</div>
+          <div class="float-right font-weight-light">{{ ticket.created_at | DateOnly }}</div>
         </div>
 
         <div class="card-body">

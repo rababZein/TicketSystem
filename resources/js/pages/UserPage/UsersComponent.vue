@@ -40,7 +40,7 @@
                   >{{ role.name }}</div>
                 </td>
                 <td>{{ user.type }}</td>
-                <td>{{user.created_at | myDate}}</td>
+                <td>{{user.created_at | DateWithTime}}</td>
                 <td>
                   <a href="#" class="btn btn-primary btn-xs" @click="editModal(user)">
                     <i class="fas fa-edit fa-fw"></i>

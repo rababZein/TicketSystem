@@ -30,7 +30,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import moment from "moment";
 
 export default {
   props: {
@@ -59,11 +58,6 @@ export default {
     ...mapGetters({
       tasks: "user/TasksPerClient"
     })
-  },
-  filters: {
-    DateWithTime(date) {
-      return moment(date).format(" DD/MM/YY - hh:mm a");
-    }
   }
 };
 </script>

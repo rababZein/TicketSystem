@@ -24,7 +24,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import moment from "moment";
 
 export default {
   props: {
@@ -53,11 +52,6 @@ export default {
     ...mapGetters({
       projects: "user/ProjectPerClient"
     })
-  },
-  filters: {
-    DateWithTime(date) {
-      return moment(date).format(" DD/MM/YY - hh:mm a");
-    }
   }
 };
 </script>
