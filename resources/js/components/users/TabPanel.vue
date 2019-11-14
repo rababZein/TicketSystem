@@ -27,7 +27,8 @@ export default {
             {component: "ActivityList", title: "activity"},
             {component: "ProjectsListPerUser",  title: "projects"},
             {component: "TicketsListPerUser",  title: "tickets"},
-            {component: "TasksListPerUser",  title: "tasks"}
+            {component: "TasksListPerUser",  title: "tasks"},
+            {component: "UserComment",  title: "comments"}
       ],
       selected: "ActivityList"
     };
