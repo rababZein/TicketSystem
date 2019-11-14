@@ -101,6 +101,8 @@ class ClientCommentServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [];
+        return [
+            Spatie\Permission\PermissionServiceProvider::class,
+        ];
     }
 }

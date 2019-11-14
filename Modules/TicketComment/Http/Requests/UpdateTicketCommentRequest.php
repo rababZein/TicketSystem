@@ -15,7 +15,7 @@ class UpdateTicketCommentRequest extends FormRequest
     {
         // who can update ??
         // 1- creator
-        if ($this->TicketComment->created_by == auth()->user()->id) {
+        if ($this->ticketComment->created_by == auth()->user()->id) {
             return true;
         }
 
@@ -30,8 +30,7 @@ class UpdateTicketCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'ticket_id' => 'required|integer|exists:ticket_comments,id',
-            'comment' => 'required|string',
+            'comment' => 'min:3|max:1000',
         ];
     }
 }

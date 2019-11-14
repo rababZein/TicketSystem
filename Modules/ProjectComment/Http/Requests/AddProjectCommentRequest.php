@@ -25,8 +25,8 @@ class AddProjectCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => 'required|integer|exists:project_comments,id',
-            'comment' => 'required|string',
+            'project_id' => 'required|integer|exists:projects,id',
+            'comment' => 'required|min:3|max:1000',
         ];
     }
 }

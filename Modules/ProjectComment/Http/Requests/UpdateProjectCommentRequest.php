@@ -15,7 +15,7 @@ class UpdateProjectCommentRequest extends FormRequest
     {
         // who can update ??
         // 1- creator
-        if ($this->ProjectComment->created_by == auth()->user()->id) {
+        if ($this->projectComment->created_by == auth()->user()->id) {
             return true;
         }
 
@@ -30,8 +30,7 @@ class UpdateProjectCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'project_id' => 'required|integer|exists:project_comments,id',
-            'comment' => 'required|string',
+            'comment' => 'min:3|max:1000',
         ];
     }
 }

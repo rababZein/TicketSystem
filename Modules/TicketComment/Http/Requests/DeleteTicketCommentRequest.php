@@ -16,7 +16,7 @@ class DeleteTicketCommentRequest extends FormRequest
         // who can delete TicketComment?
 
         // 1- creator
-        if ($this->TicketComment->created_by == auth()->user()->id) {
+        if ($this->ticketComment->created_by == auth()->user()->id) {
             return true;
         }
 

@@ -16,7 +16,7 @@ class DeleteClientCommentRequest extends FormRequest
         // who can delete ClientComment?
 
         // 1- creator
-        if ($this->ClientComment->created_by == auth()->user()->id) {
+        if ($this->clientComment->created_by == auth()->user()->id) {
             return true;
         }
 

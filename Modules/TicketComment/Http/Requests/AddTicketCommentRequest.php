@@ -25,8 +25,8 @@ class AddTicketCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'ticket_id' => 'required|integer|exists:ticket_comments,id',
-            'comment' => 'required|string',
+            'ticket_id' => 'required|integer|exists:tickets,id',
+            'comment' => 'required|min:3|max:1000',
         ];
     }
 }

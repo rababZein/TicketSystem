@@ -16,7 +16,7 @@ class DeleteTaskCommentRequest extends FormRequest
         // who can delete TaskComment?
 
         // 1- creator
-        if ($this->TaskComment->created_by == auth()->user()->id) {
+        if ($this->taskComment->created_by == auth()->user()->id) {
             return true;
         }
 

@@ -16,7 +16,7 @@ class DeleteProjectCommentRequest extends FormRequest
         // who can delete ProjectComment?
 
         // 1- creator
-        if ($this->ProjectComment->created_by == auth()->user()->id) {
+        if ($this->projectComment->created_by == auth()->user()->id) {
             return true;
         }
 

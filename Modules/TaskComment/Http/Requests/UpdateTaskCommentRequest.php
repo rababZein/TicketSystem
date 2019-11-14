@@ -15,7 +15,7 @@ class UpdateTaskCommentRequest extends FormRequest
     {
         // who can update ??
         // 1- creator
-        if ($this->TaskComment->created_by == auth()->user()->id) {
+        if ($this->taskComment->created_by == auth()->user()->id) {
             return true;
         }
 
@@ -30,8 +30,7 @@ class UpdateTaskCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'task_id' => 'required|integer|exists:task_comments,id',
-            'comment' => 'required|string',
+            'comment' => 'min:3|max:1000',
         ];
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClientCommentsTable extends Migration
+class CreateProjectCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateClientCommentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('client_comments', function (Blueprint $table) {
+        Schema::create('project_comments', function (Blueprint $table) {
             $table->increments('id');
 			$table->integer('created_by')->unsigned();
 			$table->integer('updated_by')->unsigned()->nullable();
             $table->longText('comment');
-            $table->integer('client_id')->unsigned();
+            $table->integer('project_id')->unsigned();
             $table->timestamps();
 
             // add foreign key
@@ -30,7 +30,7 @@ class CreateClientCommentsTable extends Migration
             ->onDelete('restrict')
             ->onUpdate('restrict');
 
-            $table->foreign('client_id')->references('id')->on('users')
+            $table->foreign('project_id')->references('id')->on('projects')
             ->onDelete('restrict')
             ->onUpdate('restrict');
         });

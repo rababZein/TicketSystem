@@ -25,8 +25,8 @@ class AddClientCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'client_id' => 'required|integer|exists:client_comments,id',
-            'comment' => 'required|string',
+            'client_id' => 'required|integer|exists:users,id',
+            'comment' => 'required|min:3|max:1000',
         ];
     }
 }
