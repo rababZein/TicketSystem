@@ -206,6 +206,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import DatePicker from "vue2-datepicker";
 import trackApi from '../../api/tracks';
 import taskApi from '../../api/tasks';
@@ -234,8 +235,7 @@ export default {
     startTracking() {
       // Reset the counter and timer string
       this.counted_time = null;
-      // show timer before send request
-      this.activeTimerString = this.humanReadableFromSecounds(this.duration);
+      
       trackApi
         .post({
           comment: "new tracking",
@@ -243,6 +243,7 @@ export default {
           task_id: this.task_id
         })
         .then(response => {
+          this.activeTimerString = this.humanReadableFromSecounds(this.duration);
           this.tracking_task = response.data.data;
           this.startTimer();
         })
