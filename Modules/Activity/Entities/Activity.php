@@ -13,12 +13,12 @@ class Activity extends Model
 
     public function user()
     {
-        return $this->hasMany('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'user_id');
     }
 
     public function project()
     {
-        return $this->hasMany('App\Models\Project', 'id', 'project_id');
+        return $this->hasOne('App\Models\Project', 'id', 'project_id');
     }
 
     public function client()
