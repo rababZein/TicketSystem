@@ -84,9 +84,9 @@ export default {
             })
         });
     },
-    getTicketsPerClient({commit}, userId) {
+    getTicketsPerClient({commit}, params) {
         return new Promise((resolve, reject) => {
-            tickets.getTicketsPerClient(userId).then(response => {
+            tickets.getTicketsPerClient(params).then(response => {
                 commit('user/getTicketsPerClient', response.data.data, { root: true });
                 resolve(response);
             }).catch(error => {

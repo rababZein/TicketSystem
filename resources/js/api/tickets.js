@@ -9,5 +9,5 @@ export default {
     show: params => API.get('/tickets/' + params),
     getByProjectId: params => API.get('/projects/' + params.id + '/tickets/' , {params}),
     getTicketCountPerClient: params => API.get('/clients/'+ params +'/ticketsNumber'),
-    getTicketsPerClient: params => API.get('/clients/'+ params +'/tickets')
+    getTicketsPerClient: params => API.get('/clients/'+ params.id +'/tickets', {params})
 }
