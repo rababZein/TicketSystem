@@ -340,9 +340,8 @@ export default {
       trackApi
         .getHistory(task_id)
         .then(response => {
-          this.listTracking_Task = response.data.data;
-
           this.$Progress.finish();
+          this.listTracking_Task = response.data.data;
         })
         .catch(error => {
           this.$Progress.fail();
