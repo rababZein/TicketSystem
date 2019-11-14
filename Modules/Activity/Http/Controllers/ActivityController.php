@@ -35,7 +35,8 @@ class ActivityController extends BaseController
 
     public function logActivityListsByClientId($clientId)
     {
-    	$activities = Activity::where('client_id', $clientId)->latest()->paginate();
+        $activities = Activity::with('user', 'project', 'ticket', 'task')
+                            ->where('client_id', $clientId)->latest()->paginate();
         
         return $this->sendResponse(new ActivityCollection($activities), 'Activities log retrieved successfully.');
     }

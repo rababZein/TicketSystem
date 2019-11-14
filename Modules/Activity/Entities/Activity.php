@@ -8,17 +8,17 @@ class Activity extends Model
 {
 
     protected $table = 'activities';
-    public $timestamps = false;
+    public $timestamps = true;
     protected $fillable = array('subject', 'url', 'method', 'ip', 'agent', 'user_id', 'project_id', 'client_id', 'ticket_id', 'task_id');
 
     public function user()
     {
-        return $this->hasMany('App\Models\User', 'id', 'user_id');
+        return $this->hasOne('App\Models\User', 'id', 'user_id');
     }
 
     public function project()
     {
-        return $this->hasMany('App\Models\Project', 'id', 'project_id');
+        return $this->hasOne('App\Models\Project', 'id', 'project_id');
     }
 
     public function client()
