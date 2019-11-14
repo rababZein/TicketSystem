@@ -1,0 +1,13 @@
+{
+    "name": "ClientComment",
+    "alias": "clientcomment",
+    "description": "",
+    "keywords": [],
+    "order": 0,
+    "providers": [
+        "Modules\\ClientComment\\Providers\\ClientCommentServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

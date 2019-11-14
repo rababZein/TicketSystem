@@ -1,0 +1,25 @@
+{
+    "name": "nwidart/ticketcomment",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Modules\\TicketComment\\Providers\\TicketCommentServiceProvider"
+            ],
+            "aliases": {
+                
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\TicketComment\\": ""
+        }
+    }
+}
