@@ -48,6 +48,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapWebRoutes()
     {
         Route::middleware('web')
+            ->prefix('v-api')
             ->namespace($this->moduleNamespace)
             ->group(__DIR__ . '/../Routes/web.php');
     }

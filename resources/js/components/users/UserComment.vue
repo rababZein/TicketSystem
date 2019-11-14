@@ -1,7 +1,7 @@
 <template>
-  <div class="card" id="comments">
+  <div class="card" id="listTracking">
     <div class="card-header">
-      <h5 class="card-title m-0">comments</h5>
+      <h5 class="card-title m-0">User comments</h5>
     </div>
     <div class="card-body">
       <comments v-for="comment in comments" :key="comment.id" :comment="comment"></comments>

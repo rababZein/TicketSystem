@@ -68,6 +68,26 @@ export default {
                     reject(error);
                 })
             });
+        },
+        getTaskCountPerClient({commit}, userId) {
+            return new Promise((resolve, reject) => {
+                tasks.getTaskCountPerClient(userId).then(response => {
+                    commit('user/setTaskCountPerClient', response.data.data, {root: true});
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
+        getTasksPerClient({commit}, userId) {
+            return new Promise((resolve, reject) => {
+                tasks.getTasksPerClient(userId).then(response => {
+                    commit('user/setTasksPerClient', response.data.data, {root: true});
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
         }
     },
     mutations: {

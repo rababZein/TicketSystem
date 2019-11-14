@@ -73,6 +73,26 @@ export default {
                 reject(error);
             })
         });
+    },
+    getTicketCountPerClient({commit}, userId) {
+        return new Promise((resolve, reject) => {
+            tickets.getTicketCountPerClient(userId).then(response => {
+                commit('user/getTicketCountPerClient', response.data.data, { root: true });
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
+    getTicketsPerClient({commit}, userId) {
+        return new Promise((resolve, reject) => {
+            tickets.getTicketsPerClient(userId).then(response => {
+                commit('user/getTicketsPerClient', response.data.data, { root: true });
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
     }
 
 }

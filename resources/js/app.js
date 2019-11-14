@@ -10,7 +10,7 @@ require('admin-lte');
 window.Vue = require('vue');
 import store from './store/index';
 import {Form, HasError, AlertError} from 'vform';
-// import moment from 'moment';
+import moment from 'moment';
 import VueProgressBar from 'vue-progressbar';
 import Swal from 'sweetalert2';
 import router from './routes';
@@ -32,9 +32,12 @@ Vue.use(VueProgressBar, {
 })
 
 // global filters
-// Vue.filter('myDate', function (createAt) {
-//     return moment(createAt).format(' DD/MM/YYYY');
-// })
+Vue.filter('DateOnly', function (date) {
+    return moment(date).format(' DD/MM/YYYY');
+})
+Vue.filter('DateWithTime', function (date) {
+    return moment(date).format(" DD/MM/YY - hh:mm a");
+})
 
 // sweetalert
 const Toast = Swal.mixin({
