@@ -47,7 +47,7 @@ export default {
     },
     createComment(data) {
       this.$store
-        .dispatch("comment/createComment", data)
+        .dispatch("comment/createCommentForUser", data)
         .then()
         .catch();
     }

@@ -7,9 +7,19 @@ export default {
         items: {},
     },
     actions: {
-        createComment({ commit }, data) {
+        createCommentForUser({ commit }, data) {
             return new Promise((resolve, reject) => {
-                comments.post(data).then(response => {
+                comments.postForClient(data).then(response => {
+                    commit('setComment', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
+        createCommentForTask({ commit }, data) {
+            return new Promise((resolve, reject) => {
+                comments.postForTask(data).then(response => {
                     commit('setComment', response.data.data);
                     resolve(response);
                 }).catch(error => {
@@ -27,9 +37,22 @@ export default {
                 })
             });
         },
+        getCommentsPerTask({commit}, params) {
+            return new Promise((resolve, reject) => {
+                comments.getPerTask(params).then(response => {
+                    commit('setCommentsPerTask', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        }
     },
     mutations: {
         setCommentsPerClient(state, comments) {
+            state.items = comments;
+        },
+        setCommentsPerTask(state, comments) {
             state.items = comments;
         },
         setComment(state, comment) {
