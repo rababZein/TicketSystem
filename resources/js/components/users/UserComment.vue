@@ -6,40 +6,50 @@
     <div class="card-body">
       <comments v-for="comment in comments" :key="comment.id" :comment="comment"></comments>
     </div>
-    <comments-form></comments-form>
+    <div class="p-4">
+      <hr />
+      <form @submit.prevent="createComment(form)">
+        <vue-editor id="comments-editor" v-model="form.comment" :editorToolbar="customToolbar"></vue-editor>
+        <button class="btn float-left btn-primary mt-1">
+          Send
+          <i class="fab fa-telegram-plane fa-fw"></i>
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { VueEditor } from "vue2-editor";
 
 export default {
   data() {
     return {
-      client_id: this.$route.params.id
-      // comments: [
-      //   {
-      //     id: 1,
-      //     body:
-      //       "It is a long established fact that a reader will be distracted by the readable content ",
-      //     user: { name: "mohamed" },
-      //     created_at: "07/11/19 - 03:33 pm"
-      //   },
-      //   {
-      //     id: 2,
-      //     body:
-      //       "It is a long established fact that a reader will be distracted by the readable content ",
-      //     user: { name: "mohamed" },
-      //     created_at: "07/11/19 - 03:33 pm"
-      //   }
-      // ]
+      client_id: this.$route.params.id,
+      form: new Form({
+        client_id: this.$route.params.id,
+        comment: ""
+      }),
+      customToolbar: [
+        ["bold", "italic", "underline", "strike"],
+        ["blockquote", "code-block"],
+        [{ list: "ordered" }, { list: "bullet" }]
+      ]
     };
   },
   methods: {
     getComments(id) {
-      this.$store.dispatch("comment/getCommentsPerClient", id)
-      .then()
-      .catch()
+      this.$store
+        .dispatch("comment/getCommentsPerClient", id)
+        .then()
+        .catch();
+    },
+    createComment(data) {
+      this.$store
+        .dispatch("comment/createComment", data)
+        .then()
+        .catch();
     }
   },
   mounted() {
@@ -50,9 +60,15 @@ export default {
     ...mapGetters({
       comments: "comment/activeComments"
     })
+  },
+  components: {
+    VueEditor
   }
 };
 </script>
 
-<style>
+<style scoped>
+#comments-editor {
+  height: 100px;
+}
 </style>
