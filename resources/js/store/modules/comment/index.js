@@ -56,7 +56,7 @@ export default {
             state.items = comments;
         },
         setComment(state, comment) {
-            state.items = Object.assign({}, comment);
+            state.items.data.push(comment);
         },
         
     },
