@@ -3,13 +3,12 @@
     <div class="user-block">
       <img class="img-circle img-bordered-sm" src="/../../assets/img/profile.png" alt="user image" />
       <span class="username">
-        <a href="#">{{ comment.user.name }}</a>
+        <router-link :to="/profile/ + comment.created_by.id" v-if="comment.created_by">{{ comment.created_by.name }}</router-link>
       </span>
-      <span class="description">{{ comment.created_at }}</span>
+      <span class="description">{{ comment.created_at | DateWithTime}}</span>
     </div>
     <!-- /.user-block -->
-    <p>
-      {{ comment.body }}
+    <p v-html="comment.comment">
     </p>
   </div>
 </template>

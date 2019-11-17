@@ -7,6 +7,7 @@ import regularUser from './modules/regularUser/index';
 import owner from './modules/owner/index';
 import user from './modules/user/index';
 import activity from './modules/activity/index';
+import comment from './modules/comment/index';
 
 Vue.use(Vuex);
 
@@ -20,7 +21,8 @@ export default new Vuex.Store({
         regularUser,
         owner,
         user,
-        activity
+        activity,
+        comment
     },
     strict: debug,
 })

@@ -49,7 +49,9 @@
               </p>
             </label>
             <div class="col-sm-10">
-              <p class="font-weight-light mt-3">{{ humanReadableFromSecounds(duration).slice(0, -3) }}</p>
+              <p
+                class="font-weight-light mt-3"
+              >{{ humanReadableFromSecounds(duration).slice(0, -3) }}</p>
             </div>
           </div>
           <center>
@@ -112,7 +114,6 @@
           <i class="fas fa-stop fa-fw"></i>
         </button>
       </center>
-      <task-comment></task-comment>
       <div class="card" id="listTracking" v-show="listTracking_Task.length > 0">
         <div class="card-header">
           <h5 class="card-title m-0">History</h5>
@@ -144,6 +145,7 @@
           </div>
         </div>
       </div>
+      <task-comment></task-comment>
     </div>
     <!-- Modal -->
     <div
@@ -206,10 +208,10 @@
 </template>
 
 <script>
-import moment from 'moment';
+import moment from "moment";
 import DatePicker from "vue2-datepicker";
-import trackApi from '../../api/tracks';
-import taskApi from '../../api/tasks';
+import trackApi from "../../api/tracks";
+import taskApi from "../../api/tasks";
 
 export default {
   components: { DatePicker },
@@ -235,7 +237,7 @@ export default {
     startTracking() {
       // Reset the counter and timer string
       this.counted_time = null;
-      
+
       trackApi
         .post({
           comment: "new tracking",
@@ -243,7 +245,9 @@ export default {
           task_id: this.task_id
         })
         .then(response => {
-          this.activeTimerString = this.humanReadableFromSecounds(this.duration);
+          this.activeTimerString = this.humanReadableFromSecounds(
+            this.duration
+          );
           this.tracking_task = response.data.data;
           this.startTimer();
         })
