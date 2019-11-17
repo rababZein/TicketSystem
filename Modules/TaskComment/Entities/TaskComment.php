@@ -11,7 +11,7 @@ class TaskComment extends Model
 
     protected $table = 'task_comments';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'created_by', 'updated_at', 'updated_by', 'comment', 'Task_id');
+    protected $fillable = array('created_at', 'created_by', 'updated_at', 'updated_by', 'comment', 'task_id');
 
     public function task()
     {

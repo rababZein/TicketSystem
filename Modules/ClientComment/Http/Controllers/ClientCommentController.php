@@ -44,7 +44,7 @@ class ClientCommentController extends BaseController
      */
     public function index()
     {
-        $clientComments = ClientComment::with('creator', 'updater')->paginate();
+        $clientComments = ClientComment::with('client', 'creator', 'updater')->paginate();
 
         return $this->sendResponse(new ClientCommentCollection($clientComments), 'ClientCommenties retrieved successfully.');
     }
@@ -128,7 +128,7 @@ class ClientCommentController extends BaseController
      */
     public function getCommentsPerClient($clientId)
     {
-        $clientComments = ClientComment::where('client_id', $clientId)
+        $clientComments = ClientComment::with('creator', 'updater')->where('client_id', $clientId)
                                        ->paginate();
 
         return $this->sendResponse(new ClientCommentCollection($clientComments), 'ClientCommenties retrieved successfully.');
