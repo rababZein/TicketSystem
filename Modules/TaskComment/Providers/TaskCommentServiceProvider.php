@@ -5,6 +5,9 @@ namespace Modules\TaskComment\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
+use Modules\TaskComment\Entities\TaskComment;
+use Modules\TaskComment\Observers\TaskCommentObserver;
+
 class TaskCommentServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +22,9 @@ class TaskCommentServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+
+        //observer
+        TaskComment::observe(TaskCommentObserver::class);
     }
 
     /**

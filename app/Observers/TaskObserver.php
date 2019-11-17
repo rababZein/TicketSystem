@@ -68,7 +68,6 @@ class TaskObserver
      */
     public function deleted(Task $task)
     {
-        
         $ticket_id = null;
         if ($task->ticket) {
             $ticket_id = $task->ticket->id;
