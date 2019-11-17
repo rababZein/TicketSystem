@@ -33,7 +33,7 @@ class TaskCommentController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('permission:taskComment-list|taskComment-create|taskComment-edit|taskComment-delete', ['only' => ['index', 'show', 'getTaskCommentsPerTask']]);
+        $this->middleware('permission:taskComment-list|taskComment-create|taskComment-edit|taskComment-delete', ['only' => ['index', 'show', 'getCommentsPerTask']]);
         $this->middleware('permission:taskComment-create', ['only' => ['store']]);
         $this->middleware('permission:taskComment-edit', ['only' => ['update']]);
         $this->middleware('permission:taskComment-delete', ['only' => ['destroy']]);
@@ -44,7 +44,7 @@ class TaskCommentController extends BaseController
      */
     public function index()
     {
-        $taskComments = TaskComment::paginate();
+        $taskComments = TaskComment::with('client', 'creator', 'updater')->paginate();
 
         return $this->sendResponse(new TaskCommentCollection($taskComments), 'taskCommenties retrieved successfully.');
     }
@@ -57,6 +57,7 @@ class TaskCommentController extends BaseController
     public function store(AddTaskCommentRequest $request)
     {
         $input = $request->validated();
+
         $input['created_at'] = Carbon::now();
         $input['created_by'] = auth()->user()->id;
     
@@ -126,9 +127,9 @@ class TaskCommentController extends BaseController
      * @param $taskId
      * @return Response
      */
-    public function getTaskCommentsPerTask($taskId)
+    public function getCommentsPerTask($taskId)
     {
-        $taskComments = TaskComment::where('task_id', $taskId)
+        $taskComments = TaskComment::with('creator', 'updater')->where('task_id', $taskId)
                                        ->paginate();
 
         return $this->sendResponse(new TaskCommentCollection($taskComments), 'taskCommenties retrieved successfully.');
