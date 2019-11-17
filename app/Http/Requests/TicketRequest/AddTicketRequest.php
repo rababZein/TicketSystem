@@ -55,6 +55,7 @@ class AddTicketRequest extends FormRequest
             'name' => 'required|string',
             'description' => 'required|string',
             'project_id' => 'required|integer|exists:projects,id',
+            'status_id' => 'nullable|integer|exists:status,id',
         ];
     }
 }

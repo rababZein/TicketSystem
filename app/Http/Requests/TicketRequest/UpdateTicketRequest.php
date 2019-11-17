@@ -48,6 +48,7 @@ class UpdateTicketRequest extends FormRequest
             'name' => 'string',
             'description' => 'string',
             'project_id' => 'integer|exists:projects,id',
+            'status_id' => 'nullable|integer|exists:status,id',
         ];
     }
 }
