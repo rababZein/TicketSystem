@@ -8,7 +8,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-use App\Models\Task;
+use App\Models\Ticket;
 
 use App\Notifications\TicketChangeStatusNotification;
 

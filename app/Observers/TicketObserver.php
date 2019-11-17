@@ -4,7 +4,7 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 use Modules\Activity\Http\Controllers\ActivityController;
-use App\Jobs\Ticket\TicketAssignJob;
+use App\Jobs\Ticket\TicketChangeStatusJob;
 
 class TicketObserver
 {
@@ -37,7 +37,7 @@ class TicketObserver
     {
       if($ticket->isDirty('status_id') && $ticket->status_id == 4){ 
         // status is changed && new status is done
-        TicketAssignJob::dispatch($ticket);
+        TicketChangeStatusJob::dispatch($ticket);
       }
     }
 

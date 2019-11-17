@@ -110,7 +110,7 @@ class TicketController extends BaseController
 
     try {
       $updated = $ticket->fill($request->validated())->save();
-    } catch (\Throwable $th) {
+    } catch (Exception $ex) {
       throw new ItemNotUpdatedException('Ticket');
     }
 
