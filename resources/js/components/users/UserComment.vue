@@ -4,7 +4,7 @@
       <h5 class="card-title m-0">User comments</h5>
     </div>
     <div class="card-body">
-      <comments v-for="comment in comments" :key="comment.id" :comment="comment"></comments>
+      <comments v-for="comment in comments.data" :key="comment.id" :comment="comment"></comments>
     </div>
     <div class="p-4">
       <hr />
