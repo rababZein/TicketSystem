@@ -5,6 +5,9 @@ namespace Modules\ClientComment\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
+use Modules\ClientComment\Entities\ClientComment;
+use Modules\ClientComment\Observers\ClientCommentObserver;
+
 class ClientCommentServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +22,9 @@ class ClientCommentServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+
+        //observer
+        ClientComment::observe(ClientCommentObserver::class);
     }
 
     /**

@@ -21,8 +21,8 @@ class ClientCommentResource extends JsonResource
             "client" => new UserResource($this->whenLoaded('client')),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "created_by" => new UserResource('creator'),
-            "updated_by" => new UserResource('updater'),
+            "created_by" => new UserResource($this->whenLoaded('creator')),
+            "updated_by" => new UserResource($this->whenLoaded('updater')),
         ];
     }
 }
