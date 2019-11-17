@@ -33,7 +33,7 @@ class Ticket extends Model
 
     public function ticket_status()
     {
-        return $this->belongsTo('App\Models\Status');
+        return $this->hasOne('App\Models\Status', 'id', 'status_id');
     }
 
     public function ownTickets($id)
