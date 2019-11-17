@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 use Modules\Activity\Http\Controllers\ActivityController;
+use App\Jobs\Ticket\TicketAssignJob;
 
 class TicketObserver
 {
@@ -24,6 +25,20 @@ class TicketObserver
         $ticket->project->owner;
 
         $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
+    }
+
+    /**
+     * Handle the ticket "updating" event.
+     *
+     * @param  \App\Ticket  $ticket
+     * @return void
+     */
+    public function updating(Ticket $ticket)
+    {
+      if($ticket->isDirty('status_id') && $ticket->status_id == 4){ 
+        // status is changed && new status is done
+        TicketAssignJob::dispatch($ticket);
+      }
     }
 
     /**
