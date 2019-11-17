@@ -44,7 +44,7 @@ class ClientCommentController extends BaseController
      */
     public function index()
     {
-        $clientComments = ClientComment::paginate();
+        $clientComments = ClientComment::with('creator', 'updater')->paginate();
 
         return $this->sendResponse(new ClientCommentCollection($clientComments), 'ClientCommenties retrieved successfully.');
     }
@@ -65,7 +65,7 @@ class ClientCommentController extends BaseController
         } catch (Exception $ex) {
           throw new ItemNotCreatedException('ClientComment');
         }
-    
+
         return $this->sendResponse(new ClientCommentResource($clientComment), 'ClientComment created successfully.');
     }
 
