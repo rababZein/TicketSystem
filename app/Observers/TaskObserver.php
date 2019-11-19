@@ -41,6 +41,21 @@ class TaskObserver
     }
 
     /**
+     * Handle the task "updating" event.
+     *
+     * @param  \App\Task  $task
+     * @return void
+     */
+    public function updating(Task $task)
+    {
+        if($task->isDirty('status_id') && ($task->status_id == 2 || $task->status_id == 3)){ 
+            // status is changed && new status is pending or in-progress
+            $task->ticket->status_id = $task->status_id;
+            // $task->ticket->save();
+          }
+    }
+
+    /**
      * Handle the task "updated" event.
      *
      * @param  \App\Task  $task

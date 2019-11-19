@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\Project\ProjectResource;
+use App\Http\Resources\Status\StatusResource;
 
 class TicketResource extends JsonResource
 {
@@ -22,6 +23,7 @@ class TicketResource extends JsonResource
             "name" => $this->name,
             "description" => $this->description,
             "read" => $this->read,
+            "status" => new StatusResource($this->ticket_status),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),
