@@ -396,7 +396,10 @@ export default {
               this.$Progress.finish();
               this.listTrackingTask(task_id);
               this.countTaskDuration(task_id);
-              Swal.fire("Deleted!", response.data.message, "success");
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
             })
             .catch(error => {
               this.$Progress.fail();
