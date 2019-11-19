@@ -25,5 +25,10 @@ export default {
     },
     getTicketById(state, ticket) {
         state.singleTicket = ticket;
-    }
+    },
+    setStatus(state, status) {
+        state.status = _.map(status, function (key) {
+            return { id: key.id, name: key.name };
+        });
+    },
 }
