@@ -9,8 +9,14 @@
     <div class="p-4">
       <hr />
       <form @submit.prevent="createComment(form)">
-        <vue-editor id="comments-editor" v-model="form.comment" :editorToolbar="customToolbar"></vue-editor>
-        <button class="btn float-left btn-primary mt-1">
+        <quill-editor
+          id="comments-editor"
+          v-model="form.comment"
+          ref="myQuillEditor"
+          :options="editorOption"
+        ></quill-editor>
+        <br />
+        <button class="btn btn-primary mt-4">
           Send
           <i class="fab fa-telegram-plane fa-fw"></i>
         </button>
@@ -21,7 +27,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { VueEditor } from "vue2-editor";
+import { quillEditor } from "vue-quill-editor";
 
 export default {
   data() {
@@ -31,11 +37,15 @@ export default {
         task_id: this.$route.params.id,
         comment: ""
       }),
-      customToolbar: [
-        ["bold", "italic", "underline", "strike"],
-        ["blockquote", "code-block"],
-        [{ list: "ordered" }, { list: "bullet" }]
-      ]
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
+        }
+      }
     };
   },
   methods: {
@@ -48,7 +58,9 @@ export default {
     createComment(data) {
       this.$store
         .dispatch("comment/createCommentForTask", data)
-        .then()
+        .then(response => {
+          this.form.comment = null;
+        })
         .catch();
     }
   },
@@ -62,10 +74,13 @@ export default {
     })
   },
   components: {
-    VueEditor
+    quillEditor
   }
 };
 </script>
 
-<style>
+<style scoped>
+#comments-editor {
+  height: 100px;
+}
 </style>

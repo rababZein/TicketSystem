@@ -97,13 +97,18 @@
               </div>
               <div class="form-group">
                 <label for="description">Ticket Description</label>
-                <input
+                <!-- <input
                   v-model="form.description"
                   type="text"
                   name="description"
                   class="form-control"
                   :class="{ 'is-invalid': form.errors.has('description') }"
-                />
+                />-->
+                <quill-editor
+                  v-model="form.description"
+                  ref="myQuillEditor"
+                  :options="editorOption"
+                ></quill-editor>
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group" v-if="!isDisabled">
@@ -151,6 +156,12 @@
 </template>
 
 <script>
+// require styles
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
+
+import { quillEditor } from "vue-quill-editor";
 import { mapGetters, mapState } from "vuex";
 
 export default {
@@ -161,14 +172,26 @@ export default {
       form: new Form({
         id: "",
         name: "",
-        description: "",
+        description: null,
         owner: "",
         project: {
           id: "",
           name: ""
         }
-      })
+      }),
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
+        }
+      }
     };
+  },
+  components: {
+    quillEditor
   },
   props: {
     tickets: {
