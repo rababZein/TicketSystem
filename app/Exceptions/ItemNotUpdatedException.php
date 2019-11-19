@@ -7,10 +7,16 @@ use Exception;
 class ItemNotUpdatedException extends Exception
 {
     private $itemType;
+    private $errMsg;
 
-    public function __construct($itemType)
+    public function __construct($itemType, $errMsg = null)
     {
         $this->itemType = $itemType;
+        if (! empty($errMsg)) {
+            $this->message = $errMsg;
+        } else {
+            $this->message = 'Item not updated';
+        }
     }
     /**
      * Render the exception into an HTTP response.
