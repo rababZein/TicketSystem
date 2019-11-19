@@ -61,6 +61,13 @@ class everyMinute extends Command
             $emailData['personal'] = $oMessage->getFrom()[0]->personal;
             $emailData['body'] =  $oMessage->getHTMLBody(true);
 
+            // attachments
+            $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
+                $fp = fopen(public_path('attachments/') . $oAttachment->name,"wb");
+                file_put_contents(public_path('attachments/'. $oAttachment->name), $oAttachment->content);
+                fclose($fp);
+            });
+
             $emailData['project'] = $this->getProjectByClientEmail($emailData);
 
             if ($oMessage->getInReplyTo()) {
@@ -68,13 +75,6 @@ class everyMinute extends Command
             } else {
                 $this->createNewTicket($emailData);
             }
-
-            // attachments
-            $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
-                $fp = fopen(public_path('attachments/') . $oAttachment->name,"wb");
-                file_put_contents(public_path('attachments/'. $oAttachment->name), $oAttachment->content);
-                fclose($fp);
-            });
         }
     }
 
