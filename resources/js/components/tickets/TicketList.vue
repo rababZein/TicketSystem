@@ -97,19 +97,25 @@
               </div>
               <div class="form-group">
                 <label for="description">Ticket Description</label>
-                <!-- <input
-                  v-model="form.description"
-                  type="text"
-                  name="description"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('description') }"
-                />-->
                 <quill-editor
                   v-model="form.description"
                   ref="myQuillEditor"
                   :options="editorOption"
                 ></quill-editor>
                 <has-error :form="form" field="description"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="name">Status</label>
+                <multiselect
+                  v-model="form.status"
+                  :options="status"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                  @input="opt => form.status_id = opt.id"
+                ></multiselect>
+
+                <has-error :form="form" field="status_id"></has-error>
               </div>
               <div class="form-group" v-if="!isDisabled">
                 <label for="name">Client</label>
@@ -156,13 +162,12 @@
 </template>
 
 <script>
-// require styles
-import "quill/dist/quill.core.css";
-import "quill/dist/quill.snow.css";
-import "quill/dist/quill.bubble.css";
-
 import { quillEditor } from "vue-quill-editor";
 import { mapGetters, mapState } from "vuex";
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 export default {
   data() {
@@ -203,7 +208,8 @@ export default {
   computed: {
     ...mapGetters({
       owners: "owner/activeOwners",
-      projects: "project/projectByOwners"
+      projects: "project/projectByOwners",
+      status: "ticket/activeStatus",
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
@@ -215,6 +221,7 @@ export default {
   },
   mounted() {
     this.getOwners();
+    this.getStatus();
   },
   methods: {
     newModal() {
@@ -332,7 +339,15 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    }
+    },
+    getStatus() {
+      this.$store
+        .dispatch("ticket/getStatus")
+        .then(response => {})
+        .catch(error => {
+          console.log(error);
+        });
+    },
   },
   directives: {
     trim: {

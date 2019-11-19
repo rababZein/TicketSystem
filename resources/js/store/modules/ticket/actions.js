@@ -1,5 +1,6 @@
 import tickets from '../../../api/tickets';
 import projects from '../../../api/projects';
+import status from '../../../api/status';
 
 export default {
     getTickets({ commit }, page) {
@@ -88,6 +89,16 @@ export default {
         return new Promise((resolve, reject) => {
             tickets.getTicketsPerClient(params).then(response => {
                 commit('user/getTicketsPerClient', response.data.data, { root: true });
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
+    getStatus({commit}) {
+        return new Promise((resolve, reject) => {
+            status.get().then(response => {
+                commit('setStatus', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);
