@@ -148,7 +148,6 @@ class TaskController extends BaseController
     try {
       $task->delete();
     } catch (\Throwable $th) {
-      dd($th);
       throw new ItemNotDeletedException('Task');
     }
 
