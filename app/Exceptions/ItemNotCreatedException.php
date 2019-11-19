@@ -7,10 +7,16 @@ use Exception;
 class ItemNotCreatedException extends Exception
 {
     private $itemType;
+    private $errMsg;
 
-    public function __construct($itemType)
+    public function __construct($itemType, $errMsg = null)
     {
         $this->itemType = $itemType;
+        if (! empty($errMsg)) {
+            $this->message = $errMsg;
+        } else {
+            $this->message = 'Item not created';
+        }
     }
     /**
      * Render the exception into an HTTP response.
@@ -22,7 +28,7 @@ class ItemNotCreatedException extends Exception
     {
         return response()->json([
             'status' => false,
-            'message' => 'Item not created',
+            'message' => $this->message,
             'type' => 'ItemNotCreatedException',
             'data' => $this->itemType]
             , 410); // not created

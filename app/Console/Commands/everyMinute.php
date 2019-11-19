@@ -12,6 +12,9 @@ use App\Models\Ticket;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+
 class everyMinute extends Command
 {
     /**
@@ -95,7 +98,11 @@ class everyMinute extends Command
         $project->task_rate = 0;
         $project->budget_hours = 0;
 
-        $project->save();
+        try {
+            $project->save();
+        } catch (Exception $ex) {
+            throw new ItemNotCreatedException('Project', $ex->getMessage());
+        }
 
         return $project;
     }
@@ -123,7 +130,11 @@ class everyMinute extends Command
         $user->created_by = 1;
         $user->created_at = Carbon::now();
 
-        $user->save();
+        try {
+            $user->save();
+        } catch (Exception $ex) {
+            throw new ItemNotCreatedException('User', $ex->getMessage());
+        }
 
         return $user;
     }
@@ -137,7 +148,11 @@ class everyMinute extends Command
         $ticket->created_by = 1;
         $ticket->created_at = Carbon::now();
 
-        $ticket->save();
+        try {
+            $ticket->save();
+        } catch (Exception $ex) {
+            throw new ItemNotCreatedException('Ticket', $ex->getMessage());
+        }
 
         echo nl2br('email: '.$emailData['subject'].' is inserted as a ticket id = '.$ticket->id);
         echo "<br>";
@@ -154,7 +169,11 @@ class everyMinute extends Command
             $this->createNewTicket($emailData);
         } else {
             $ticket->description .= ' </br> ****reply**** </br> '.$emailData['body'];
-            $ticket->save();
+            try {
+                $ticket->save();
+            } catch (Exception $th) {
+                throw new ItemNotUpdatedException('Ticket', $ex->getMessage());
+            }
 
             echo nl2br('email: '.$emailData['subject'].' is updated in the ticket id = '.$ticket->id);
             echo "<br>";
