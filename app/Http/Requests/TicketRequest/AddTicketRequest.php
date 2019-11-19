@@ -54,7 +54,7 @@ class AddTicketRequest extends FormRequest
         return [
             'name' => 'required|string',
             'description' => 'required|string',
-            'project_id' => 'required|integer|exists:projects,id',
+            'project_id' => 'required|integer|exists:projects,id|in:'.$this->route('project_id'),
             'status_id' => 'nullable|integer|exists:status,id',
         ];
     }
