@@ -18,7 +18,7 @@ class ActivityController extends BaseController
     	$log = [];
 
     	$log['subject'] = $subject;
-        $log['user_id'] = auth()->user()->id;
+        $log['user_id'] = (!empty(auth()->user()->id)) ? auth()->user()->id : 1 ;
         $log['client_id'] = $client_id;
         $log['project_id'] = $project_id;
         $log['ticket_id'] = $ticket_id;
