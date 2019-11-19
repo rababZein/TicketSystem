@@ -59,7 +59,6 @@ class everyMinute extends Command
             $emailData['subject'] = $oMessage->getSubject();
             $emailData['mail'] = $oMessage->getFrom()[0]->mail;
             $emailData['personal'] = $oMessage->getFrom()[0]->personal;
-            // echo 'Attachments: '.$oMessage->getAttachments()->count().'<br />';
             $emailData['body'] =  $oMessage->getHTMLBody(true);
 
             $emailData['project'] = $this->getProjectByClientEmail($emailData);
@@ -69,6 +68,13 @@ class everyMinute extends Command
             } else {
                 $this->createNewTicket($emailData);
             }
+
+            // attachments
+            $oMessage->getAttachments()->each(function ($oAttachment) use ($oMessage) {
+                $fp = fopen(public_path('attachments/') . $oAttachment->name,"wb");
+                file_put_contents(public_path('attachments/'. $oAttachment->name), $oAttachment->content);
+                fclose($fp);
+            });
         }
     }
 
