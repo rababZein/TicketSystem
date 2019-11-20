@@ -193,16 +193,7 @@ export default {
             [{ list: "ordered" }, { list: "bullet" }]
           ]
         }
-      }),
-      editorOption: {
-        modules: {
-          toolbar: [
-            ["bold", "italic", "underline", "strike"],
-            ["blockquote", "code-block"],
-            [{ list: "ordered" }, { list: "bullet" }]
-          ]
-        }
-      }
+      })
     };
   },
   components: {
