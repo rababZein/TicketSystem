@@ -103,7 +103,7 @@ export default {
     filePath(path) {
       let str = path;
       let n = str.indexOf("storage");
-      return "/storage/attachments/" + str.substring(n + 7);
+      return "/storage/attachments" + str.substring(n + 7);
     },
     fileName(path) {
       let str = path;
