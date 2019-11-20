@@ -7,5 +7,8 @@ export default {
     },
     activeTicket(state) {
         return state.singleTicket;
+    },
+    activeStatus(state) {
+        return state.status;
     }
 }

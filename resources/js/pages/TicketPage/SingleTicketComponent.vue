@@ -16,6 +16,10 @@
                 <div class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light" v-html="ticket.description" style="min-height:100px; max-height: 600px;">
                 </div>
               </div>
+              <div class="form-group">
+                <label for="Description" class="col-form-label">status:</label>
+                  <span>{{ ticket.status.name }}</span>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import tasks from '../../../api/tasks';
+import status from '../../../api/status';
 
 export default {
     namespaced: true,
@@ -21,7 +22,7 @@ export default {
         },
         getStatus({ commit }) {
             return new Promise((resolve, reject) => {
-                tasks.getStatus().then(response => {
+                status.get().then(response => {
                     commit('setStatus', response.data.data);
                     resolve(response);
                 }).catch(error => {
