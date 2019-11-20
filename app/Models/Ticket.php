@@ -13,7 +13,7 @@ class Ticket extends Model
 
     protected $table = 'tickets';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'project_id', 'status_id', 'email_id', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at','name', 'description', 'project_id', 'status_id', 'email_id', 'created_by', 'updated_by');
 
     public function project()
     {
@@ -38,11 +38,6 @@ class Ticket extends Model
     public function ticket_status()
     {
         return $this->hasOne('App\Models\Status', 'id', 'status_id');
-    }
-
-    public function files()
-    {
-        return $this->hasMany('App\Models\Ticket_file');
     }
 
     public function ownTickets($id)
