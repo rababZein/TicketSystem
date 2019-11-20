@@ -12,13 +12,31 @@
           <div class="row">
             <div class="col-sm-12">
               <div class="form-group">
-                <label for="Description" class="col-form-label">Description:</label>
-                <div class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light" v-html="ticket.description" style="min-height:100px; max-height: 600px;">
-                </div>
+                <label for="Description" class="col-form-label">status:</label>
+                <span class="badge bg-primary">{{ ticket.status.name }}</span>
               </div>
               <div class="form-group">
-                <label for="Description" class="col-form-label">status:</label>
-                  <span>{{ ticket.status.name }}</span>
+                <label for="Description" class="col-form-label">Description:</label>
+                <div
+                  class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light"
+                  v-html="ticket.description"
+                  style="min-height:100px; max-height: 600px;"
+                ></div>
+              </div>
+              <div class="card-footer bg-white" v-if="ticket.files.length > 0">
+                <ul class="mailbox-attachments d-flex align-items-stretch clearfix">
+                  <li v-for="file in ticket.files" :key="file.id">
+                    <div class="mailbox-attachment-info">
+                      <a
+                        target="_plank"
+                        :href=" file.attachment_path | filePath"
+                        class="mailbox-attachment-name"
+                      >
+                        <i class="fas fa-paperclip"></i> {{ file.attachment_path | fileName }}
+                      </a>
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -30,11 +48,14 @@
       <task-list :tasks="tasks" :singlePage="true"></task-list>
     </div>
   </div>
-  <div class="card" v-else><div class="card-body  justify-content-center">loading...</div></div>
+  <div class="card" v-else>
+    <div class="card-body justify-content-center">loading...</div>
+  </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import Axios from "axios";
 
 export default {
   data() {
@@ -59,7 +80,7 @@ export default {
     getTasksByTicketId(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("task/getTasksByTicketId", {id: this.ticketId, page: page})
+        .dispatch("task/getTasksByTicketId", { id: this.ticketId, page: page })
         .then(response => {
           this.$Progress.finish();
         })
@@ -77,6 +98,18 @@ export default {
       ticket: "ticket/activeTicket",
       tasks: "task/activeTasks"
     })
+  },
+  filters: {
+    filePath(path) {
+      let str = path;
+      let n = str.indexOf("storage");
+      return "/storage/attachments/" + str.substring(n + 7);
+    },
+    fileName(path) {
+      let str = path;
+      let n = str.lastIndexOf("/");
+      return str.substring(n + 1);
+    }
   }
 };
 </script>
