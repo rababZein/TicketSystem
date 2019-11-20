@@ -320,7 +320,10 @@ export default {
             .dispatch("ticket/deleteTicket", id)
             .then(response => {
               this.$Progress.finish();
-              Swal.fire("Deleted!", response.data.message, "success");
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
             })
             .catch(error => {
               console.log(error);
