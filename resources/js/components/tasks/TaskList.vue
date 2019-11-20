@@ -42,9 +42,7 @@
               </td>
               <td>
                 <span v-if="task.responsible">
-                  <router-link
-                    :to="'/profile/' + task.responsible.id"
-                  >{{ task.responsible.name }}</router-link>
+                  <router-link :to="'/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
                 </span>
               </td>
               <td>
@@ -193,8 +191,18 @@
             </div>
 
             <div class="modal-footer">
-              <button v-show="!editMode" type="submit" class="btn btn-primary" :disabled="form.project_id == ''">Save</button>
-              <button v-show="editMode" type="submit" class="btn btn-success" :disabled="form.project_id == ''">Update</button>
+              <button
+                v-show="!editMode"
+                type="submit"
+                class="btn btn-primary"
+                :disabled="form.project_id == ''"
+              >Save</button>
+              <button
+                v-show="editMode"
+                type="submit"
+                class="btn btn-success"
+                :disabled="form.project_id == ''"
+              >Update</button>
             </div>
           </form>
         </div>
@@ -206,9 +214,9 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 // require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 export default {
   data() {
@@ -234,11 +242,11 @@ export default {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
-      if (this.singlePage) {
-        this.form.project = this.ticket.project;
-        this.form.project_id = this.ticket.project.id;
-        this.isDisabled = true;
-      }
+      // if (this.singlePage) {
+      //   this.form.project = this.ticket.project;
+      //   this.form.project_id = this.ticket.project.id;
+      //   this.isDisabled = true;
+      // }
       $("#newTask").modal("show");
     },
     editModel(task) {
@@ -248,11 +256,12 @@ export default {
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
-      if (this.singlePage) {
-        this.form.project = this.ticket.project;
-        this.form.project_id = this.ticket.project.id;
-        this.isDisabled = true;
-      }
+      // if (this.singlePage) {
+      //   this.getTicketForEditTask();
+      //   this.form.project = this.ticket.project;
+      //   this.form.project_id = this.ticket.project.id;
+      //   this.isDisabled = true;
+      // }
     },
     getStatus() {
       this.$store
