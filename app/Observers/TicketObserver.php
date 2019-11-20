@@ -62,7 +62,7 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket)
     {
-        $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
+        $this->activityLog->addToLog('Delete ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }
 
     /**

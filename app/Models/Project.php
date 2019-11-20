@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model 
 {
     use HasRoles;
+    use SoftDeletes;
 
     protected $guard_name = 'api';
 
