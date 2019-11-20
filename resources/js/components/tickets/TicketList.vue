@@ -151,8 +151,8 @@
             </div>
 
             <div class="modal-footer">
-              <button v-show="!editMode" type="submit" class="btn btn-primary">Save</button>
-              <button v-show="editMode" type="submit" class="btn btn-success">Update</button>
+              <button v-show="!editMode" type="submit" class="btn btn-primary" :disabled="form.project_id == ''">Save</button>
+              <button v-show="editMode" type="submit" class="btn btn-success" :disabled="form.project_id == ''">Update</button>
             </div>
           </form>
         </div>
@@ -182,6 +182,16 @@ export default {
         project: {
           id: "",
           name: ""
+        },
+        project_id: ""
+      }),
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
         }
       }),
       editorOption: {

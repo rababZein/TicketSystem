@@ -13,9 +13,9 @@ class ItemNotCreatedException extends Exception
     {
         $this->itemType = $itemType;
         if (! empty($errMsg)) {
-            $this->message = $errMsg;
+            $this->errMsg = $errMsg;
         } else {
-            $this->message = 'Item not created';
+            $this->errMsg = 'Item not created';
         }
     }
     /**
@@ -28,7 +28,7 @@ class ItemNotCreatedException extends Exception
     {
         return response()->json([
             'status' => false,
-            'message' => $this->message,
+            'message' => $this->errMsg,
             'type' => 'ItemNotCreatedException',
             'data' => $this->itemType]
             , 410); // not created

@@ -13,9 +13,9 @@ class ItemNotUpdatedException extends Exception
     {
         $this->itemType = $itemType;
         if (! empty($errMsg)) {
-            $this->message = $errMsg;
+            $this->errMsg = $errMsg;
         } else {
-            $this->message = 'Item not updated';
+            $this->errMsg = 'Item not updated';
         }
     }
     /**
@@ -28,7 +28,7 @@ class ItemNotUpdatedException extends Exception
     {
         return response()->json([
             'status' => false,
-            'message' => 'Item not updated',
+            'message' => $this->errMsg,
             'type' => 'ItemNotUpdatedException',
             'data' => $this->itemType]
             , 430); // not updated

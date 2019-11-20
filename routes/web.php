@@ -56,13 +56,15 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/projects/{project_id}/tickets/', 'TicketController@getTicketsByProjectId');
     Route::get('/clients/{client_id}/ticketsNumber', 'TicketController@getTicketsCountPerClient');
     Route::get('/clients/{client_id}/tickets', 'TicketController@getTicketsPerClient');
+    Route::post('/tickets/{project_id}', 'TicketController@store');
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
     Route::get('/tickets/{ticket_id}/tasks/', 'TaskController@getTasksByTicketId');
     Route::get('/clients/{client_id}/tasksNumber', 'TaskController@getTasksCountPerClient');
     Route::get('/clients/{client_id}/tasks', 'TaskController@getTasksPerClient');
-    Route::resource('/tasks', 'TaskController')->except('create');
+    Route::post('/tasks/{project_id}', 'TaskController@store');
+    Route::resource('/tasks', 'TaskController')->except('create', 'store');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');
