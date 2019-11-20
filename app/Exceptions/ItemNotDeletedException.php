@@ -7,10 +7,16 @@ use Exception;
 class ItemNotDeletedException extends Exception
 {
     private $itemType;
+    private $errMsg;
 
-    public function __construct($itemType)
+    public function __construct($itemType, $errMsg = null)
     {
         $this->itemType = $itemType;
+        if (! empty($errMsg)) {
+            $this->errMsg = $errMsg;
+        } else {
+            $this->errMsg = 'Item not deleted';
+        }
     }
     /**
      * Render the exception into an HTTP response.
@@ -22,7 +28,7 @@ class ItemNotDeletedException extends Exception
     {
         return response()->json([
             'status' => false,
-            'message' => 'Item not deleted',
+            'message' => $this->errMsg,
             'type' => 'ItemNotDeletedException',
             'data' => $this->itemType]
             , 440); // not deleted
