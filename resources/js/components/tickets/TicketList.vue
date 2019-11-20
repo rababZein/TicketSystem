@@ -193,7 +193,7 @@ export default {
             [{ list: "ordered" }, { list: "bullet" }]
           ]
         }
-      }
+      })
     };
   },
   components: {
