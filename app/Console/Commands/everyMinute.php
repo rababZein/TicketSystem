@@ -140,7 +140,7 @@ class everyMinute extends Command
         $user = new User();
         $user->name = $emailData['personal'];
         $user->email = $emailData['mail'];
-        $user->password = Hash::make('123456'); // our default password
+        $user->password = Hash::make(str_random(8));
         $user->type = 'client';
         $user->created_by = 1;
         $user->created_at = Carbon::now();
