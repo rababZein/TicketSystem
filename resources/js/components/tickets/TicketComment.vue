@@ -16,7 +16,12 @@
           :options="editorOption"
         ></quill-editor>
         <br />
-        <button class="btn btn-primary mt-4">
+        <div class="custom-control custom-checkbox mt-4">
+          <input class="custom-control-input" type="checkbox" id="confirmAsReply" value="option1" />
+          <label for="confirmAsReply" class="custom-control-label">send as reply to client</label>
+        </div>
+        <br />
+        <button class="btn btn-primary">
           Send
           <i class="fab fa-telegram-plane fa-fw"></i>
         </button>
@@ -30,9 +35,9 @@ import { mapGetters } from "vuex";
 import { quillEditor } from "vue-quill-editor";
 
 // require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 export default {
   data() {
