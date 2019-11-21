@@ -242,11 +242,6 @@ export default {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
-      // if (this.singlePage) {
-      //   this.form.project = this.ticket.project;
-      //   this.form.project_id = this.ticket.project.id;
-      //   this.isDisabled = true;
-      // }
       $("#newTask").modal("show");
     },
     editModel(task) {
@@ -256,12 +251,6 @@ export default {
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
-      // if (this.singlePage) {
-      //   this.getTicketForEditTask();
-      //   this.form.project = this.ticket.project;
-      //   this.form.project_id = this.ticket.project.id;
-      //   this.isDisabled = true;
-      // }
     },
     getStatus() {
       this.$store
