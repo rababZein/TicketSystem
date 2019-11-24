@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\Project;
 use App\Models\Ticket;
+use App\Models\Ticket_file;
 
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -51,7 +52,7 @@ class everyMinute extends Command
         $oClient = Client::account('default');
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
-        $aMessage = $aFolder->query()->unseen()->setFetchAttachment(false)->get();
+        $aMessage = $aFolder->query()->unseen()->setFetchAttachment(true)->get();
         foreach($aMessage as $oMessage){
             $emailData = [];
             $emailData['email_id'] = $oMessage->getMessageId();
@@ -59,8 +60,22 @@ class everyMinute extends Command
             $emailData['subject'] = $oMessage->getSubject();
             $emailData['mail'] = $oMessage->getFrom()[0]->mail;
             $emailData['personal'] = $oMessage->getFrom()[0]->personal;
-            // echo 'Attachments: '.$oMessage->getAttachments()->count().'<br />';
             $emailData['body'] =  $oMessage->getHTMLBody(true);
+            
+            // attachments
+            $emailData['attachmentPaths'] = [];
+            foreach ($oMessage->getAttachments() as $oAttachment) {
+                $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
+                $dirName = dirname($attachmentPath);
+                if (!is_dir($dirName))
+                    mkdir($dirName, 0755, true);
+                
+                $fp = fopen($attachmentPath, "wb");
+                file_put_contents($attachmentPath, $oAttachment->content);
+                fclose($fp);
+
+                $emailData['attachmentPaths'][] = $attachmentPath;
+            }
 
             $emailData['project'] = $this->getProjectByClientEmail($emailData);
 
@@ -152,6 +167,22 @@ class everyMinute extends Command
             $ticket->save();
         } catch (Exception $ex) {
             throw new ItemNotCreatedException('Ticket', $ex->getMessage());
+        }
+
+        // insert attachment
+        if (isset($emailData['attachmentPaths'])) {
+            foreach ($emailData['attachmentPaths'] as $attachmentPath) {
+                $file = new Ticket_file();
+                $file->attachment_path = $attachmentPath;
+                $file->ticket_id = $ticket->id;
+                $file->created_by = 1;
+
+                try {
+                    $file->save();
+                } catch (Exception $ex) {
+                    throw new ItemNotCreatedException('Ticket_file', $ex->getMessage());
+                }
+            }
         }
 
         echo nl2br('email: '.$emailData['subject'].' is inserted as a ticket id = '.$ticket->id);
