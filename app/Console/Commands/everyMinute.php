@@ -71,7 +71,6 @@ class everyMinute extends Command
             // attachments
             $emailData['attachmentPaths'] = [];
             foreach ($oMessage->getAttachments() as $oAttachment) {
-                dd($oAttachment->getExtension());
                 // validate extention
                 if (in_array($oAttachment->getExtension(), ['png', 'jpg', 'jpeg', 'txt', 'csv', 'docx', 'doc', 'xlsx', 'xls']) ) {
                     throw new InvalidDataException([
