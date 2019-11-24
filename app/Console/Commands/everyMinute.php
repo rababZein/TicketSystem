@@ -15,6 +15,12 @@ use Carbon\Carbon;
 
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
+
+use Illuminate\Http\Request;
+use Validator;
+use Illuminate\Support\Facades\File;
+use Illuminate\Http\UploadedFile;
 
 class everyMinute extends Command
 {
@@ -65,14 +71,39 @@ class everyMinute extends Command
             // attachments
             $emailData['attachmentPaths'] = [];
             foreach ($oMessage->getAttachments() as $oAttachment) {
+                dd($oAttachment->getExtension());
+                // validate extention
+                if (in_array($oAttachment->getExtension(), ['png', 'jpg', 'jpeg', 'txt', 'csv', 'docx', 'doc', 'xlsx', 'xls']) ) {
+                    throw new InvalidDataException([
+                        'file extension' => $oAttachment->getExtension()
+                        ],
+                        'file extension not allowed'
+                    );
+                }
+                // storage
                 $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
                 $dirName = dirname($attachmentPath);
                 if (!is_dir($dirName))
                     mkdir($dirName, 0755, true);
                 
-                $fp = fopen($attachmentPath, "wb");
-                file_put_contents($attachmentPath, $oAttachment->content);
-                fclose($fp);
+
+                $filepath = 'public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name;
+                $pullfile = \Storage::put($filepath, $oAttachment->content, 'public');
+
+                // validate file 
+                $attached = $this->pathToUploadedFile($attachmentPath);
+                $request = new Request([
+                'file' => $attached
+                ]);
+                $validator = \Validator::make($request->all(), ['file' => 'clamav']);
+                if ($validator->fails()){
+                    \Storage::delete($filepath);
+                    throw new InvalidDataException([
+                        'mail' => $emailData
+                        ],
+                        'Attached file not secure'
+                    );
+                }
 
                 $emailData['attachmentPaths'][] = $attachmentPath;
             }
@@ -210,4 +241,25 @@ class everyMinute extends Command
             echo "<br>";
         }
     }
+
+    public function pathToUploadedFile( $path, $public = false )
+    {
+        $name = File::name( $path );
+
+        $extension = File::extension( $path );
+
+        $originalName = $name . '.' . $extension;
+
+        $mimeType = File::mimeType( $path );
+
+        $size = File::size( $path );
+
+        $error = null;
+
+        $test = $public;
+
+        $object = new UploadedFile( $path, $originalName, $mimeType, $size, $error, $test );
+
+        return $object;
+  }
 }
