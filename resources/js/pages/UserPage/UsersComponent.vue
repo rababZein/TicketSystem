@@ -278,7 +278,10 @@ export default {
             .then(response => {
               this.$Progress.finish();
               this.getResults();
-              Swal.fire("Deleted!", response.data.message, "success");
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
             })
             .catch(error => {
               this.$Progress.fail();
