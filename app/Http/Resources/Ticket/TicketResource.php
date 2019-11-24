@@ -7,7 +7,6 @@ use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Status\StatusResource;
-use App\Http\Resources\Ticket_file\Ticket_fileResource;
 
 class TicketResource extends JsonResource
 {
@@ -25,7 +24,6 @@ class TicketResource extends JsonResource
             "description" => $this->description,
             "read" => $this->read,
             "status" => new StatusResource($this->ticket_status),
-            "files"=> Ticket_fileResource::collection($this->files),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),

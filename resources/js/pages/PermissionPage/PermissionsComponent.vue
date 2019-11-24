@@ -200,7 +200,10 @@ export default {
             .then(response => {
               this.$Progress.finish();
               this.getResults();
-              Swal.fire("Deleted!", "permission has been deleted.", "success");
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
             })
             .catch(error => {
               this.$Progress.fail();
