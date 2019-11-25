@@ -38,6 +38,7 @@ class TicketChangeStatusJob implements ShouldQueue
         try {
             $this->ticket->project->owner->notify(new TicketChangeStatusNotification($this->ticket));
         } catch (\Exception $ex) {
+            dd($ex);
             throw new \Exception($ex);
         }
     }
