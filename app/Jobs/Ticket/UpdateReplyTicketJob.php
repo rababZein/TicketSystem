@@ -36,7 +36,7 @@ class UpdateReplyTicketJob implements ShouldQueue
     public function handle()
     {
         try {
-            $this->ticketComment->ticket->project->owner->notify(new UpdateReplyTicketNotification($this->ticket));
+            $this->ticketComment->ticket->project->owner->notify(new UpdateReplyTicketNotification($this->ticketComment));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
