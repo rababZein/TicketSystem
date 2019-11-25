@@ -17,8 +17,14 @@
         ></quill-editor>
         <br />
         <div class="custom-control custom-checkbox mt-4">
-          <input class="custom-control-input" type="checkbox" id="confirmAsReply" value="option1" />
-          <label for="confirmAsReply" class="custom-control-label">send as reply to client</label>
+          <input
+            v-model="form.send_mail"
+            class="custom-control-input"
+            :class="{ 'is-invalid': form.errors.has('send_mail') }"
+            type="checkbox"
+            id="send_mail"
+          />
+          <label for="send_mail" class="custom-control-label">send as reply to client</label>
         </div>
         <br />
         <button class="btn btn-primary">
@@ -45,7 +51,8 @@ export default {
       ticketId: this.$route.params.id,
       form: new Form({
         ticket_id: this.$route.params.id,
-        comment: ""
+        comment: "",
+        send_mail: false
       }),
       editorOption: {
         modules: {
