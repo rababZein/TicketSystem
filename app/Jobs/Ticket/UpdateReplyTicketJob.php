@@ -10,6 +10,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use Modules\TicketComment\Entities\TicketComment;
 
+use App\Notifications\Ticket\UpdateReplyTicketNotification;
+
 class UpdateReplyTicketJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
@@ -34,7 +36,7 @@ class UpdateReplyTicketJob implements ShouldQueue
     public function handle()
     {
         try {
-            $this->ticketComment->ticket->project->owner->notify(new TicketChangeStatusNotification($this->ticket));
+            $this->ticketComment->ticket->project->owner->notify(new UpdateReplyTicketNotification($this->ticket));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
