@@ -22,8 +22,8 @@ class TicketCommentResource extends JsonResource
             "ticket" => new TicketResource($this->whenLoaded('ticket')),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
-            "created_by" => new UserResource('creator'),
-            "updated_by" => new UserResource('updater'),
+            "created_by" => new UserResource($this->whenLoaded('creator')),
+            "updated_by" => new UserResource($this->whenLoaded('updater')),
         ];
     }
 }
