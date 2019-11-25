@@ -13,7 +13,7 @@ class TicketComment extends Model
 
     protected $table = 'ticket_comments';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'created_by', 'updated_at', 'updated_by', 'comment', 'ticket_id');
+    protected $fillable = array('created_at', 'created_by', 'updated_at', 'updated_by', 'comment', 'ticket_id', 'send_mail');
 
     public function ticket()
     {

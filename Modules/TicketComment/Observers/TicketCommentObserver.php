@@ -29,7 +29,9 @@ class TicketCommentObserver
 
         $this->activityLog->addToLog('Create Comment on Ticket: '.$ticketComment->ticket->name, $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
     
-        ReplyTicketJob::dispatch($ticketComment);
+        if ($ticketComment->send_mail) {
+            ReplyTicketJob::dispatch($ticketComment);
+        }
     }
 
     /**
@@ -45,7 +47,9 @@ class TicketCommentObserver
 
         $this->activityLog->addToLog('Update Comment on Ticket: '.$ticketComment->ticket->name, $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
    
-        UpdateReplyTicketJob::dispatch($ticketComment);
+        if ($ticketComment->send_mail) {
+            UpdateReplyTicketJob::dispatch($ticketComment);
+        }
     }
 
     /**

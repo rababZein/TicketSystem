@@ -19,6 +19,7 @@ class TicketCommentResource extends JsonResource
         return [
             "id" => $this->id,
             "comment" => $this->comment,
+            "send_mail" => $this->send_mail,
             "ticket" => new TicketResource($this->whenLoaded('ticket')),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
