@@ -16,7 +16,12 @@
           :options="editorOption"
         ></quill-editor>
         <br />
-        <button class="btn btn-primary mt-4">
+        <div class="custom-control custom-checkbox mt-4">
+          <input class="custom-control-input" type="checkbox" id="confirmAsReply" value="option1" />
+          <label for="confirmAsReply" class="custom-control-label">send as reply to client</label>
+        </div>
+        <br />
+        <button class="btn btn-primary">
           Send
           <i class="fab fa-telegram-plane fa-fw"></i>
         </button>
@@ -37,9 +42,9 @@ import "quill/dist/quill.bubble.css";
 export default {
   data() {
     return {
-      taskId: this.$route.params.id,
+      ticketId: this.$route.params.id,
       form: new Form({
-        task_id: this.$route.params.id,
+        ticket_id: this.$route.params.id,
         comment: ""
       }),
       editorOption: {
@@ -56,13 +61,13 @@ export default {
   methods: {
     getComments(id) {
       this.$store
-        .dispatch("comment/getCommentsPerTask", id)
+        .dispatch("comment/getCommentsPerTicket", id)
         .then()
         .catch();
     },
     createComment(data) {
       this.$store
-        .dispatch("comment/createCommentForTask", data)
+        .dispatch("comment/createCommentForTicket", data)
         .then(response => {
           this.form.comment = null;
         })
@@ -71,7 +76,7 @@ export default {
   },
   mounted() {
     // get all comments for the user
-    this.getComments(this.taskId);
+    this.getComments(this.ticketId);
   },
   computed: {
     ...mapGetters({
