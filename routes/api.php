@@ -45,7 +45,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     Route::group(['prefix' => 'permission', 'namespace' => 'API'], function () {
         Route::get('/users/list', 'UsersController@list');
         Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
-        Route::resource('/users', 'UsersController')->except('show', 'create');
+        Route::resource('/users', 'UsersController')->except('create');
     });
 
     Route::group(['prefix' => 'project'], function () {

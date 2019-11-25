@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\User;
 use \Illuminate\Http\Request;
+use App\Jobs\User\NewAccountJob;
 
 class UserObserver
 {
@@ -25,6 +26,8 @@ class UserObserver
         if (isset($this->input['roles'])) {
             $user->assignRole($this->input['roles']);
         }
+
+        NewAccountJob::dispatch($user, $this->input['password']);
     }
 
     /**
