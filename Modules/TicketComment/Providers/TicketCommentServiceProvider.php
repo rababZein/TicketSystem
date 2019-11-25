@@ -5,6 +5,9 @@ namespace Modules\TicketComment\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Factory;
 
+use Modules\TicketComment\Entities\TicketComment;
+use Modules\TicketComment\Observers\TicketCommentObserver;
+
 class TicketCommentServiceProvider extends ServiceProvider
 {
     /**
@@ -19,6 +22,9 @@ class TicketCommentServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->registerFactories();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+   
+        //observer
+        TicketComment::observe(TicketCommentObserver::class);
     }
 
     /**
