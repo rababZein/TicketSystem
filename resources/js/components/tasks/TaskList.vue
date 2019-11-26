@@ -18,7 +18,6 @@
             <tr>
               <th width="2%">ID</th>
               <th width="20%">Name</th>
-              <th width="30%">Description</th>
               <th width="10%">Status</th>
               <th width="10%">Project</th>
               <th width="10%">Responsible</th>
@@ -31,7 +30,6 @@
               <td>
                 <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
               </td>
-              <td v-trim="4">{{ task.description }}</td>
               <td>
                 <div class="badge bg-primary">{{ task.status.name }}</div>
               </td>
@@ -97,13 +95,12 @@
               </div>
               <div class="form-group">
                 <label for="description">Task Description</label>
-                <input
+                <quill-editor
+                  id="comments-editor"
                   v-model="form.description"
-                  type="text"
-                  name="description"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('description') }"
-                />
+                  ref="myQuillEditor"
+                  :options="editorOption"
+                ></quill-editor>
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
@@ -213,6 +210,8 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { quillEditor } from "vue-quill-editor";
+
 // require styles
 import "quill/dist/quill.core.css";
 import "quill/dist/quill.snow.css";
@@ -234,7 +233,16 @@ export default {
         ticket_id: "",
         responsible: {},
         responsible_id: ""
-      })
+      }),
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
+        }
+      }
     };
   },
   methods: {
@@ -389,6 +397,9 @@ export default {
         el.innerHTML = resultString;
       }
     }
+  },
+  components: {
+    quillEditor
   }
 };
 </script>
