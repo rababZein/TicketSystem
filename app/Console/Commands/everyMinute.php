@@ -69,6 +69,13 @@ class everyMinute extends Command
             } else {
                 $this->createNewTicket($emailData);
             }
+
+            //Move the current Message to 'INBOX.read'
+            if($oMessage->moveToFolder('INBOX.read') == true){
+                echo 'Message has ben moved';
+            }else{
+                echo 'Message could not be moved';
+            }
         }
     }
 
