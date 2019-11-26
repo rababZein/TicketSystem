@@ -35,8 +35,8 @@ class TicketObserver
      */
     public function updating(Ticket $ticket)
     {
-      if($ticket->isDirty('status_id') && $ticket->status_id == 4){ 
-        // status is changed && new status is done
+      if($ticket->isDirty('status_id') && ($ticket->status_id == 4 || $ticket->status_id == 3)){ 
+        // status is changed && new status is done or in-progress
         TicketChangeStatusJob::dispatch($ticket);
       }
     }
