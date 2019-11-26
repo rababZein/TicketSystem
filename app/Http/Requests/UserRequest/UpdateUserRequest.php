@@ -3,6 +3,7 @@
 namespace App\Http\Requests\UserRequest;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\User;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -13,7 +14,10 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize()
     {
-        if (auth()->user()->isAdmin()) {
+        $user_id =$this->route('user');
+        $owner = User::find($user_id);
+
+        if (auth()->user()->isAdmin() || auth()->user()->can('user-edit') || $owner->id == auth()->user()->id) {
             return true;
         }
 
