@@ -7,6 +7,7 @@ export default {
             id: project.id,
             name: project.name,
             description: project.description,
+            project_assign: project.project_assign,
             owner: project.owner,
             task_rate: project.task_rate,
             budget_hours: project.budget_hours
@@ -16,7 +17,7 @@ export default {
     },
     editProject(state, project) {
         const projectObj = state.items.data.find(items => items.id == project.id);
-        Vue.set(projectObj, 'name', project.name);
+        Object.assign(projectObj, project);
     },
     deleteProject(state, project) {
         state.items.data = state.items.data.filter(items => items.id != project.id);
