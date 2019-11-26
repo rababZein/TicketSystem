@@ -153,6 +153,29 @@
                 <has-error :form="form" field="owner_id"></has-error>
               </div>
               <div class="form-group">
+                <label for="name">Assigned Users</label>
+                <multiselect
+                  v-model="form.project_assign"
+                  :options="responsible"
+                  :multiple="true"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Pick some"
+                  label="name"
+                  track-by="id"
+                  :preselect-first="true"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="responsible_id"></has-error>
+              </div>
+              <div class="form-group">
                 <label for="task_rate">task rate</label>
                 <input
                   v-model="form.task_rate"
@@ -253,6 +276,12 @@ export default {
     },
     createProject() {
       this.$Progress.start();
+      this.form.project_assign.forEach(element => {
+        this.form.project_assign = this.form.project_assign.filter(function( obj ) {
+            return obj.id !== element.id;
+        });
+        this.form.project_assign.push(element.id)
+      });
       this.$store
         .dispatch("project/createProject", this.form)
         .then(response => {
@@ -321,11 +350,20 @@ export default {
             });
         }
       });
+    },
+    getResponsibles() {
+      this.$store
+        .dispatch("regularUser/getRegularUser")
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   mounted() {
     this.getProjects(this.$route.params.page || 1);
     this.getOwners();
+    this.getResponsibles();
   },
   beforeRouteUpdate(to, from, next) {
     this.getProjects(to.params.page);
@@ -334,7 +372,8 @@ export default {
   computed: {
     ...mapGetters({
       projects: "project/activeProjects",
-      owners: "owner/activeOwners"
+      owners: "owner/activeOwners",
+      responsible: "regularUser/activeRegularUser"
     })
   }
 };
