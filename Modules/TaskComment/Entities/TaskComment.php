@@ -4,10 +4,12 @@ namespace Modules\TaskComment\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class TaskComment extends Model 
 {
     use HasRoles;
+    use SoftDeletes;
 
     protected $table = 'task_comments';
     public $timestamps = false;

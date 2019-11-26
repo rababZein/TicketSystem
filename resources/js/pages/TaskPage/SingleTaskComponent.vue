@@ -12,7 +12,7 @@
           <div class="form-group row">
             <label for="Description" class="col-sm-2 col-form-label">Description:</label>
             <div class="col-sm-10">
-              <textarea v-model="task.description" class="form-control" id="Description" disabled></textarea>
+              <p v-html="task.description" id="Description"></p>
             </div>
           </div>
           <div class="form-group row">
