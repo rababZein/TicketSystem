@@ -173,7 +173,7 @@
                     >{{ values.length }} options selected</span>
                   </template>
                 </multiselect>
-                <has-error :form="form" field="responsible_id"></has-error>
+                <has-error :form="form" field="project_assign"></has-error>
               </div>
               <div class="form-group">
                 <label for="task_rate">task rate</label>
@@ -229,7 +229,8 @@ export default {
         budget_hours: "",
         project_assign: []
       }),
-      owner_id: ""
+      owner_id: "",
+      selected: null
     };
   },
   methods: {
@@ -273,14 +274,23 @@ export default {
       this.form.clear();
       $("#Modal").modal("show");
       this.form.fill(item);
+      this.form.selected = _.map(this.form.project_assign, function(
+        value,
+        key
+      ) {
+        return value.name;
+      });
     },
     createProject() {
       this.$Progress.start();
+      // get user id only form assigned users
       this.form.project_assign.forEach(element => {
-        this.form.project_assign = this.form.project_assign.filter(function( obj ) {
-            return obj.id !== element.id;
+        this.form.project_assign = this.form.project_assign.filter(function(
+          obj
+        ) {
+          return obj.id !== element.id;
         });
-        this.form.project_assign.push(element.id)
+        this.form.project_assign.push(element.id);
       });
       this.$store
         .dispatch("project/createProject", this.form)
@@ -301,12 +311,20 @@ export default {
     },
     editProject(id) {
       this.$Progress.start();
+      // get user id only form assigned users
+      this.form.project_assign.forEach(element => {
+        this.form.project_assign = this.form.project_assign.filter(function(
+          obj
+        ) {
+          return obj.id !== element.id;
+        });
+        this.form.project_assign.push(element.id);
+      });
       this.$store
         .dispatch("project/editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getProjects();
           Toast.fire({
             type: "success",
             title: response.data.message
