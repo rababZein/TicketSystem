@@ -13,7 +13,7 @@ class ViewPermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        if (auth()->user()->isAdmin()) {
+        if (auth()->user()->isAdmin() || auth()->user()->can('permission-list')) {
             return true;
         }
 
