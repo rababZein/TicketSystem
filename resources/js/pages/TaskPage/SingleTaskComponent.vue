@@ -266,7 +266,7 @@ export default {
       );
       vm.counter.ticker = setInterval(() => {
         vm.counted_time = null;
-        vm.activeTimerString = vm.humanReadableFromSecounds(++vm.duration);
+        vm.activeTimerString = vm.humanReadableFromSecounds(++vm.duration + vm.counter.seconds);
       }, 1000);
     },
     stopTracking() {
@@ -326,7 +326,7 @@ export default {
           });
         });
     },
-    // fun to check if this track is in progress
+    // check if this track is in progress
     checkTrackingInProgress(task_id) {
       trackApi
         .checkTrackingInProgress(task_id)
@@ -413,7 +413,9 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
+    // count total duration
+    this.countTaskDuration(this.task_id);
     // check if this track is in progress
     this.checkTrackingInProgress(this.task_id);
 
@@ -426,10 +428,8 @@ export default {
       .catch(error => {
         this.$Progress.fail();
       });
-    // count total duration
-    this.countTaskDuration(this.task_id);
+
   },
-  mounted() {},
   computed: {
     orderedTrack: function() {
       return this.listTracking_Task.reverse();
