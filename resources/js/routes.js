@@ -29,6 +29,11 @@ let routes = [
         meta: { title: "Dashboard" }
     },
     {
+        path: "/clients",
+        component: require("./pages/ClientPage/ClientsComponent.vue").default,
+        meta: { title: "Users" }
+    },
+    {
         path: "/users",
         component: require("./pages/UserPage/UsersComponent.vue").default,
         meta: { title: "Users" }
