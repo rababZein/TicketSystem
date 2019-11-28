@@ -14,7 +14,7 @@ class AddNumberToTicketsTable extends Migration
     public function up()
     {
         Schema::table('tickets', function (Blueprint $table) {
-            $table->integer('setting_id')->nullable();
+            $table->integer('setting_id')->unsigned()->nullable();
 
             $table->foreign('setting_id')->references('id')->on('setting')
               ->onDelete('restrict')
