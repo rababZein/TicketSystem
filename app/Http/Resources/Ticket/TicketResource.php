@@ -21,6 +21,7 @@ class TicketResource extends JsonResource
         return [
             "id" => $this->id,
             "name" => $this->name,
+            "number" => $this->number,
             "description" => $this->description,
             "read" => $this->read,
             "status" => new StatusResource($this->ticket_status),
@@ -29,6 +30,7 @@ class TicketResource extends JsonResource
             "created_by" => new UserResource($this->whenLoaded('creator')),
             "updated_by" => new UserResource($this->whenLoaded('updater')),
             "project" => new ProjectResource($this->whenLoaded('project')),
+            "setting" => new SettingResource($this->whenLoaded('setting')),
             "tasks" => TaskResource::collection($this->whenLoaded('tasks'))
         ];
     }

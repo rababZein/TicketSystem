@@ -14,6 +14,23 @@ class TicketObserver
     {
         $this->activityLog = $activityLog;
     }
+
+    /**
+     * Handle the ticket "creating" event.
+     *
+     * @param  \App\Ticket  $ticket
+     * @return void
+     */
+    public function creating(Ticket $ticket)
+    {
+        $ticketSetting = Setting::where('entity', 'ticket')
+                ->andWhere('current', true)
+                ->order_by('created_at', 'desc')->first();
+
+        $ticket->setting_id = $ticketSetting->id;
+        $ticket->number = $ticketSetting->last_number + 1;
+    }
+
     /**
      * Handle the ticket "created" event.
      *
@@ -23,6 +40,8 @@ class TicketObserver
     public function created(Ticket $ticket)
     {
         $ticket->project->owner;
+
+        $ticket->setting->last_number += $ticket->setting->last_number;
 
         $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }

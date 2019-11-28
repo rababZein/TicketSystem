@@ -15,6 +15,7 @@ class AddNumberToTicketsTable extends Migration
     {
         Schema::table('tickets', function (Blueprint $table) {
             $table->integer('setting_id')->unsigned()->nullable();
+            $table->string('number')->nullable();
 
             $table->foreign('setting_id')->references('id')->on('setting')
               ->onDelete('restrict')
@@ -31,7 +32,7 @@ class AddNumberToTicketsTable extends Migration
     {
         Schema::table('tickets', function (Blueprint $table) {
             $table->dropForeign('tickets_setting_id_foreign');
-            $table->dropColumn('setting_id');
+            $table->dropColumn(['setting_id', 'number']);
         });
     }
 }
