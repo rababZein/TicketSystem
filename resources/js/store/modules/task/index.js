@@ -96,14 +96,7 @@ export default {
             state.items = Object.assign({}, tasks);
         },
         setNewTask(state, task) {
-            const taskObj = {
-                id: task.id,
-                name: task.name,
-                description: task.description,
-                status: task.status,
-                project: task.project,
-                responsible: task.responsible
-            };
+            const taskObj = task;
             state.items.data.unshift(taskObj);
         },
         setStatus(state, status) {
