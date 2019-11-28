@@ -52,7 +52,7 @@ class UsersController extends BaseController
      */
     public function getClientsPaginated(ListUserRequest $request)
     {
-        $users = User::where('type', 'client')->with('roles')->paginate();
+        $users = User::where('type', 'client')->with('roles')->latest()->paginate();
         return $this->sendResponse(new UserCollection($users), 'clients retrieved successfully.');
     }
 
@@ -63,7 +63,7 @@ class UsersController extends BaseController
      */
     public function getEmployeesPaginated(ListUserRequest $request)
     {
-        $users = User::where('type', 'regular-user')->with('roles')->paginate();
+        $users = User::where('type', 'regular-user')->with('roles')->latest()->paginate();
         return $this->sendResponse(new UserCollection($users), 'employees retrieved successfully.');
     }
 
