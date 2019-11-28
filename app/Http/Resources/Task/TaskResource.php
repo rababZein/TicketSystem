@@ -25,6 +25,8 @@ class TaskResource extends JsonResource
             "name" => $this->name,
             "description" => $this->description,
             "count_hours" => $this->count_hours,
+            "priority" => $this->priority,
+            "deadline" => $this->deadline,
             "status" => new StatusResource($this->task_status),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
