@@ -183,7 +183,7 @@ export default {
   methods: {
     getResults(page = 1) {
       this.$Progress.start();
-      userApi.getEmployeesPaginated({ page: page })
+      userApi.getClientsPaginated({ page: page })
         .then(response => {
           this.users = response.data.data;
           this.$Progress.finish();
@@ -287,7 +287,7 @@ export default {
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
-                title: "can't delete the role"
+                title: error.response.data.message
               });
             });
         }
