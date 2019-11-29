@@ -19,6 +19,9 @@
               <th width="2%">ID</th>
               <th width="20%">Name</th>
               <th width="10%">Status</th>
+              <th width="12%">Created at</th>
+              <th width="10%">Priority</th>
+              <th width="10%">Deadline</th>
               <th width="10%">Project</th>
               <th width="10%">Responsible</th>
               <th width="10%">action</th>
@@ -32,6 +35,15 @@
               </td>
               <td>
                 <div class="badge bg-primary">{{ task.status.name }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.created_at | DateWithTime }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.priority }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.deadline | DateOnly}}</div>
               </td>
               <td>
                 <span v-if="task.project">
@@ -185,6 +197,32 @@
                 </multiselect>
                 <has-error :form="form" field="responsible_id"></has-error>
               </div>
+              <div class="form-group" v-if="form.priority">
+                <label for="priority">priority</label>
+                <multiselect
+                  class="clearfix"
+                  v-model="form.priority"
+                  :options="priorityList"
+                  :close-on-select="true"
+                  :allow-empty="false"
+                  :show-labels="false"
+                  placeholder="Select one"
+                ></multiselect>
+                <has-error :form="form" field="priority"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="deadline">deadline</label>
+                <date-picker
+                  v-model="form.deadline"
+                  lang="en"
+                  type="date"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  :minute-step="1"
+                  value-type="format"
+                  input-class="form-control"
+                ></date-picker>
+                <has-error :form="form" field="deadline"></has-error>
+              </div>
             </div>
 
             <div class="modal-footer">
@@ -211,6 +249,8 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { quillEditor } from "vue-quill-editor";
+import DatePicker from "vue2-datepicker";
+import moment from 'moment';
 
 // require styles
 import "quill/dist/quill.core.css";
@@ -232,8 +272,11 @@ export default {
         ticket: [],
         ticket_id: "",
         responsible: {},
-        responsible_id: ""
+        responsible_id: "",
+        priority: "",
+        deadline: ""
       }),
+      priorityList: ["normal", "high", "low"],
       editorOption: {
         modules: {
           toolbar: [
@@ -251,6 +294,8 @@ export default {
       this.form.reset();
       this.form.clear();
       $("#newTask").modal("show");
+      this.form.priority = "normal";
+      this.form.deadline = moment().add(1, 'day').format("YYYY-MM-DD HH:mm:ss");
     },
     editModel(task) {
       this.editMode = true;
@@ -399,10 +444,15 @@ export default {
     }
   },
   components: {
-    quillEditor
+    quillEditor,
+    DatePicker
   }
 };
 </script>
 
-<style>
+<style scoped>
+.mx-datepicker {
+  display: block;
+  width: unset;
+}
 </style>

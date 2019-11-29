@@ -72,7 +72,9 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
+    $task->deadline;
+
+    return $this->sendResponse(new TaskResource(Task::find($task->id)), 'Task created successfully.'); 
   }
 
   /**
