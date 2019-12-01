@@ -67,7 +67,6 @@ class TicketController extends BaseController
     try {
       $ticket = Ticket::create($input);
     } catch (\Exception $ex) {
-      dd($ex);
       throw new ItemNotCreatedException('Ticket');
     }
 
