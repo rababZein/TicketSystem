@@ -7,6 +7,7 @@ use App\Http\Resources\User\UserResource;
 use App\Http\Resources\Task\TaskResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Http\Resources\Status\StatusResource;
+use App\Http\Resources\Setting\SettingResource;
 
 class TicketResource extends JsonResource
 {

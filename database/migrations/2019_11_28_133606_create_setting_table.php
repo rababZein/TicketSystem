@@ -16,8 +16,9 @@ class CreateSettingTable extends Migration
         Schema::create('setting', function (Blueprint $table) {
             $table->increments('id');
             $table->string('entity');
+            $table->string('key');
             $table->string('start_number');
-            $table->string('last_number')->nullable();
+            $table->string('last_number');
             $table->boolean('current')->default(0);
             $table->integer('created_by')->unsigned();
 			$table->integer('updated_by')->unsigned()->nullable();

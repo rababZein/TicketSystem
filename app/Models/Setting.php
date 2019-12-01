@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model 
 {
 
-    protected $table = 'Setting';
+    protected $table = 'setting';
     public $timestamps = true;
     protected $fillable = array('updated_by', 'created_by', 'start_number', 'last_number', 'current', 'updated_at', 'created_at');
 

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use App\Models\Setting;
+use App\Models\User;
 
 class addSettingTicketNumberSeeder extends Seeder
 {
@@ -12,10 +13,15 @@ class addSettingTicketNumberSeeder extends Seeder
      */
     public function run()
     {
+        $admin = User::where('name', 'admin')->firstOrFail();
+
         $setting = Setting::create([
             'entity' => 'ticket',
-            'start_from' => 'T100000001',
-            'current' => true
+            'key' => 'T1',
+            'start_number' => '00000001',
+            'last_number' => '00000001',
+            'current' => true,
+            'created_by' => $admin->id
         ]);
     }
 }
