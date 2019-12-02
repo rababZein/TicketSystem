@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DB;
 
 class Tracking_task extends Model 
 {
@@ -34,5 +35,34 @@ class Tracking_task extends Model
     {
         return Tracking_task::where('task_id', $task_id)
                     ->get();
+    }
+
+    public function timeReporting($fromDate, $toDate, $employeeId, $projectId)
+    {
+        return DB::select('
+        SELECT 
+        p.id project_id,
+        p.name project_name,
+        p.owner_id owner_id,
+        u.name owner_name,
+        SEC_TO_TIME(sum(TIME_TO_SEC(TIMEDIFF(end_at, start_at)))) time_counting,
+        date(start_at) the_day 
+        from tracking_tasks tt,
+             projects p,
+             tasks t,
+             users u
+        where tt.task_id = t.id
+        and p.id = t.project_id
+        and u.id = p.owner_id
+        and date(tt.start_at) between ? and ?
+        and (tt.created_by = ?)
+        and (p.id = ? or ? is null)
+        
+        GROUP by p.id,
+                p.name,
+                p.owner_id,
+                u.name,
+                date(start_at)', 
+        [$fromDate, $toDate, $employeeId, $projectId, $projectId]);
     }
 }

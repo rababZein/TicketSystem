@@ -6,6 +6,7 @@ use App\Http\Requests\TrackingRequest\AddTrackingRequest;
 use App\Http\Requests\TrackingRequest\EditTrackingRequest;
 use App\Http\Requests\TrackingRequest\DeleteTrackingRequest;
 use App\Http\Requests\TrackingRequest\ListTrackingRequest;
+use App\Http\Requests\TrackingRequest\TimeReportingTrackingRequest;
 use App\Models\Tracking_task;
 use App\Models\Task;
 use Validator;
@@ -18,6 +19,9 @@ use App\Exceptions\ItemsNotFoundException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Tracking\TrackingResource;
+use App\Http\Resources\TimeReporting\TimeReportingCollection;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Tracking_taskController extends BaseController 
 {
@@ -32,7 +36,7 @@ class Tracking_taskController extends BaseController
       $this->middleware('permission:tracking_task-create', ['only' => ['store', 'checkTrackingInProgress', 'tracking']]);
       $this->middleware('permission:tracking_task-edit', ['only' => ['update']]);
       $this->middleware('permission:tracking_task-delete', ['only' => ['destroy']]);
-      $this->middleware('permission:tracking_task-list', ['only' => ['getHistory']]);
+      $this->middleware('permission:tracking_task-list', ['only' => ['getHistory', 'timeReporting']]);
   }
 
   /**
@@ -216,6 +220,36 @@ public function checkTrackingInProgress($task_id)
       throw new ItemsNotFoundException();
 
     return $this->sendResponse(TrackingResource::collection($tracking), 'Traking History retrieved successfully.');
+  }
+
+  public function timeReporting(TimeReportingTrackingRequest $request)
+  {
+    $input = $request->validated();
+
+    $tracking_model = new Tracking_task();
+    $timeReporting = $tracking_model->timeReporting(
+                                      $input['from_date'],
+                                      $input['to_date'],
+                                      isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
+                                      isset($input['employee_id']) ? $input['employee_id'] : null );
+    //dd($timeReporting);
+    $output = null;
+    if ($timeReporting)
+      $output = $this->arrayPaginator($timeReporting, $request);
+    
+
+    return $this->sendResponse($output, 'Traking History retrieved successfully.');
+  
+  }
+
+  public function arrayPaginator($array, $request)
+  {
+    $page = Input::get('page', 1);
+    $perPage = 10;
+    $offset = ($page * $perPage) - $perPage;
+
+    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
+        ['path' => $request->url(), 'query' => $request->query()]);
   }
 }
 
