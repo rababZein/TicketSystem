@@ -34,6 +34,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // users
     Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
+    Route::get('/user/getClientsPaginated', 'UsersController@getClientsPaginated');
+    Route::get('/user/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
     Route::resource('/users', 'UsersController')->except('create');
 
     // projects

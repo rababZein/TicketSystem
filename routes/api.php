@@ -42,10 +42,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 
     // users
-    Route::group(['prefix' => 'permission', 'namespace' => 'API'], function () {
-        Route::get('/users/list', 'UsersController@list');
-        Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
-        Route::resource('/users', 'UsersController')->except('show', 'create');
+    Route::group(['prefix' => 'users', 'namespace' => 'API'], function () {
+        Route::get('/list', 'UsersController@list');
+        Route::get('/getAllResponsibles', 'UsersController@getAllResponsibles');
+        Route::get('/getClientsPaginated', 'UsersController@getClientsPaginated');
+        Route::get('/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
+        Route::resource('/', 'UsersController')->except('show', 'create');
     });
 
     Route::group(['prefix' => 'project'], function () {

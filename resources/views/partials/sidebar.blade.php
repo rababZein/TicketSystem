@@ -75,6 +75,14 @@
                             </p>
                         </router-link>
                     </li>
+                    <li class="nav-item">
+                        <router-link to="/clients" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>
+                                Clients
+                            </p>
+                        </router-link>
+                    </li>
                 </ul>
             </li>
             @endcan
@@ -108,7 +116,7 @@
                         <router-link to="/users" class="nav-link">
                             <i class="nav-icon fas fa-list"></i>
                             <p>
-                                Users
+                                Employees
                             </p>
                         </router-link>
                     </li>
