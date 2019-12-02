@@ -10,6 +10,16 @@
 
         <div class="card-body">
           <div class="row">
+            <div class="form-group col-sm-12 col-md-6">
+              <label for="ticket number" class="col-form-label">ticket#:</label>
+              <span class="font-weight-light">{{ ticket.number }}</span>
+            </div>
+            <div class="form-group col-sm-12 col-md-6">
+              <label for="Description" class="col-form-label">status:</label>
+              <span class="font-weight-light badge bg-primary">{{ ticket.status.name }}</span>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-sm-12">
               <div class="form-group">
                 <label for="Description" class="col-form-label">Description:</label>
@@ -18,10 +28,6 @@
                   v-html="ticket.description"
                   style="min-height:100px; max-height: 600px;"
                 ></div>
-              </div>
-              <div class="form-group">
-                <label for="Description" class="col-form-label">status:</label>
-                <span>{{ ticket.status.name }}</span>
               </div>
             </div>
           </div>
