@@ -254,6 +254,7 @@ export default {
       this.editMode = true;
       this.form.reset();
       this.form.clear();
+      this.getProjectsByOwner(ticket.project.owner.id);
       $("#Modal").modal("show");
       this.form.fill(ticket);
       this.form.owner = this.form.project.owner;
