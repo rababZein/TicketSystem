@@ -14,7 +14,6 @@ export default {
     createTicket(state, ticket) {
         const ticketObj = {
             id: ticket.id,
-            number: ticket.number,
             name: ticket.name,
             description: ticket.description,
             project: ticket.project,
