@@ -13,12 +13,12 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body table-responsive p-0">
-        <table class="table table-hover">
+        <table class="table table-hover table-sm">
           <thead>
             <tr>
-              <th width="2%">ID</th>
-              <th width="45%">Name</th>
-              <!-- <th width="30%">Description</th> -->
+              <th width="10%">Ticket#</th>
+              <th width="35%">Name</th>
+              <th width="10%">Status</th>
               <th width="20%">Client</th>
               <th width="10%">Project</th>
               <th width="10%">Read</th>
@@ -27,11 +27,15 @@
           </thead>
           <tbody>
             <tr v-for="ticket in activeTickets" :key="ticket.id">
-              <td>{{ ticket.id }}</td>
+              <td>
+                <router-link :to="'/ticket/' + ticket.id">{{ ticket.number }}</router-link>
+              </td>
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
-              <!-- <td v-trim="4">{{ ticket.description }}</td> -->
+              <td>
+                <div class="badge bg-primary">{{ ticket.status.name }}</div>
+              </td>
               <td>
                 <span v-if="ticket.project">
                   <router-link
@@ -151,8 +155,18 @@
             </div>
 
             <div class="modal-footer">
-              <button v-show="!editMode" type="submit" class="btn btn-primary" :disabled="form.project_id == ''">Save</button>
-              <button v-show="editMode" type="submit" class="btn btn-success" :disabled="form.project_id == ''">Update</button>
+              <button
+                v-show="!editMode"
+                type="submit"
+                class="btn btn-primary"
+                :disabled="form.project_id == ''"
+              >Save</button>
+              <button
+                v-show="editMode"
+                type="submit"
+                class="btn btn-success"
+                :disabled="form.project_id == ''"
+              >Update</button>
             </div>
           </form>
         </div>
@@ -165,9 +179,9 @@
 import { quillEditor } from "vue-quill-editor";
 import { mapGetters, mapState } from "vuex";
 // require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 export default {
   data() {
@@ -210,7 +224,7 @@ export default {
     ...mapGetters({
       owners: "owner/activeOwners",
       projects: "project/projectByOwners",
-      status: "ticket/activeStatus",
+      status: "ticket/activeStatus"
     }),
     ...mapGetters("project", {
       project: "activeSingleProject",
@@ -351,7 +365,7 @@ export default {
         .catch(error => {
           console.log(error);
         });
-    },
+    }
   },
   directives: {
     trim: {
