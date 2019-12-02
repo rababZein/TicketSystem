@@ -73,6 +73,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     Route::group(['prefix' => 'task'], function () {
         Route::get('/', 'API\TaskController@getAll');
         Route::get('/list', 'API\TaskController@list');
+        Route::post('/cards', 'API\TaskController@tasksCard');
         Route::get('/{task_id}', 'API\TaskController@show');
         Route::post('/{project_id}', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
