@@ -15,6 +15,7 @@ export default {
         const ticketObj = {
             id: ticket.id,
             number: ticket.number,
+            status: {name: ticket.status.name},
             name: ticket.name,
             description: ticket.description,
             project: ticket.project,
