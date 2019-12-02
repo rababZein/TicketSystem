@@ -16,7 +16,7 @@
         <table class="table table-hover">
           <thead>
             <tr>
-              <th width="2%">ID</th>
+              <th width="10%">Ticket#</th>
               <th width="45%">Name</th>
               <!-- <th width="30%">Description</th> -->
               <th width="20%">Client</th>
@@ -27,7 +27,7 @@
           </thead>
           <tbody>
             <tr v-for="ticket in activeTickets" :key="ticket.id">
-              <td>{{ ticket.id }}</td>
+              <td>{{ ticket.number }}</td>
               <td>
                 <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
