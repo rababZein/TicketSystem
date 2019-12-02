@@ -37,7 +37,7 @@
                 <div class="badge bg-primary">{{ ticket.status.name }}</div>
               </td>
               <td>
-                <span v-if="ticket.project">
+                <span v-if="ticket.project && ticket.project.owner">
                   <router-link
                     :to="'/profile/' + ticket.project.owner.id"
                   >{{ ticket.project.owner.name }}</router-link>
