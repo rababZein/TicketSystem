@@ -40,8 +40,6 @@
             :preserve-search="true"
             placeholder="Select Project"
             label="name"
-            :preselect-first="true"
-            :allow-empty="false"
             @select="opt => {form.project_id = opt.id; this.reporting();}"
             @remove="() => {form.project_id = ''; this.reporting();}"
           ></multiselect>
@@ -90,6 +88,7 @@ export default {
   components: { DatePicker },
   methods: {
     reporting(page = 1) {
+      this.$Progress.start();
       this.$store
         .dispatch("track/reporting", {
           from_date: this.form.from_date,
@@ -100,11 +99,13 @@ export default {
         })
         .then(response => {
           this.form.clear();
+          this.$Progress.finish();
         })
         .catch(error => {
           if (error.response) {
             this.form.errors.errors = error.response.data.errors;
           }
+          this.$Progress.fail();
         });
     },
     dateRangeChange(opt) {
@@ -126,7 +127,7 @@ export default {
     ...mapGetters({
       time_counting: "track/activeTimeReport",
       employee: "regularUser/activeRegularUser",
-      projects: "project/activeProjects"
+      projects: "project/allProjects"
     })
   }
 };

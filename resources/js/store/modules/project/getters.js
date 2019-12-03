@@ -2,6 +2,9 @@ export default {
     activeProjects(state) {
         return state.items;
     },
+    allProjects(state) {
+        return state.allProjectList;
+    },
     activeSingleProject(state) {
         return state.singleProject;
     },
