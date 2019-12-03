@@ -19,9 +19,6 @@ use App\Exceptions\ItemsNotFoundException;
 use App\Exceptions\ItemNotFoundException;
 use App\Exceptions\ItemNotDeletedException;
 use App\Http\Resources\Tracking\TrackingResource;
-use App\Http\Resources\TimeReporting\TimeReportingCollection;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class Tracking_taskController extends BaseController 
 {
@@ -232,24 +229,12 @@ public function checkTrackingInProgress($task_id)
                                       $input['to_date'],
                                       isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
                                       isset($input['employee_id']) ? $input['employee_id'] : null );
-    //dd($timeReporting);
     $output = null;
     if ($timeReporting)
-      $output = $this->arrayPaginator($timeReporting, $request);
+      $output = arrayPaginator($timeReporting, $request);
     
 
     return $this->sendResponse($output, 'Traking History retrieved successfully.');
-  
-  }
-
-  public function arrayPaginator($array, $request)
-  {
-    $page = Input::get('page', 1);
-    $perPage = 10;
-    $offset = ($page * $perPage) - $perPage;
-
-    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
-        ['path' => $request->url(), 'query' => $request->query()]);
   }
 }
 
