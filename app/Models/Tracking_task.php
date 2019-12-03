@@ -55,7 +55,7 @@ class Tracking_task extends Model
         and p.id = t.project_id
         and u.id = p.owner_id
         and date(tt.start_at) between ? and ?
-        and (tt.created_by = ?)
+        and tt.created_by = ?
         and (p.id = ? or ? is null)
         
         GROUP by p.id,

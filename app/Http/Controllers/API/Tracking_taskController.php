@@ -228,7 +228,7 @@ public function checkTrackingInProgress($task_id)
                                       $input['from_date'],
                                       $input['to_date'],
                                       isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
-                                      isset($input['employee_id']) ? $input['employee_id'] : null );
+                                      isset($input['project_id']) ? $input['project_id'] : null );
     $output = null;
     if ($timeReporting)
       $output = arrayPaginator($timeReporting, $request);
