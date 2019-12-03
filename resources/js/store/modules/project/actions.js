@@ -14,7 +14,7 @@ export default {
     getAllProjects({commit}) {
         return new Promise((resolve, reject) => {
             projects.getAllProjects().then(response => {
-                commit('setProjects', response.data.data);
+                commit('setAllProjects', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

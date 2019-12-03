@@ -34,7 +34,7 @@
           <label for="name">Project</label>
           <multiselect
             v-model="selectedProject"
-            :options="projects.data"
+            :options="projects"
             :close-on-select="true"
             :clear-on-select="false"
             :preserve-search="true"
@@ -42,7 +42,8 @@
             label="name"
             :preselect-first="true"
             :allow-empty="false"
-            @input="opt => form.project_id = opt.id"
+            @select="opt => {form.project_id = opt.id; this.reporting();}"
+            @remove="() => {form.project_id = ''; this.reporting();}"
           ></multiselect>
         </div>
       </div>
@@ -117,9 +118,9 @@ export default {
     this.$store.dispatch("regularUser/getRegularUser").catch(error => {
       console.log(error);
     });
-    // this.$store.dispatch("project/getAllProjects").catch(error => {
-    //   console.log(error);
-    // });
+    this.$store.dispatch("project/getAllProjects").catch(error => {
+      console.log(error);
+    });
   },
   computed: {
     ...mapGetters({

@@ -19,7 +19,7 @@ export default {
                 budget_hours: params.budget_hours,
                 project_assign: params.project_assign
         }),
-        getAllProjects: () => API.get('/project/list'),
+        getAllProjects: () => API.get('/projects/list'),
         getAllByOwner: params => API.get('/project/getAllByOwner/' + params),
         delete: params => API.delete('/projects/' + params),
         show: params => API.get('/projects/' + params),

@@ -2,6 +2,9 @@ export default {
     setProjects(state, projects) {
         state.items = Object.assign({}, projects);
     },
+    setAllProjects(state, projects) {
+        state.items = projects;
+    },
     createProject(state, project) {
         const projectObj = {
             id: project.id,
