@@ -90,7 +90,13 @@ export default {
   methods: {
     reporting(page = 1) {
       this.$store
-        .dispatch("track/reporting", {data: this.form, page: page })
+        .dispatch("track/reporting", {
+          from_date: this.form.from_date,
+          to_date: this.form.to_date,
+          employee_id: this.form.employee_id,
+          project_id: this.form.project_id,
+          page: page
+        })
         .then(response => {
           this.form.clear();
         })
@@ -111,9 +117,9 @@ export default {
     this.$store.dispatch("regularUser/getRegularUser").catch(error => {
       console.log(error);
     });
-    this.$store.dispatch("project/getAllProjects").catch(error => {
-      console.log(error);
-    });
+    // this.$store.dispatch("project/getAllProjects").catch(error => {
+    //   console.log(error);
+    // });
   },
   computed: {
     ...mapGetters({
