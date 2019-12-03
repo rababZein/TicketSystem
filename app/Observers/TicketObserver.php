@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Ticket;
+use App\Models\Setting;
 use Modules\Activity\Http\Controllers\ActivityController;
 use App\Jobs\Ticket\TicketChangeStatusJob;
 
@@ -14,6 +15,29 @@ class TicketObserver
     {
         $this->activityLog = $activityLog;
     }
+
+    /**
+     * Handle the ticket "creating" event.
+     *
+     * @param  \App\Ticket  $ticket
+     * @return void
+     */
+    public function creating(Ticket $ticket)
+    {
+        $ticketSetting = Setting::where('entity', 'ticket')
+                ->where('current', true)
+                ->orderBy('created_at', 'desc')->first();
+
+        if ($ticketSetting) {
+            $ticket->setting_id = $ticketSetting->id;
+            $ticket->number = $ticketSetting->key . sprintf("%08d", $ticketSetting->last_number + 1);
+        
+            $ticketSetting->last_number = sprintf("%08d", $ticketSetting->last_number + 1);
+            $ticketSetting->updated_by = auth()->user()->id;
+            $ticketSetting->save();
+        }
+    }
+
     /**
      * Handle the ticket "created" event.
      *
@@ -23,6 +47,8 @@ class TicketObserver
     public function created(Ticket $ticket)
     {
         $ticket->project->owner;
+
+        $ticketSetting = Setting::find($ticket->setting_id);
 
         $this->activityLog->addToLog('Create ticket: '.$ticket->name, $ticket->project->owner->id, $ticket->project->id, $ticket->id);
     }

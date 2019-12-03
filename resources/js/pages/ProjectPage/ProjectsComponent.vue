@@ -39,7 +39,7 @@
                       >{{ project.name }}</router-link>
                     </h3>
 
-                    <p>
+                    <p v-if="project.owner">
                       <router-link
                         :to="'/profile/' + project.owner.id"
                         class="text-white"
