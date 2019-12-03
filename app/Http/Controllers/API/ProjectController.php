@@ -59,7 +59,7 @@ class ProjectController extends BaseController
   {
     $projects = Project::all();
 
-    return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
+    return $this->sendResponse(ProjectResource::collection($projects), 'Projects retrieved successfully.');
   }
 
 
