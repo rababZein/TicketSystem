@@ -23,6 +23,24 @@ class TimeReportingTrackingRequest extends FormRequest
     }
 
     /**
+     * Inject GET parameter "type" into validation data
+     *
+     * @param array $keys Properties to only return
+     *
+     * @return array
+     */
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        $data['from_date'] = $this->get('from_date');
+        $data['to_date'] = $this->get('to_date');
+        $data['employee_id'] = $this->get('employee_id');
+        $data['project_id'] = $this->get('project_id');
+
+        return $data;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
