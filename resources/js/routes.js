@@ -84,6 +84,11 @@ let routes = [
         meta: { title: "Receipts" }
     },
     {
+        path: "/time-report",
+        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue").default,
+        meta: { title: "Time Report" }
+    },
+    {
         path: "/permissions",
         component: require("./pages/PermissionPage/PermissionsComponent.vue")
             .default,
