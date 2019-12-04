@@ -84,7 +84,9 @@ let routes = [
         meta: { title: "Receipts" }
     },
     {
+        alias: '/time-report',
         path: "/time-report",
+        name: "timeReport.list",
         component: require("./pages/TimeReportingPage/TimeReportingComponent.vue").default,
         meta: { title: "Time Report" }
     },

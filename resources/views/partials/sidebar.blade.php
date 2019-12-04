@@ -1,6 +1,7 @@
 <!-- Brand Logo -->
 <a href="/" class="brand-link">
-    <img src="{{ asset('assets/img/ALFerp.png') }}" alt="ALFerp Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+    <img src="{{ asset('assets/img/ALFerp.png') }}" alt="ALFerp Logo" class="brand-image img-circle elevation-3"
+        style="opacity: .8">
     <span class="brand-text font-weight-light">{{ config('app.name', 'ALFerp') }}</span>
 </a>
 
@@ -82,6 +83,23 @@
                                 Clients
                             </p>
                         </router-link>
+                    </li>
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>
+                                Reports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: none;">
+                            <li class="nav-item">
+                            <router-link to="/time-report" class="nav-link">
+                                <i class="far fa-dot-circle nav-icon"></i>
+                                <p>Time Report</p>
+                              </router-link>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </li>

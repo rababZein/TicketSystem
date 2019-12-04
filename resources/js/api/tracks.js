@@ -16,5 +16,5 @@ export default {
     countDuration: params => API.get('/tracking/' + params),
     checkTrackingInProgress:  params => API.get('/tracking/checkTrackingInProgress/' + params, { handlerEnabled: false }),
     getHistory: params => API.get('/tracking/history/' + params),
-    timeReporting: params => API.post('/tracking/timeReporting', params),
+    timeReporting: params => API.get('/tracking/timeReporting/', {page: params.page, params: params.form}),
 }
