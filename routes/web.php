@@ -67,6 +67,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/clients/{client_id}/tasksNumber', 'TaskController@getTasksCountPerClient');
     Route::get('/clients/{client_id}/tasks', 'TaskController@getTasksPerClient');
     Route::get('/tasks/filterTasks', 'TaskController@filterTasks');
+    Route::get('/tasks/cards', 'TaskController@tasksCard');
     Route::post('/tasks/{project_id}', 'TaskController@store');
     Route::resource('/tasks', 'TaskController')->except('create', 'store');
 
