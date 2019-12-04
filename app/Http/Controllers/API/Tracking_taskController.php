@@ -222,7 +222,7 @@ public function checkTrackingInProgress($task_id)
   public function timeReporting(TimeReportingTrackingRequest $request)
   {
     $input = $request->validated();
-
+    
     $tracking_model = new Tracking_task();
     $timeReporting = $tracking_model->timeReporting(
                                       $input['from_date'],
