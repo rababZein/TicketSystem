@@ -220,6 +220,6 @@ class TaskController extends BaseController
     if (! $tasks)
       return $this->sendResponse([], 'Tasks retrieved successfully.');
 
-    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
   }
 }
