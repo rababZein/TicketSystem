@@ -93,6 +93,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
 
 // tracking tasks 
 Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace' => 'API'], function () {
+    Route::get('/timeReporting', 'Tracking_taskController@timeReporting');
     Route::post('/{task_id}', 'Tracking_taskController@store');
     Route::patch('/{task_id}', 'Tracking_taskController@update');
     Route::delete('/{task_id}', 'Tracking_taskController@destroy');
