@@ -26,6 +26,23 @@ class CardTaskRequest extends FormRequest
     }
 
     /**
+     * Inject GET parameters into validation data
+     *
+     * @param array $keys Properties to only return
+     *
+     * @return array
+     */
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        $data['status_id'] = $this->get('status_id');
+        $data['employee_id'] = $this->get('employee_id');
+        $data['project_id'] = $this->get('project_id');
+
+        return $data;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array

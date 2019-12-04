@@ -23,7 +23,7 @@ class TimeReportingTrackingRequest extends FormRequest
     }
 
     /**
-     * Inject GET parameter "type" into validation data
+     * Inject GET parameters into validation data
      *
      * @param array $keys Properties to only return
      *
