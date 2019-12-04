@@ -17,6 +17,8 @@ class AddStartAtToTasksTable extends Migration
         Schema::table('tasks', function (Blueprint $table) {
             $table->timestamp('start_at')->default(Carbon::today());
         });
+
+        \DB::statement('UPDATE tasks SET start_at = created_at');
     }
 
     /**

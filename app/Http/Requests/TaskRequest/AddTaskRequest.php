@@ -54,8 +54,9 @@ class AddTaskRequest extends FormRequest
             'responsible_id' => 'required|integer|exists:users,id',
             'status_id' => 'nullable|integer|exists:status,id',
             'count_hours' => 'nullable|numeric|min:0',
-            'priority' => 'string',
-            'deadline' => 'string'
+            'priority' => 'nullable|string',
+            'deadline' => 'nullable|date_format:"Y-m-d"',
+            'start_at' => 'nullable|date_format:"Y-m-d"',
         ];
     }
 }
