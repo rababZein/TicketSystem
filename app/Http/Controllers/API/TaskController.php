@@ -8,6 +8,7 @@ use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Http\Requests\TaskRequest\ViewTaskRequest;
 use App\Http\Requests\TaskRequest\DeleteTaskRequest;
 use App\Http\Requests\TaskRequest\ListTaskRequest;
+use App\Http\Requests\TaskRequest\FilteTaskRequest;
 use App\Http\Requests\TaskRequest\CardTaskRequest;
 use App\Models\Task;
 use App\Models\User;
@@ -36,7 +37,7 @@ class TaskController extends BaseController
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
-      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient', 'getTaskPerClient', 'tasksCard']]);
+      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient', 'getTaskPerClient', 'filterTasks', 'tasksCard']]);
   }
 
    /**
@@ -192,17 +193,33 @@ class TaskController extends BaseController
   public function tasksCard(CardTaskRequest $request)
   {
     $input = $request->validated();
-
     $tasks = Task::with('responsible', 'project')
                   ->where('status_id', $input['status_id'])
                   ->where('responsible_id', isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id)
                   ->when($request->get('project_id'), function($query) use ($input) {
                     $query->where('project_id', $input['project_id']); 
                   })->paginate();
+    if (! $tasks)
+      return $this->sendResponse([], 'Tasks retrieved successfully.');
+    
+    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function filterTasks(FilteTaskRequest $request)
+  {
+    $input = $request->validated();
+
+    $tasks = Task::with('responsible', 'project')
+              ->whereDate('start_at', '>=', $input['from_date'])
+              ->whereDate('start_at', '<=', $input['to_date'])
+              ->where('responsible_id', isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id)
+              ->when($request->get('project_id'), function($query) use ($input) {
+                $query->where('project_id', $input['project_id']); 
+              })->get();
 
     if (! $tasks)
       return $this->sendResponse([], 'Tasks retrieved successfully.');
 
-    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
   }
 }
