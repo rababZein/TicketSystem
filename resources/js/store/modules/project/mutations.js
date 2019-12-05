@@ -3,7 +3,7 @@ export default {
         state.items = Object.assign({}, projects);
     },
     setAllProjects(state, projects) {
-        state.items = projects;
+        state.allProjectList = projects;
     },
     createProject(state, project) {
         const projectObj = {

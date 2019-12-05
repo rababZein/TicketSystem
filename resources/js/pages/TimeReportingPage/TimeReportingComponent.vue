@@ -6,7 +6,7 @@
           <label for="dateRange">Date Range</label>
           <date-picker
             v-model="dateRange"
-            type="type"
+            type="date"
             value-type="date"
             lang="en"
             format="YYYY-MM-DD"
@@ -14,7 +14,6 @@
             input-class="form-control"
             @input="dateRangeChange(dateRange)"
           ></date-picker>
-          <has-error :form="form" field="from_date"></has-error>
         </div>
         <div class="col-sm-12 col-md-4 form-group">
           <label for="employee">Employee</label>
@@ -23,11 +22,10 @@
             :options="employee"
             placeholder="Select employee"
             label="name"
-            track-by="name"
             :allow-empty="true"
             :show-labels="false"
-            @select="opt => {form.employee_id = opt.id; this.reporting();}"
-            @remove="() => {form.employee_id = ''; this.reporting();}"
+            @select="(opt) => {employeeChange(opt)}"
+            @remove="() => {employeeChange('')}"
           ></multiselect>
         </div>
         <div class="col-sm-12 col-md-4 form-group">
@@ -35,15 +33,10 @@
           <multiselect
             v-model="selectedProject"
             :options="projects"
-            :close-on-select="true"
-            :clear-on-select="false"
-            :preserve-search="true"
             placeholder="Select Project"
             label="name"
-            :preselect-first="true"
-            :allow-empty="false"
-            @select="opt => {form.project_id = opt.id; this.reporting();}"
-            @remove="() => {form.project_id = ''; this.reporting();}"
+            @select="(opt) => {projectChange(opt.id)}"
+            @remove="() => {projectChange(id = '')}"
           ></multiselect>
         </div>
       </div>
@@ -55,7 +48,7 @@
         :show-disabled="true"
         :data="time_counting"
         :limit="3"
-        @pagination-change-page="reporting"
+        @pagination-change-page="onPaginate"
       ></pagination>
     </div>
   </div>
@@ -69,55 +62,87 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      form: new Form({
-        from_date: moment()
-          .startOf("month")
-          .format("YYYY-MM-DD"),
-        to_date: moment().format("YYYY-MM-DD"),
-        employee_id: "",
-        project_id: ""
-      }),
-      selectedEmployee: "",
-      selectedProject: "",
-      dateRange: [
-        moment()
-          .startOf("month")
-          .format("YYYY-MM-DD"),
-        moment().format("YYYY-MM-DD")
-      ]
+      data: {
+        from_date: moment(this.$route.query.from_date).format("YYYY-MM-DD"),
+        to_date: moment(this.$route.query.to_date).format("YYYY-MM-DD"),
+        employee_id: this.$route.query.employee_id || "",
+        project_id: this.$route.query.project_id || "",
+        page: 1
+      },
+      dateRange: [],
     };
   },
   components: { DatePicker },
   methods: {
-    reporting(page = 1) {
+    // pagination
+    onPaginate(page) {
+      this.data.page = page;
+      // get time report list
+      this.reporting(this.data);
+      this.$router.push({
+        name: "timeReport.list",
+        query: { ...this.data }
+      });
+    },
+    // get time report list
+    reporting(form) {
+      this.$Progress.start();
       this.$store
-        .dispatch("track/reporting", {
-          from_date: this.form.from_date,
-          to_date: this.form.to_date,
-          employee_id: this.form.employee_id,
-          project_id: this.form.project_id,
-          page: page
-        })
+        .dispatch("track/reporting", { form })
         .then(response => {
-          this.form.clear();
+          this.$router.push({
+            name: "timeReport.list",
+            query: { ...form }
+          });
+          this.$Progress.finish();
         })
         .catch(error => {
-          if (error.response) {
-            this.form.errors.errors = error.response.data.errors;
-          }
+          console.log(error);
+          this.$Progress.fail();
         });
     },
+    // on date range change
     dateRangeChange(opt) {
-      this.form.from_date = moment(opt[0]).format("YYYY-MM-DD");
-      this.form.to_date = moment(opt[1]).format("YYYY-MM-DD");
-      this.reporting();
+      this.data.from_date = moment(opt[0]).format("YYYY-MM-DD");
+      this.data.to_date = moment(opt[1]).format("YYYY-MM-DD");
+      this.dateRange = [this.data.from_date , this.data.to_date];
+      // get time report list
+      this.reporting(this.data);
+      this.$router.push({
+        name: "timeReport.list",
+        query: { ...this.data }
+      });
+    },
+    // on employee change
+    employeeChange(opt) {
+      this.data.employee_id = opt.id;
+      // get time report list
+      this.reporting(this.data);
+      this.$router.push({
+        name: "timeReport.list",
+        query: { ...this.data }
+      });
+    },
+    // on project change
+    projectChange(id) {
+      this.data.project_id = id;
+      // get time report list
+      this.reporting(this.data);
+      this.$router.push({
+        name: "timeReport.list",
+        query: { ...this.data }
+      });
     }
   },
-  mounted() {
-    this.reporting();
+  mounted() {    
+    // get time report list
+    this.reporting(this.data);
+
+    // get all employee
     this.$store.dispatch("regularUser/getRegularUser").catch(error => {
       console.log(error);
     });
+    // get all projects without pagination
     this.$store.dispatch("project/getAllProjects").catch(error => {
       console.log(error);
     });
@@ -126,8 +151,14 @@ export default {
     ...mapGetters({
       time_counting: "track/activeTimeReport",
       employee: "regularUser/activeRegularUser",
-      projects: "project/activeProjects"
-    })
+      projects: "project/allProjects"
+    }),
+    selectedEmployee() {
+      return this.employee.find(item => item.id == this.$route.query.employee_id);
+    },
+    selectedProject() {
+      return this.projects.find(item => item.id == this.$route.query.project_id);
+    }
   }
 };
 </script>
