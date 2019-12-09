@@ -45,8 +45,8 @@ class Tracking_task extends Model
         p.name project_name,
         p.owner_id owner_id,
         u.name owner_name,
-        SEC_TO_TIME(sum(TIME_TO_SEC(TIMEDIFF(end_at, start_at)))) time_counting,
-        date(start_at) the_day 
+        SEC_TO_TIME(sum(TIME_TO_SEC(TIMEDIFF(tt.end_at, tt.start_at)))) time_counting,
+        date(tt.start_at) the_day 
         from tracking_tasks tt,
              projects p,
              tasks t,
@@ -62,7 +62,7 @@ class Tracking_task extends Model
                 p.name,
                 p.owner_id,
                 u.name,
-                date(start_at)', 
+                date(tt.start_at)', 
         [$fromDate, $toDate, $employeeId, $projectId, $projectId]);
     }
 }
