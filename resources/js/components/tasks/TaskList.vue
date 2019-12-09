@@ -215,9 +215,9 @@
                 <date-picker
                   v-model="form.deadline"
                   lang="en"
-                  type="date"
+                  type="datetime"
                   format="YYYY-MM-DD HH:mm:ss"
-                  :minute-step="1"
+                  :minute-step="15"
                   value-type="format"
                   input-class="form-control"
                 ></date-picker>
