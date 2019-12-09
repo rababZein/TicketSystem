@@ -18,6 +18,7 @@ class TimeReportingTrackingRequest extends FormRequest
         if (! $this->get('employee_id') && auth()->user()->can('tracking_task-list')) {
             return true;
         }
+        
         if (auth()->user()->isAdmin()) {
             return true;
         }
