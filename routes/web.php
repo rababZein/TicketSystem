@@ -14,10 +14,12 @@
 
 
 Auth::routes();
+Route::group(['namespace' => 'Frontend'], function () {
+    Route::get('/', 'HomeController@index');
+});
 
 Route::group(['middleware' => ['auth'], 'namespace' => 'Vue'], function () {
-    Route::get('/', 'VueController@index');
-    Route::get('/home', 'VueController@index')->name('home');
+    Route::get('/admin', 'VueController@index')->name('admin');
 });
 
 

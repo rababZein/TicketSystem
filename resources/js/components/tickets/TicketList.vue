@@ -28,10 +28,10 @@
           <tbody>
             <tr v-for="ticket in activeTickets" :key="ticket.id">
               <td>
-                <router-link :to="'/ticket/' + ticket.id">{{ ticket.number }}</router-link>
+                <router-link :to="'/admin/ticket/' + ticket.id">{{ ticket.number }}</router-link>
               </td>
               <td>
-                <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
+                <router-link :to="'/admin/ticket/' + ticket.id">{{ ticket.name }}</router-link>
               </td>
               <td>
                 <div class="badge bg-primary">{{ ticket.status.name }}</div>
@@ -39,13 +39,13 @@
               <td>
                 <span v-if="ticket.project && ticket.project.owner">
                   <router-link
-                    :to="'/profile/' + ticket.project.owner.id"
+                    :to="'/admin/profile/' + ticket.project.owner.id"
                   >{{ ticket.project.owner.name }}</router-link>
                 </span>
               </td>
               <td>
                 <span v-if="ticket.project">
-                  <router-link :to="'/project/' + ticket.project.id">{{ ticket.project.name }}</router-link>
+                  <router-link :to="'/admin/project/' + ticket.project.id">{{ ticket.project.name }}</router-link>
                 </span>
               </td>
               <td v-if="!ticket.read">Not Read</td>

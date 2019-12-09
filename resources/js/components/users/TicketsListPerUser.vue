@@ -13,7 +13,7 @@
           <tr v-for="ticket in tickets.data" :key="ticket.id">
             <td>{{ ticket.id }}</td>
             <td>
-              <router-link :to="'/ticket/' + ticket.id">{{ ticket.name }}</router-link>
+              <router-link :to="'/admin/ticket/' + ticket.id">{{ ticket.name }}</router-link>
             </td>
             <td>{{ ticket.created_at | DateWithTime }}</td>
           </tr>
