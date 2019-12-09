@@ -106,3 +106,9 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
 Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
     Route::get('/getAll', 'API\StatusController@getAll');
 });
+
+// dynamic attributes
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::get('/dynamicAttributes/list', 'API\DynamicAttributeController@list');
+    Route::resource('/dynamicAttributes', 'API\DynamicAttributeController')->except('create', 'edit');
+});
