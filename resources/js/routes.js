@@ -16,7 +16,7 @@ Vue.use(VueRouter);
 // routes
 let routes = [
     {
-        path: "/home",
+        path: "/admin",
         component: require("./pages/DashboardPage/DashboardComponent.vue")
             .default,
         alias: "",
