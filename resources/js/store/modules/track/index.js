@@ -27,7 +27,18 @@ export default {
     },
     getters: {
         activeTimeReport(state) {
-            return state.items;
+            if (typeof state.items[0].data !="undefined") {
+                return state.items[0];
+            } else {
+                return {};
+            }
+        },
+        activeTotalTime(state) {
+            if (state.items[1]) {
+                return state.items[1][0].time_summation;
+            } else {
+                return null;
+            }
         }
     }
 };

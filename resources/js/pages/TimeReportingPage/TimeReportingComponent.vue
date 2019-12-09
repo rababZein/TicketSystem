@@ -1,5 +1,5 @@
 <template>
-  <div class="row">
+  <div class="row" v-if="!loading">
     <div class="col-sm-12">
       <div class="row">
         <div class="col-sm-12 col-md-4">
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <time-report-table :time_counting="time_counting"></time-report-table>
+      <time-report-table :time_count="time_counting" :total="total_time"></time-report-table>
       <pagination
         align="right"
         size="small"
@@ -51,6 +51,9 @@
         @pagination-change-page="onPaginate"
       ></pagination>
     </div>
+  </div>
+  <div class="card" v-else>
+    <div class="card-body justify-content-center">loading...</div>
   </div>
 </template>
 
@@ -70,6 +73,7 @@ export default {
         page: 1
       },
       dateRange: [],
+      loading: true
     };
   },
   components: { DatePicker },
@@ -86,6 +90,7 @@ export default {
     },
     // get time report list
     reporting(form) {
+      this.loading = true;
       this.$Progress.start();
       this.$store
         .dispatch("track/reporting", { form })
@@ -94,10 +99,12 @@ export default {
             name: "timeReport.list",
             query: { ...form }
           });
+          this.loading = false;
           this.$Progress.finish();
         })
         .catch(error => {
           console.log(error);
+          this.loading = false;
           this.$Progress.fail();
         });
     },
@@ -105,7 +112,7 @@ export default {
     dateRangeChange(opt) {
       this.data.from_date = moment(opt[0]).format("YYYY-MM-DD");
       this.data.to_date = moment(opt[1]).format("YYYY-MM-DD");
-      this.dateRange = [this.data.from_date , this.data.to_date];
+      this.dateRange = [this.data.from_date, this.data.to_date];
       // get time report list
       this.reporting(this.data);
       this.$router.push({
@@ -134,7 +141,7 @@ export default {
       });
     }
   },
-  mounted() {    
+  mounted() {
     // get time report list
     this.reporting(this.data);
 
@@ -150,14 +157,19 @@ export default {
   computed: {
     ...mapGetters({
       time_counting: "track/activeTimeReport",
+      total_time: "track/activeTotalTime",
       employee: "regularUser/activeRegularUser",
       projects: "project/allProjects"
     }),
     selectedEmployee() {
-      return this.employee.find(item => item.id == this.$route.query.employee_id);
+      return this.employee.find(
+        item => item.id == this.$route.query.employee_id
+      );
     },
     selectedProject() {
-      return this.projects.find(item => item.id == this.$route.query.project_id);
+      return this.projects.find(
+        item => item.id == this.$route.query.project_id
+      );
     }
   }
 };
