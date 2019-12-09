@@ -16,7 +16,7 @@ class DynamicAttribute extends Model
     protected $table = 'dynamic_attributes';
     public $timestamps = true;
 
-    protected $fillable = array('created_at', 'updated_at', 'name', 'hidden', 'created_by', 'updated_by');
+    protected $fillable = array('created_at', 'updated_at', 'name', 'hidden');
 
     public function creator()
     {

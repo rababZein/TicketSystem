@@ -47,8 +47,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
         Route::get('/getAllResponsibles', 'UsersController@getAllResponsibles');
         Route::get('/getClientsPaginated', 'UsersController@getClientsPaginated');
         Route::get('/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
-        Route::resource('/', 'UsersController')->except('show', 'create');
     });
+    Route::resource('/users', 'API\UsersController')->except('show', 'create');
+
 
     Route::group(['prefix' => 'project'], function () {
         Route::resource('/', 'API\ProjectController')->except('create');

@@ -18,16 +18,8 @@ class CreateUserDynamicAttributesTable extends Migration
             $table->integer('dynamic_attribute_id')->unsigned();
             $table->integer('user_id')->unsigned();
             $table->longText('value');
-            $table->integer('updated_by')->unsigned()->nullable();
-			$table->integer('created_by')->unsigned();
             $table->timestamps();
 
-            $table->foreign('updated_by')->references('id')->on('users')
-                  ->onDelete('restrict')
-                  ->onUpdate('restrict');
-            $table->foreign('created_by')->references('id')->on('users')
-                  ->onDelete('restrict')
-                  ->onUpdate('restrict');
             $table->foreign('user_id')->references('id')->on('users')
                   ->onDelete('restrict')
                   ->onUpdate('restrict');
