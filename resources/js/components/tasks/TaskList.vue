@@ -31,7 +31,7 @@
             <tr v-for="task in tasks.data" :key="task.id">
               <td>{{ task.id }}</td>
               <td>
-                <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
+                <router-link :to="'/admin/task/' + task.id">{{ task.name }}</router-link>
               </td>
               <td>
                 <div class="badge bg-primary">{{ task.status.name }}</div>
@@ -47,12 +47,12 @@
               </td>
               <td>
                 <span v-if="task.project">
-                  <router-link :to="'/project/' + task.project.id">{{ task.project.name }}</router-link>
+                  <router-link :to="'/admin/project/' + task.project.id">{{ task.project.name }}</router-link>
                 </span>
               </td>
               <td>
                 <span v-if="task.responsible">
-                  <router-link :to="'/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
+                  <router-link :to="'/admin/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
                 </span>
               </td>
               <td>

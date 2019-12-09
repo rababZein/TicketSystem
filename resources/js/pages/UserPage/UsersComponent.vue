@@ -29,7 +29,7 @@
             <tbody>
               <tr v-for="user in users.data" :key="user.id">
                 <td>{{user.id}}</td>
-                <td><router-link :to="'/profile/' + user.id">{{user.name}}</router-link></td>
+                <td><router-link :to="'/admin/profile/' + user.id">{{user.name}}</router-link></td>
                 <td>{{user.email}}</td>
                 <td>
                   <div

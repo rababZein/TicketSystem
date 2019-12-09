@@ -34,14 +34,14 @@
                   <div class="inner">
                     <h3>
                       <router-link
-                        :to="'/project/' + project.id"
+                        :to="'/admin/project/' + project.id"
                         class="text-white"
                       >{{ project.name }}</router-link>
                     </h3>
 
                     <p v-if="project.owner">
                       <router-link
-                        :to="'/profile/' + project.owner.id"
+                        :to="'/admin/profile/' + project.owner.id"
                         class="text-white"
                       >{{ project.owner.name }}</router-link>
                     </p>
@@ -55,7 +55,7 @@
                   <div class="icon">
                     <i class="fas fa-briefcase"></i>
                   </div>
-                  <router-link :to="'/project/' + project.id" class="small-box-footer">
+                  <router-link :to="'/admin/project/' + project.id" class="small-box-footer">
                     More info
                     <i class="fas fa-arrow-circle-right"></i>
                   </router-link>

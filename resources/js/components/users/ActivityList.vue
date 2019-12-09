@@ -9,7 +9,7 @@
                 <span style="color:#888;font-style:italic"
                     >{{ activity.created_at | DateWithTime }} |</span
                 >
-                <router-link :to="'/profile/' + activity.user.id">{{
+                <router-link :to="'/admin/profile/' + activity.user.id">{{
                     activity.user.name
                 }}</router-link>
                 {{ activity.subject }}
