@@ -53,7 +53,7 @@ class UpdateTaskRequest extends FormRequest
             'status_id' => 'integer|exists:status,id',
             'count_hours' => 'nullable|numeric|min:0',
             'priority' => 'string',
-            'deadline' => 'date_format:"Y-m-d  H:i:s"',
+            'deadline' => 'date_format:"Y-m-d H:i:s"',
             'start_at' => 'date_format:"Y-m-d"',
         ];
     }
