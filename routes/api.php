@@ -106,3 +106,7 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
 Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
     Route::get('/getAll', 'API\StatusController@getAll');
 });
+
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::resource('/metadata', 'API\MetadataController')->except('create', 'edit');
+});
