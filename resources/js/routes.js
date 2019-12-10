@@ -79,15 +79,21 @@ let routes = [
         meta: { title: "Task" }
     },
     {
+        path: "/admin/board/:projectId",
+        name: "board",
+        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
+    },
+    {
         path: "/admin/receipts",
-        component: require("./pages/ReceiptPage/ReceiptsComponent.vue").default,
+        component: require("./pages/ProjectPage/BoardComponent.vue").default,
         meta: { title: "Receipts" }
     },
     {
-        alias: '/admin/time-report',
+        alias: "/admin/time-report",
         path: "/admin/time-report",
         name: "timeReport.list",
-        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue").default,
+        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue")
+            .default,
         meta: { title: "Time Report" }
     },
     {
