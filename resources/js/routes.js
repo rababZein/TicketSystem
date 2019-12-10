@@ -79,13 +79,14 @@ let routes = [
         meta: { title: "Task" }
     },
     {
-        path: "/admin/board/:projectId",
+        path: "/admin/board",
         name: "board",
-        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
+        component: require("./pages/ProjectPage/BoardComponent.vue").default,
+        meta: { pagetitle: route => `${route.params.project}` }
     },
     {
         path: "/admin/receipts",
-        component: require("./pages/ProjectPage/BoardComponent.vue").default,
+        component: require("./pages/ReceiptPage/ReceiptsComponent.vue").default,
         meta: { title: "Receipts" }
     },
     {
