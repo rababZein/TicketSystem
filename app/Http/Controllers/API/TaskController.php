@@ -199,24 +199,24 @@ class TaskController extends BaseController
 
     $project = [];
     foreach ($tasks->toArray()['data'] as $task) {
-          $project['name'] = $task['project']['name'];
-          $statusFlag = false;
-          $i=0;
-          if (isset($project['columns'])) {
-            foreach($project['columns'] as $status) {
-              if ($status['name'] == $task['task_status']['name']) {
-                $project['columns'][$i]['tasks'][] = $task;
-                $statusFlag = true;
-              }
-              $i++;
-            }
+      $project['name'] = $task['project']['name'];
+      $statusFlag = false;
+      $i=0;
+      if (isset($project['columns'])) {
+        foreach($project['columns'] as $status) {
+          if ($status['name'] == $task['task_status']['name']) {
+            $project['columns'][$i]['tasks'][] = $task;
+            $statusFlag = true;
           }
-          if (! $statusFlag) {
-            $status = [];
-            $status['name'] = $task['task_status']['name'];
-            $status['tasks'][] = $task;
-            $project['columns'][] = $status;
-          } 
+          $i++;
+        }
+      }
+      if (! $statusFlag) {
+        $status = [];
+        $status['name'] = $task['task_status']['name'];
+        $status['tasks'][] = $task;
+        $project['columns'][] = $status;
+      } 
     }
     
     return $this->sendResponse($project, 'Tasks retrieved successfully.');
