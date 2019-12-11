@@ -8,48 +8,47 @@
     <template v-else>
       <div class="col-sm-12">
         <div class="card">
-        <div class="card-header">
-          <span>project \ {{ projectTitle }}</span>
-          <div class="card-tools">
-            <router-link
-              :to="{ name: 'project', params: { id: this.$route.params.projectId }}"
-              class="btn btn-default btn-sm"
-            >
-              <i class="fas fa-info fa-fw"></i> default view
-            </router-link>
+          <div class="card-header">
+            <span>project \ {{ projectTitle }}</span>
+            <div class="card-tools">
+              <router-link
+                :to="{ name: 'project', params: { id: this.$route.params.projectId }}"
+                class="btn btn-default btn-sm"
+              >
+                <i class="fas fa-info fa-fw"></i> default view
+              </router-link>
+            </div>
           </div>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div
-              v-for="(column, $columnIndex) of board.board.columns"
-              :key="$columnIndex"
-              @drop="moveTask($event, column.tasks)"
-              @dragover.prevent
-              @dragenter.prevent
-              class="col-sm-12 col-md-3"
-            >
-              <div class="card bg-light">
-                <div class="card-header">{{ column.name }}</div>
-                <div
-                  id="scrollbar-style"
-                  class="card-body p-1 overflow-auto"
-                  style="min-height: 100px; max-height: 300px;"
-                >
+          <div class="card-body">
+            <div class="row">
+              <div
+                v-for="(column, $columnIndex) of board.board.columns"
+                :key="$columnIndex"
+                @drop="moveTask($event, column.tasks)"
+                @dragover.prevent
+                @dragenter.prevent
+                class="col-sm-12 col-md-3"
+              >
+                <div class="card bg-light">
+                  <div class="card-header">{{ column.name }}</div>
                   <div
-                    class="bg-white p-1 m-1 border"
-                    v-for="(task, $taskIndex) of column.tasks"
-                    :key="$taskIndex"
-                    draggable
-                    @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
-                  >{{ task.name }}</div>
+                    id="scrollbar-style"
+                    class="card-body p-1 overflow-auto"
+                    style="min-height: 100px; max-height: 300px;"
+                  >
+                    <div
+                      class="bg-white p-1 m-1 border"
+                      v-for="(task, $taskIndex) of column.tasks"
+                      :key="$taskIndex"
+                      draggable
+                      @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
+                    >{{ task.name }}</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        </div>
-
       </div>
     </template>
   </div>
