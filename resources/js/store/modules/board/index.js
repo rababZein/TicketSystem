@@ -4,71 +4,29 @@ export default {
     namespaced: true,
 
     state: {
-        name: "workshop",
-        columns: [
-            {
-                name: "open",
-                tasks: [
-                    {
-                        description: "",
-                        name: "New Alferp Bug when trying to close a ticket",
-                        id: 1,
-                        userAssigned: null
-                    },
-                    {
-                        description: "",
-                        name: "New Alferp Bug when trying to ticket",
-                        id: 2,
-                        userAssigned: null
-                    },
-                    {
-                        description: "",
-                        name: "New Alferp Bug when trying to close a ticket",
-                        id: 3,
-                        userAssigned: null
-                    }
-                ]
-            },
-            {
-                name: "pending",
-                tasks: [
-                    {
-                        description: "",
-                        name: "first task",
-                        id: 6,
-                        userAssigned: null
-                    }
-                ]
-            },
-            {
-                name: "in-progress",
-                tasks: [
-                    {
-                        description: "",
-                        name: "first task",
-                        id: 4,
-                        userAssigned: null
-                    }
-                ]
-            },
-            {
-                name: "done",
-                tasks: [
-                    {
-                        description: "",
-                        name: "first task",
-                        id: 5,
-                        userAssigned: null
-                    }
-                ]
-            }
-        ]
+        board: {}
     },
-    actions: {},
+    actions: {
+        getTasksForBoard({ commit }, projectId) {
+            return new Promise((resolve, reject) => {
+                tasks.getTasksForBoard({ project_id: projectId })
+                    .then(response => {
+                        commit("SET_BOARD", response.data.data);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            });
+        }
+    },
     mutations: {
         MOVE_TASK(state, { fromTasks, toTasks, taskIndex }) {
             const taskToMove = fromTasks.splice(taskIndex, 1)[0];
             toTasks.push(taskToMove);
+        },
+        SET_BOARD(state, data) {
+            state.board = data;
         }
     },
     getters: {

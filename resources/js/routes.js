@@ -44,16 +44,17 @@ let routes = [
         meta: { title: "Users" }
     },
     {
+        path: "/admin/project/:id",
+        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
+            .default,
+        name: "project",
+        meta: { title: "Project" }
+    },
+    {
         path: "/admin/projects/:page?",
         name: "projects.list",
         component: require("./pages/ProjectPage/ProjectsComponent.vue").default,
         meta: { title: "Projects" }
-    },
-    {
-        path: "/admin/project/:id",
-        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
-            .default,
-        meta: { title: "Project" }
     },
     {
         path: "/admin/tickets/:page?",
@@ -79,10 +80,10 @@ let routes = [
         meta: { title: "Task" }
     },
     {
-        path: "/admin/board",
+        path: "/admin/board/:projectId",
         name: "board",
         component: require("./pages/ProjectPage/BoardComponent.vue").default,
-        meta: { pagetitle: route => `${route.params.project}` }
+        meta: { pagetitle: route => `${route.params.pagetitle}` }
     },
     {
         path: "/admin/receipts",
