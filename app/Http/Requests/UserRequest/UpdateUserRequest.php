@@ -41,6 +41,9 @@ class UpdateUserRequest extends FormRequest
             'roles' => 'array',
             'roles.*.id' => 'integer',
             'roles.*.name' => 'string',
+            'dynamic_attributes' => 'array',
+            'dynamic_attribute.*.id' => 'required|integer',
+            'dynamic_attribute.*.value' => 'required|string',
         ];
     }
 }

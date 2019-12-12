@@ -59,6 +59,11 @@ class User extends Authenticatable implements JWTSubject
         return false;
     }
 
+    public function dynamicAttributes()
+    {
+        return $this->belongsToMany('App\Models\DynamicAttribute','user_dynamic_attributes', 'user_id', 'dynamic_attribute_id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

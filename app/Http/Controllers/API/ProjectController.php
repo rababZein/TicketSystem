@@ -30,7 +30,7 @@ class ProjectController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index', 'getAllByOwner']]);
+      $this->middleware('permission:project-list|project-create|project-edit|project-delete', ['only' => ['index', 'getAllByOwner', 'list']]);
       $this->middleware('permission:project-create', ['only' => ['store']]);
       $this->middleware('permission:project-edit', ['only' => ['update']]);
       $this->middleware('permission:project-delete', ['only' => ['destroy']]);
