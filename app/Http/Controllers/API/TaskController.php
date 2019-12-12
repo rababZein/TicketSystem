@@ -198,8 +198,25 @@ class TaskController extends BaseController
                   ->paginate();
 
     $project = [];
+    // generate all status
+    $open['name'] = 'open';
+    $open['tasks'] = [];
+    $project['columns'][] = $open;
+
+    $inprogress['name'] = 'inprogress';
+    $inprogress['tasks'] = [];
+    $project['columns'][] = $inprogress;
+
+    $pending['name'] = 'pending';
+    $pending['tasks'] = [];
+    $project['columns'][] = $pending;
+
+    $done['name'] = 'done';
+    $done['tasks'] = [];
+    $project['columns'][] = $done;
     foreach ($tasks->toArray()['data'] as $task) {
       $project['name'] = $task['project']['name'];
+         
       $statusFlag = false;
       $i=0;
       if (isset($project['columns'])) {
@@ -211,12 +228,12 @@ class TaskController extends BaseController
           $i++;
         }
       }
-      if (! $statusFlag) {
-        $status = [];
-        $status['name'] = $task['task_status']['name'];
-        $status['tasks'][] = $task;
-        $project['columns'][] = $status;
-      } 
+      // if (! $statusFlag) {
+      //   $status = [];
+      //   $status['name'] = $task['task_status']['name'];
+      //   $status['tasks'][] = $task;
+      //   $project['columns'][] = $status;
+      // } 
     }
     
     return $this->sendResponse($project, 'Tasks retrieved successfully.');
