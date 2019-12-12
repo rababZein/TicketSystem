@@ -17,11 +17,25 @@ class CardTaskRequest extends FormRequest
     {
         // who can add new task?
 
-        // 1- admin && who has permission
-        if (auth()->user()->isAdmin() || auth()->user()->can('task-list')) {
+        // 1- admin
+        if (auth()->user()->isAdmin()) {
             return true;
         }
 
+        $project_id =$this->get('project_id');
+        $project = Project::find($project_id);
+
+        if (!$project) {
+            throw new ItemNotFoundException($project_id);
+        }
+
+        //2- people who is assign to this projects
+        foreach ($project->assigns as $assign) {
+            if ($assign->id == auth()->user()->id) {
+                return true;
+            }
+        }
+        
         return false;
     }
 
@@ -35,8 +49,6 @@ class CardTaskRequest extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all($keys);
-        $data['status_id'] = $this->get('status_id');
-        $data['employee_id'] = $this->get('employee_id');
         $data['project_id'] = $this->get('project_id');
 
         return $data;
@@ -50,9 +62,7 @@ class CardTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            'status_id' => 'required|integer|exists:status,id',
-            'employee_id' => 'nullable||integer|exists:users,id',
-            'project_id' => 'nullable|integer|exists:projects,id'
+            'project_id' => 'required|integer|exists:projects,id'
         ];
     }
 }

@@ -9,6 +9,7 @@ import user from './modules/user/index';
 import activity from './modules/activity/index';
 import comment from './modules/comment/index';
 import track from './modules/track/index';
+import board from './modules/board/index';
 
 Vue.use(Vuex);
 
@@ -24,7 +25,8 @@ export default new Vuex.Store({
         user,
         activity,
         comment,
-        track
+        track,
+        board
     },
     strict: debug,
 })

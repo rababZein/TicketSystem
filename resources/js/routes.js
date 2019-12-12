@@ -44,16 +44,17 @@ let routes = [
         meta: { title: "Users" }
     },
     {
+        path: "/admin/project/:id",
+        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
+            .default,
+        name: "project",
+        meta: { title: "Project" }
+    },
+    {
         path: "/admin/projects/:page?",
         name: "projects.list",
         component: require("./pages/ProjectPage/ProjectsComponent.vue").default,
         meta: { title: "Projects" }
-    },
-    {
-        path: "/admin/project/:id",
-        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
-            .default,
-        meta: { title: "Project" }
     },
     {
         path: "/admin/tickets/:page?",
@@ -79,15 +80,22 @@ let routes = [
         meta: { title: "Task" }
     },
     {
+        path: "/admin/board/:projectId",
+        name: "board",
+        component: require("./pages/ProjectPage/BoardComponent.vue").default,
+        meta: { title: "Board" }
+    },
+    {
         path: "/admin/receipts",
         component: require("./pages/ReceiptPage/ReceiptsComponent.vue").default,
         meta: { title: "Receipts" }
     },
     {
-        alias: '/admin/time-report',
+        alias: "/admin/time-report",
         path: "/admin/time-report",
         name: "timeReport.list",
-        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue").default,
+        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue")
+            .default,
         meta: { title: "Time Report" }
     },
     {
