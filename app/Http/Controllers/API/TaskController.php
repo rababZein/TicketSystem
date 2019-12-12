@@ -197,26 +197,31 @@ class TaskController extends BaseController
                   ->where('project_id', $input['project_id'])
                   ->paginate();
 
+    if (! $tasks) {
+      return $this->sendResponse([], 'Tasks retrieved successfully.');
+    }
+
     $project = [];
-    foreach ($tasks->toArray()['data'] as $task) {
-      $project['name'] = $task['project']['name'];
-      $statusFlag = false;
+    $project['name'] = $tasks->toArray()['data'][0]['project']['name'];
+
+    // generate all status
+    $allStatus = ['open', 'in-progress', 'pending', 'done'];
+    foreach ($allStatus as $status) {
+      $arr['name'] = $status;
+      $arr['tasks'] = [];
+      $project['columns'][] = $arr;
+    }
+
+    foreach ($tasks->toArray()['data'] as $task) {         
       $i=0;
       if (isset($project['columns'])) {
         foreach($project['columns'] as $status) {
           if ($status['name'] == $task['task_status']['name']) {
             $project['columns'][$i]['tasks'][] = $task;
-            $statusFlag = true;
           }
           $i++;
         }
       }
-      if (! $statusFlag) {
-        $status = [];
-        $status['name'] = $task['task_status']['name'];
-        $status['tasks'][] = $task;
-        $project['columns'][] = $status;
-      } 
     }
     
     return $this->sendResponse($project, 'Tasks retrieved successfully.');
