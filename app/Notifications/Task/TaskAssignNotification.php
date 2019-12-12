@@ -45,7 +45,7 @@ class TaskAssignNotification extends Notification
         return (new MailMessage)
                     ->line('The task '.$this->task->name.' has been assigned to you')
                     ->line('Description: '.$this->task->description)
-                    ->action('See more ..', url('/').'/task/'.$this->task->id)
+                    ->action('See more ..', url('/admin/task/' . $this->task->id))
                     ->line('Thank you for using our application!');
     }
 

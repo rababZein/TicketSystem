@@ -46,7 +46,7 @@ class ProjectAssignNotification extends Notification
                     ->line('The Project '.$this->project->name.' has been assigned to you')
                     ->line('Description: '.$this->project->description)
                     ->line('Owner: '.$this->project->owner->name)
-                    ->action('See More ..', url('/project/'. $this->project->id))
+                    ->action('See More ..', url('/admin/project/' . $this->project->id))
                     ->line('Thank you for using our application!');
     }
 

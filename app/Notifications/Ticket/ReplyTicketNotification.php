@@ -47,7 +47,7 @@ class ReplyTicketNotification extends Notification
         return (new MailMessage)
                     ->line('The ticket '.$this->ticketComment->ticket->name.' has a reply.')
                     ->line('Reply: '.$this->ticketComment->comment)
-                    ->action('See more ..', url('/').'/ticket/'.$this->ticketComment->ticket->id)
+                    ->action('See more ..', url('/admin/ticket/' . $this->ticketComment->ticket->id))
                     ->line('Thank you for using our application!');
     }
 

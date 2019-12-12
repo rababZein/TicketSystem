@@ -46,7 +46,7 @@ class ReceiptPaidNotification extends Notification
                     ->line('The Receipt: '.$this->receipt->name.' has been paid')
                     ->line('For Task: '.$this->receipt->task->name)
                     ->line('Amount: '.$this->receipt->amount)
-                    ->action('See More .', url('/receipts/list'))
+                    ->action('See More .', url('admin/receipts/list'))
                     ->line('Thank you for using our application!');
     }
 

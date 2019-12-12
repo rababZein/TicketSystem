@@ -45,7 +45,7 @@ class TicketChangeStatusNotification extends Notification
     {
         return (new MailMessage)
                     ->line('The ticket '.$this->ticket->name.' has been changed to '. $this->ticket->ticket_status->name)
-                    ->action('See more ..', url('/').'/ticket/'.$this->ticket->id)
+                    ->action('See more ..', url('/admin/ticket/' . $this->ticket->id))
                     ->line('Thank you for using our application!');
     }
 
