@@ -205,7 +205,7 @@ class TaskController extends BaseController
     $project['name'] = $tasks->toArray()['data'][0]['project']['name'];
 
     // generate all status
-    $allStatus = ['open', 'in-progress', 'pending', 'done'];
+    $allStatus = ['open', 'pending', 'in-progress', 'done'];
     foreach ($allStatus as $status) {
       $arr['name'] = $status;
       $arr['tasks'] = [];
