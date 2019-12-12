@@ -35,6 +35,9 @@ class AddUserRequest extends FormRequest
             'roles' => 'required|array',
             'roles.*.id' => 'required|integer',
             'roles.*.name' => 'required|string',
+            'dynamic_attributes' => 'array',
+            'dynamic_attribute.*.id' => 'required|integer',
+            'dynamic_attribute.*.value' => 'required|string',
         ];
     }
 }
