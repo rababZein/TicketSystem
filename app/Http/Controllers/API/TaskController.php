@@ -198,22 +198,15 @@ class TaskController extends BaseController
                   ->paginate();
 
     $project = [];
+
     // generate all status
-    $open['name'] = 'open';
-    $open['tasks'] = [];
-    $project['columns'][] = $open;
-
-    $inprogress['name'] = 'inprogress';
-    $inprogress['tasks'] = [];
-    $project['columns'][] = $inprogress;
-
-    $pending['name'] = 'pending';
-    $pending['tasks'] = [];
-    $project['columns'][] = $pending;
-
-    $done['name'] = 'done';
-    $done['tasks'] = [];
-    $project['columns'][] = $done;
+    $allStatus = ['open', 'in-progress', 'pending', 'done'];
+    foreach ($allStatus as $status) {
+      $arr['name'] = $status;
+      $arr['tasks'] = [];
+      $project['columns'][] = $arr;
+    }
+    
     foreach ($tasks->toArray()['data'] as $task) {
       $project['name'] = $task['project']['name'];
          
