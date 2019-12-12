@@ -197,7 +197,7 @@ class TaskController extends BaseController
                   ->where('project_id', $input['project_id'])
                   ->paginate();
 
-    if (! $tasks) {
+    if (! $tasks->toArray()['data']) {
       return $this->sendResponse([], 'Tasks retrieved successfully.');
     }
 
