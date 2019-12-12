@@ -9,7 +9,7 @@
       <div class="col-sm-12">
         <div class="card">
           <div class="card-header">
-            <span>project \ {{ projectTitle }}</span>
+            <span>project: {{ board.board.name }}</span>
             <div class="card-tools">
               <router-link
                 :to="{ name: 'project', params: { id: this.$route.params.projectId }}"
@@ -23,8 +23,8 @@
             <div class="row">
               <div
                 v-for="(column, $columnIndex) of board.board.columns"
-                :key="$columnIndex"
-                @drop="moveTask($event, column.tasks)"
+                :key="$columnIndex++"
+                @drop="moveTask($event, $columnIndex)"
                 @dragover.prevent
                 @dragenter.prevent
                 class="col-sm-12 col-md-3"
@@ -41,7 +41,7 @@
                       v-for="(task, $taskIndex) of column.tasks"
                       :key="$taskIndex"
                       draggable
-                      @dragstart="pickupTask($event, $taskIndex, $columnIndex)"
+                      @dragstart="pickupTask($event, task.id, $columnIndex)"
                     >{{ task.name }}</div>
                   </div>
                 </div>
@@ -87,18 +87,17 @@ export default {
     pickupTask(e, taskIndex, fromColumnIndex) {
       e.dataTransfer.effectAllowed = "move";
       e.dataTransfer.dropEffect = "move";
-      e.dataTransfer.setData("task-index", taskIndex);
+      e.dataTransfer.setData("task-id", taskIndex);
       e.dataTransfer.setData("from-column-index", fromColumnIndex);
     },
-    moveTask(e, toTasks) {
+    moveTask(e, toColumnIndex) {
       const fromColumnIndex = e.dataTransfer.getData("from-column-index");
-      const fromTasks = this.board.columns[fromColumnIndex].tasks;
-      const taskIndex = e.dataTransfer.getData("task-index");
+      const taskId = e.dataTransfer.getData("task-id");
 
-      this.$store.commit("board/MOVE_TASK", {
-        fromTasks,
-        toTasks,
-        taskIndex
+      this.$store.dispatch("board/moveTask", {
+        fromColumnIndex,
+        toColumnIndex,
+        taskId
       });
     }
   },

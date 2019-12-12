@@ -18,12 +18,32 @@ export default {
                         reject(error);
                     });
             });
+        },
+        moveTask({ commit }, { fromColumnIndex, toColumnIndex, taskId }) {
+            return new Promise((resolve, reject) => {
+                if (fromColumnIndex != toColumnIndex) {
+                    tasks.editTask({ id: taskId, status_id: toColumnIndex })
+                        .then(response => {
+                            commit("MOVE_TASK", { fromColumnIndex, toColumnIndex, taskId });
+                            resolve(response);
+                        })
+                        .catch(error => {
+                            reject(error);
+                        });
+                }
+            });
         }
     },
     mutations: {
-        MOVE_TASK(state, { fromTasks, toTasks, taskIndex }) {
-            const taskToMove = fromTasks.splice(taskIndex, 1)[0];
-            toTasks.push(taskToMove);
+        MOVE_TASK(state, { fromColumnIndex, toColumnIndex, taskId }) {
+            let fromColumnTasks = state.board.columns[fromColumnIndex - 1].tasks;
+            const toColumnTasks = state.board.columns[toColumnIndex - 1].tasks;
+            const taskToMove = fromColumnTasks.find(items => items.id == taskId);
+            if (fromColumnIndex != toColumnIndex) {
+                state.board.columns[fromColumnIndex - 1].tasks = fromColumnTasks.filter(items => items.id != taskId);
+                toColumnTasks.push(taskToMove);
+            }
+
         },
         SET_BOARD(state, data) {
             state.board = data;

@@ -83,7 +83,7 @@ let routes = [
         path: "/admin/board/:projectId",
         name: "board",
         component: require("./pages/ProjectPage/BoardComponent.vue").default,
-        meta: { pagetitle: route => `${route.params.pagetitle}` }
+        meta: { title: "Board" }
     },
     {
         path: "/admin/receipts",
