@@ -108,6 +108,11 @@ Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function ()
     Route::get('/getAll', 'API\StatusController@getAll');
 });
 
+// meta_data_static_data
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::resource('/metadata', 'API\MetadataController')->except('create', 'edit');
+ });
+
 // dynamic attributes
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/dynamicAttributes/list', 'API\DynamicAttributeController@list');
