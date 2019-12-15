@@ -45,7 +45,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string|unique:projects,name,'.$this->project->id,
+            'name' => 'string|unique:projects,name,'.$this->project->id,
             'description' => 'string',
             'owner_id' => 'integer|exists:users,id',
             'task_rate' => 'integer',
