@@ -83,10 +83,25 @@ class everyMinute extends Command
     {
         $client = $this->getClient($emailData);
 
+        /**
+         * if client has one project with open status add new tickets to it
+         */
+        $count = Project::where('owner_id', $client->id)->count();
+        if ($count == 1) {
+            return Project::where('owner_id', $client->id)
+                          ->first();
+        }
+
+        /**
+         * else return other project
+         */
         $project = Project::where('name', 'other')
                           ->where('owner_id', $client->id)
                           ->first();
 
+        /**
+         * else create new project with name other
+         */
         if (! $project) {
             $project = $this->createOtherProject($client);
         }
