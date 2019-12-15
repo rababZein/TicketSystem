@@ -229,9 +229,18 @@ public function checkTrackingInProgress($task_id)
                                       $input['to_date'],
                                       isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
                                       isset($input['project_id']) ? $input['project_id'] : null );
-    $output = null;
+    
+    $timeReportingSummation = $tracking_model->timeReportingSummation(
+                                      $input['from_date'],
+                                      $input['to_date'],
+                                      isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
+                                      isset($input['project_id']) ? $input['project_id'] : null );
+    $output = [];
     if ($timeReporting)
-      $output = arrayPaginator($timeReporting, $request);
+      $output[] = arrayPaginator($timeReporting, $request);
+
+    if ($timeReportingSummation)
+      $output[] = $timeReportingSummation;
     
 
     return $this->sendResponse($output, 'Traking History retrieved successfully.');

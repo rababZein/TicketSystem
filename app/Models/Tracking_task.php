@@ -65,4 +65,24 @@ class Tracking_task extends Model
                 date(tt.start_at)', 
         [$fromDate, $toDate, $employeeId, $projectId, $projectId]);
     }
+
+    public function timeReportingSummation($fromDate, $toDate, $employeeId, $projectId)
+    {
+        return DB::select('
+        SELECT 
+        SEC_TO_TIME(sum(TIME_TO_SEC(TIMEDIFF(tt.end_at, tt.start_at)))) time_summation
+        from tracking_tasks tt,
+             projects p,
+             tasks t,
+             users u
+        where tt.task_id = t.id
+        and p.id = t.project_id
+        and u.id = p.owner_id
+        and date(tt.start_at) between ? and ?
+        and tt.created_by = ?
+        and (p.id = ? or ? is null)
+        
+        ', 
+        [$fromDate, $toDate, $employeeId, $projectId, $projectId]);
+    }
 }

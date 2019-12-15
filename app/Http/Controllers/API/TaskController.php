@@ -193,16 +193,38 @@ class TaskController extends BaseController
   public function tasksCard(CardTaskRequest $request)
   {
     $input = $request->validated();
-    $tasks = Task::with('responsible', 'project')
-                  ->where('status_id', $input['status_id'])
-                  ->where('responsible_id', isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id)
-                  ->when($request->get('project_id'), function($query) use ($input) {
-                    $query->where('project_id', $input['project_id']); 
-                  })->paginate();
-    if (! $tasks)
+    $tasks = Task::with('responsible', 'project', 'task_status')
+                  ->where('project_id', $input['project_id'])
+                  ->paginate();
+
+    if (! $tasks->toArray()['data']) {
       return $this->sendResponse([], 'Tasks retrieved successfully.');
+    }
+
+    $project = [];
+    $project['name'] = $tasks->toArray()['data'][0]['project']['name'];
+
+    // generate all status
+    $allStatus = ['open', 'pending', 'in-progress', 'done'];
+    foreach ($allStatus as $status) {
+      $arr['name'] = $status;
+      $arr['tasks'] = [];
+      $project['columns'][] = $arr;
+    }
+
+    foreach ($tasks->toArray()['data'] as $task) {         
+      $i=0;
+      if (isset($project['columns'])) {
+        foreach($project['columns'] as $status) {
+          if ($status['name'] == $task['task_status']['name']) {
+            $project['columns'][$i]['tasks'][] = $task;
+          }
+          $i++;
+        }
+      }
+    }
     
-    return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+    return $this->sendResponse($project, 'Tasks retrieved successfully.');
   }
 
   public function filterTasks(FilteTaskRequest $request)
