@@ -61,7 +61,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function metadata()
     {
-        return $this->belongsTo('App\Models\Metadata');
+        return $this->hasOne('App\Models\Metadata');
     }
 
     public function dynamicAttributes()
