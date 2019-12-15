@@ -33,10 +33,19 @@ class ProjectAssignJob implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            \Notification::send($this->employees, new ProjectAssignNotification($this->project));
-        } catch (\Exception $ex) {
-            throw new \Exception($ex);
+        foreach ($this->employees as $this->employee) {
+            $temp = \App::getLocale();
+            
+            \App::setLocale(isset($this->employee->metadata->language) ? $this->employee->metadata->language : 'de');
+        
+            try {
+                $this->employee->notify(new ProjectAssignNotification($this->project));
+            } catch (\Exception $ex) {
+                throw new \Exception($ex);
+            }
+
+            \App::setLocale($temp);
         }
+        
     }
 }
