@@ -66,6 +66,8 @@ class Kernel extends HttpKernel
          * JWT
          */
         'jwt.verify' => \App\Http\Middleware\JwtMiddleware::class,
+        // Language 
+        'setLang' => \App\Http\Middleware\SetLangMiddleware::class
     ];
 
     /**
