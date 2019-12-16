@@ -48,6 +48,7 @@ class TaskController extends BaseController
   public function index(ListTaskRequest $request)
   {
     $queryParameters = $request->get('queryParams');
+    dd($queryParameters->global_search);
 
     if (auth()->user()->isAdmin()) {
       $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')

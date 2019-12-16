@@ -14,7 +14,8 @@
       <!-- /.card-header -->
       <div class="card-body table-responsive p-0">
         <vue-bootstrap4-table
-          :rows="rows"
+          v-if="resultTasks"
+          :rows="resultTasks"
           :columns="columns"
           :config="config"
           @on-change-query="onChangeQuery"
@@ -216,42 +217,6 @@ import "quill/dist/quill.bubble.css";
 export default {
   data() {
     return {
-      rows: [
-        {
-          id: 1,
-          name: {
-            first_name: "Vladimir",
-            last_name: "Nitzsche"
-          },
-          address: {
-            country: "Mayotte"
-          },
-          email: "franecki.anastasia@gmail.com"
-        },
-        {
-          id: 2,
-          name: {
-            first_name: "Irwin",
-            last_name: "Bayer"
-          },
-          age: 23,
-          address: {
-            country: "Guernsey"
-          },
-          email: "rlittle@macejkovic.biz"
-        },
-        {
-          id: 3,
-          name: {
-            first_name: "Don",
-            last_name: "Herman"
-          },
-          address: {
-            country: "Papua New Guinea"
-          },
-          email: "delia.becker@cormier.com"
-        }
-      ],
       columns: [
         {
           label: "id",
@@ -263,8 +228,8 @@ export default {
           sort: true
         },
         {
-          label: "First Name",
-          name: "name.first_name",
+          label: "title",
+          name: "name",
           filter: {
             type: "simple",
             placeholder: "Enter first name"
@@ -272,8 +237,8 @@ export default {
           sort: true
         },
         {
-          label: "Email",
-          name: "email",
+          label: "status",
+          name: "status.name",
           filter: {
             type: "simple",
             placeholder: "Enter first name"
@@ -281,12 +246,31 @@ export default {
           sort: true
         },
         {
-          label: "Country",
-          name: "address.country",
+          label: "priority",
+          name: "priority",
           filter: {
             type: "simple",
-            placeholder: "Enter country"
-          }
+            placeholder: "Enter first name"
+          },
+          sort: true
+        },
+        {
+          label: "project",
+          name: "project.name",
+          filter: {
+            type: "simple",
+            placeholder: "Enter first name"
+          },
+          sort: true
+        },
+        {
+          label: "Deadline",
+          name: "deadline",
+          filter: {
+            type: "simple",
+            placeholder: "Enter first name"
+          },
+          sort: true
         }
       ],
       config: {
@@ -338,7 +322,7 @@ export default {
     fetchData() {
       let self = this;
       axios
-        .get("/", {
+        .get("/v-api/tasks/", {
           params: {
             queryParams: this.queryParams,
             page: this.queryParams.page
@@ -486,7 +470,10 @@ export default {
       responsible: "regularUser/activeRegularUser",
       ticket: "ticket/activeTicket",
       tickets: "ticket/activeTickets"
-    })
+    }),
+    resultTasks() {
+      return this.tasks.data;
+    }
   },
   props: {
     tasks: {
