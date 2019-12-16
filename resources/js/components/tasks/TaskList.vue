@@ -13,59 +13,13 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body table-responsive p-0">
-        <table class="table table-hover table-sm">
-          <thead>
-            <tr>
-              <th width="2%">ID</th>
-              <th width="20%">Name</th>
-              <th width="10%">Status</th>
-              <th width="12%">Created at</th>
-              <th width="10%">Priority</th>
-              <th width="10%">Deadline</th>
-              <th width="10%">Project</th>
-              <th width="10%">Responsible</th>
-              <th width="10%">action</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="task in tasks.data" :key="task.id">
-              <td>{{ task.id }}</td>
-              <td>
-                <router-link :to="'/admin/task/' + task.id">{{ task.name }}</router-link>
-              </td>
-              <td>
-                <div class="badge bg-primary">{{ task.status.name }}</div>
-              </td>
-              <td>
-                <div class="small">{{ task.created_at | DateWithTime }}</div>
-              </td>
-              <td>
-                <div class="small">{{ task.priority }}</div>
-              </td>
-              <td>
-                <div class="small">{{ task.deadline | DateOnly}}</div>
-              </td>
-              <td>
-                <span v-if="task.project">
-                  <router-link :to="'/admin/project/' + task.project.id">{{ task.project.name }}</router-link>
-                </span>
-              </td>
-              <td>
-                <span v-if="task.responsible">
-                  <router-link :to="'/admin/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
-                </span>
-              </td>
-              <td>
-                <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
-                  <i class="fas fa-edit fa-fw"></i>
-                </a>
-                <a href="#" @click="deleteTask(task.id)" class="btn btn-danger btn-xs">
-                  <i class="fas fa-trash fa-fw"></i>
-                </a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <vue-bootstrap4-table
+          :rows="rows"
+          :columns="columns"
+          :config="config"
+          @on-change-query="onChangeQuery"
+          :total-rows="total_rows"
+        ></vue-bootstrap4-table>
       </div>
       <!-- /.card-body -->
     </div>
@@ -250,7 +204,9 @@
 import { mapGetters, mapActions } from "vuex";
 import { quillEditor } from "vue-quill-editor";
 import DatePicker from "vue2-datepicker";
-import moment from 'moment';
+import moment from "moment";
+import VueBootstrap4Table from "vue-bootstrap4-table";
+import axios from "axios";
 
 // require styles
 import "quill/dist/quill.core.css";
@@ -260,6 +216,108 @@ import "quill/dist/quill.bubble.css";
 export default {
   data() {
     return {
+      rows: [
+        {
+          id: 1,
+          name: {
+            first_name: "Vladimir",
+            last_name: "Nitzsche"
+          },
+          address: {
+            country: "Mayotte"
+          },
+          email: "franecki.anastasia@gmail.com"
+        },
+        {
+          id: 2,
+          name: {
+            first_name: "Irwin",
+            last_name: "Bayer"
+          },
+          age: 23,
+          address: {
+            country: "Guernsey"
+          },
+          email: "rlittle@macejkovic.biz"
+        },
+        {
+          id: 3,
+          name: {
+            first_name: "Don",
+            last_name: "Herman"
+          },
+          address: {
+            country: "Papua New Guinea"
+          },
+          email: "delia.becker@cormier.com"
+        }
+      ],
+      columns: [
+        {
+          label: "id",
+          name: "id",
+          filter: {
+            type: "simple",
+            placeholder: "id"
+          },
+          sort: true
+        },
+        {
+          label: "title",
+          name: "name",
+          filter: {
+            type: "simple",
+            placeholder: "Enter first name"
+          },
+          sort: true
+        },
+        {
+          label: "Status",
+          name: "status",
+          filter: {
+            type: "simple",
+            placeholder: "Enter first email"
+          },
+          sort: true
+        },
+        {
+          label: "Created at",
+          name: "created_at",
+          filter: {
+            type: "simple",
+            placeholder: "Enter country"
+          }
+        },
+        {
+          label: "Priority",
+          name: "priority",
+          filter: {
+            type: "simple",
+            placeholder: "Enter country"
+          }
+        },
+        {
+          label: "Deadline",
+          name: "deadline",
+          filter: {
+            type: "simple",
+            placeholder: "Enter country"
+          }
+        }
+      ],
+      config: {
+        server_mode: true, // by default false
+        card_mode: false,
+        show_refresh_button: false
+      },
+      queryParams: {
+        sort: [],
+        filters: [],
+        global_search: "",
+        per_page: 2,
+        page: 1
+      },
+      total_rows: 0,
       editMode: false,
       isDisabled: false,
       form: new Form({
@@ -289,13 +347,36 @@ export default {
     };
   },
   methods: {
+    onChangeQuery(queryParams) {
+      this.queryParams = queryParams;
+      this.fetchData();
+    },
+    fetchData() {
+      let self = this;
+      axios
+        .get("/", {
+          params: {
+            queryParams: this.queryParams,
+            page: this.queryParams.page
+          }
+        })
+        .then(function(response) {
+          self.rows = response.data.data;
+          self.total_rows = response.data.total;
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    },
     newModel() {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
       $("#newTask").modal("show");
       this.form.priority = "normal";
-      this.form.deadline = moment().add(1, 'day').format("YYYY-MM-DD HH:mm:ss");
+      this.form.deadline = moment()
+        .add(1, "day")
+        .format("YYYY-MM-DD HH:mm:ss");
     },
     editModel(task) {
       this.editMode = true;
@@ -445,7 +526,8 @@ export default {
   },
   components: {
     quillEditor,
-    DatePicker
+    DatePicker,
+    VueBootstrap4Table
   }
 };
 </script>
