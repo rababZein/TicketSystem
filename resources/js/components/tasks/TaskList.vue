@@ -263,8 +263,8 @@ export default {
           sort: true
         },
         {
-          label: "title",
-          name: "name",
+          label: "First Name",
+          name: "name.first_name",
           filter: {
             type: "simple",
             placeholder: "Enter first name"
@@ -272,33 +272,17 @@ export default {
           sort: true
         },
         {
-          label: "Status",
-          name: "status",
+          label: "Email",
+          name: "email",
           filter: {
             type: "simple",
-            placeholder: "Enter first email"
+            placeholder: "Enter first name"
           },
           sort: true
         },
         {
-          label: "Created at",
-          name: "created_at",
-          filter: {
-            type: "simple",
-            placeholder: "Enter country"
-          }
-        },
-        {
-          label: "Priority",
-          name: "priority",
-          filter: {
-            type: "simple",
-            placeholder: "Enter country"
-          }
-        },
-        {
-          label: "Deadline",
-          name: "deadline",
+          label: "Country",
+          name: "address.country",
           filter: {
             type: "simple",
             placeholder: "Enter country"
