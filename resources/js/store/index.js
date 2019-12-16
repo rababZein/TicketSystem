@@ -8,6 +8,8 @@ import owner from './modules/owner/index';
 import user from './modules/user/index';
 import activity from './modules/activity/index';
 import comment from './modules/comment/index';
+import track from './modules/track/index';
+import board from './modules/board/index';
 
 Vue.use(Vuex);
 
@@ -22,7 +24,9 @@ export default new Vuex.Store({
         owner,
         user,
         activity,
-        comment
+        comment,
+        track,
+        board
     },
     strict: debug,
 })

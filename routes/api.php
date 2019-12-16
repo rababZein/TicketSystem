@@ -42,11 +42,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     });
 
     // users
-    Route::group(['prefix' => 'permission', 'namespace' => 'API'], function () {
-        Route::get('/users/list', 'UsersController@list');
-        Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
-        Route::resource('/users', 'UsersController')->except('create');
+    Route::group(['prefix' => 'users', 'namespace' => 'API'], function () {
+        Route::get('/list', 'UsersController@list');
+        Route::get('/getAllResponsibles', 'UsersController@getAllResponsibles');
+        Route::get('/getClientsPaginated', 'UsersController@getClientsPaginated');
+        Route::get('/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
     });
+    Route::resource('/users', 'API\UsersController')->except('show', 'create');
 
     Route::group(['prefix' => 'project'], function () {
         Route::resource('/', 'API\ProjectController')->except('create');
@@ -71,6 +73,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
     Route::group(['prefix' => 'task'], function () {
         Route::get('/', 'API\TaskController@getAll');
         Route::get('/list', 'API\TaskController@list');
+        Route::get('/filter', 'API\TaskController@filterTasks');
+        Route::get('/cards', 'API\TaskController@tasksCard');
         Route::get('/{task_id}', 'API\TaskController@show');
         Route::post('/{project_id}', 'API\TaskController@store');
         Route::patch('/{task_id}', 'API\TaskController@update');
@@ -90,6 +94,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify']], function() {
 
 // tracking tasks 
 Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace' => 'API'], function () {
+    Route::get('/timeReporting', 'Tracking_taskController@timeReporting');
     Route::post('/{task_id}', 'Tracking_taskController@store');
     Route::patch('/{task_id}', 'Tracking_taskController@update');
     Route::delete('/{task_id}', 'Tracking_taskController@destroy');
@@ -100,4 +105,15 @@ Route::group(['prefix' => 'tracking', 'middleware' => ['jwt.verify'], 'namespace
 
 Route::group(['prefix' => 'status', 'middleware' => ['jwt.verify']], function () {
     Route::get('/getAll', 'API\StatusController@getAll');
+});
+
+// meta_data_static_data
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::resource('/metadata', 'API\MetadataController')->except('create', 'edit');
+ });
+
+// dynamic attributes
+Route::group(['middleware' => ['jwt.verify']], function () {
+    Route::get('/dynamicAttributes/list', 'API\DynamicAttributeController@list');
+    Route::resource('/dynamicAttributes', 'API\DynamicAttributeController')->except('create', 'edit');
 });

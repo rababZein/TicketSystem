@@ -13,7 +13,7 @@ class AddPermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        if (auth()->user()->isAdmin()) {
+        if (auth()->user()->isAdmin() || auth()->user()->can('permission-create')) {
             return true;
         }
 

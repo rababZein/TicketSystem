@@ -1,6 +1,7 @@
 <!-- Brand Logo -->
-<a href="/" class="brand-link">
-    <img src="{{ asset('assets/img/ALFerp.png') }}" alt="ALFerp Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+<a href="/admin" class="brand-link">
+    <img src="{{ asset('assets/img/ALFerp.png') }}" alt="ALFerp Logo" class="brand-image img-circle elevation-3"
+        style="opacity: .8">
     <span class="brand-text font-weight-light">{{ config('app.name', 'ALFerp') }}</span>
 </a>
 
@@ -26,7 +27,7 @@
             <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
             <li class="nav-item">
-                <router-link to="/dashboard" class="nav-link">
+                <router-link to="/admin/dashboard" class="nav-link">
                     <i class="nav-icon fas fa-tachometer-alt"></i>
                     <p>
                         Dashboard
@@ -44,7 +45,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <router-link to="/projects" class="nav-link">
+                        <router-link to="/admin/projects" class="nav-link">
                             <i class="nav-icon fas fa-briefcase"></i>
                             <p>
                                 Projects
@@ -52,7 +53,7 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/tickets" class="nav-link">
+                        <router-link to="/admin/tickets" class="nav-link">
                             <i class="nav-icon fas fa-ticket-alt"></i>
                             <p>
                                 Tickets
@@ -60,7 +61,7 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/tasks" class="nav-link">
+                        <router-link to="/admin/tasks" class="nav-link">
                             <i class="nav-icon fas fa-tasks"></i>
                             <p>
                                 Tasks
@@ -68,12 +69,37 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/receipts" class="nav-link">
+                        <router-link to="/admin/receipts" class="nav-link">
                             <i class="nav-icon fas fa-receipt"></i>
                             <p>
                                 Receipts
                             </p>
                         </router-link>
+                    </li>
+                    <li class="nav-item">
+                        <router-link to="/admin/clients" class="nav-link">
+                            <i class="nav-icon fas fa-list"></i>
+                            <p>
+                                Clients
+                            </p>
+                        </router-link>
+                    </li>
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>
+                                Reports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview" style="display: none;">
+                            <li class="nav-item">
+                            <router-link to="/admin/time-report" class="nav-link">
+                                <i class="far fa-dot-circle nav-icon"></i>
+                                <p>Time Report</p>
+                              </router-link>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </li>
@@ -89,7 +115,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                     <li class="nav-item">
-                        <router-link to="/permissions" class="nav-link">
+                        <router-link to="/admin/permissions" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>
                                 Permissions
@@ -97,7 +123,7 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/roles" class="nav-link">
+                        <router-link to="/admin/roles" class="nav-link">
                             <i class="nav-icon fas fa-cogs"></i>
                             <p>
                                 Role Management
@@ -105,10 +131,10 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <router-link to="/users" class="nav-link">
+                        <router-link to="/admin/users" class="nav-link">
                             <i class="nav-icon fas fa-list"></i>
                             <p>
-                                Users
+                                Employees
                             </p>
                         </router-link>
                     </li>

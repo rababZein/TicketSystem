@@ -7,6 +7,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+use App\Models\Ticket;
+
 class TicketChangeStatusNotification extends Notification
 {
     use Queueable;
@@ -42,9 +44,8 @@ class TicketChangeStatusNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The ticket '.$this->ticket->name.' has been changed to '. $ticket->ticket_status->name)
-                    ->line('Description: '.$this->ticket->description)
-                    ->action('See more ..', url('/').'tickets/'.$this->ticket->id)
+                    ->line('The ticket '.$this->ticket->name.' has been changed to '. $this->ticket->ticket_status->name)
+                    ->action('See more ..', url('/').'/ticket/'.$this->ticket->id)
                     ->line('Thank you for using our application!');
     }
 

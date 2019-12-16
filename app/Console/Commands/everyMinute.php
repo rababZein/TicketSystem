@@ -53,7 +53,7 @@ class everyMinute extends Command
         $oClient = Client::account('default');
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
-        $aMessage = $aFolder->query()->unseen()->setFetchAttachment(false)->get();
+        $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(false)->get();
         foreach($aMessage as $oMessage){
             $emailData = [];
             $emailData['email_id'] = $oMessage->getMessageId();
@@ -71,6 +71,13 @@ class everyMinute extends Command
             } else {
                 $this->createNewTicket($emailData);
             }
+
+            //Move the current Message to 'INBOX.read'
+            if($oMessage->moveToFolder('INBOX.read') == true){
+                echo 'Message has ben moved';
+            }else{
+                echo 'Message could not be moved';
+            }
         }
     }
 
@@ -78,10 +85,25 @@ class everyMinute extends Command
     {
         $client = $this->getClient($emailData);
 
+        /**
+         * if client has one project with open status add new tickets to it
+         */
+        $count = Project::where('owner_id', $client->id)->count();
+        if ($count == 1) {
+            return Project::where('owner_id', $client->id)
+                          ->first();
+        }
+
+        /**
+         * else return other project
+         */
         $project = Project::where('name', 'other')
                           ->where('owner_id', $client->id)
                           ->first();
 
+        /**
+         * else create new project with name other
+         */
         if (! $project) {
             $project = $this->createOtherProject($client);
         }

@@ -8,6 +8,8 @@ use App\Http\Requests\TaskRequest\UpdateTaskRequest;
 use App\Http\Requests\TaskRequest\ViewTaskRequest;
 use App\Http\Requests\TaskRequest\DeleteTaskRequest;
 use App\Http\Requests\TaskRequest\ListTaskRequest;
+use App\Http\Requests\TaskRequest\FilteTaskRequest;
+use App\Http\Requests\TaskRequest\CardTaskRequest;
 use App\Models\Task;
 use App\Models\User;
 use Validator;
@@ -35,7 +37,7 @@ class TaskController extends BaseController
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
-      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient', 'getTaskPerClient']]);
+      $this->middleware('permission:task-list', ['only' => ['getTaskCountPerClient', 'getTaskPerClient', 'filterTasks', 'tasksCard']]);
   }
 
    /**
@@ -72,7 +74,9 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
+    $task->deadline;
+
+    return $this->sendResponse(new TaskResource(Task::find($task->id)), 'Task created successfully.'); 
   }
 
   /**
@@ -184,5 +188,60 @@ class TaskController extends BaseController
               })->paginate();
 
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
+  }
+
+  public function tasksCard(CardTaskRequest $request)
+  {
+    $input = $request->validated();
+    $tasks = Task::with('responsible', 'project', 'task_status')
+                  ->where('project_id', $input['project_id'])
+                  ->get();
+
+    if (! $tasks->toArray()) {
+      return $this->sendResponse([], 'Tasks retrieved successfully.');
     }
+
+    $project = [];
+    $project['name'] = $tasks->toArray()[0]['project']['name'];
+
+    // generate all status
+    $allStatus = ['open', 'pending', 'in-progress', 'done'];
+    foreach ($allStatus as $status) {
+      $arr['name'] = $status;
+      $arr['tasks'] = [];
+      $project['columns'][] = $arr;
+    }
+
+    foreach ($tasks->toArray() as $task) {         
+      $i=0;
+      if (isset($project['columns'])) {
+        foreach($project['columns'] as $status) {
+          if ($status['name'] == $task['task_status']['name']) {
+            $project['columns'][$i]['tasks'][] = $task;
+          }
+          $i++;
+        }
+      }
+    }
+    
+    return $this->sendResponse($project, 'Tasks retrieved successfully.');
+  }
+
+  public function filterTasks(FilteTaskRequest $request)
+  {
+    $input = $request->validated();
+
+    $tasks = Task::with('responsible', 'project')
+              ->whereDate('start_at', '>=', $input['from_date'])
+              ->whereDate('start_at', '<=', $input['to_date'])
+              ->where('responsible_id', isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id)
+              ->when($request->get('project_id'), function($query) use ($input) {
+                $query->where('project_id', $input['project_id']); 
+              })->get();
+
+    if (! $tasks)
+      return $this->sendResponse([], 'Tasks retrieved successfully.');
+
+    return $this->sendResponse(TaskResource::collection($tasks), 'Tasks retrieved successfully.');
+  }
 }
