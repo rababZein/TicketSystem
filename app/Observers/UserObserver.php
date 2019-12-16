@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\User;
 use App\Models\DynamicAttribute;
 use \Illuminate\Http\Request;
+use App\Jobs\User\NewAccountJob;
 
 class UserObserver
 {
@@ -27,6 +28,8 @@ class UserObserver
             $user->assignRole($this->input['roles']);
         }
 
+        NewAccountJob::dispatch($user, $this->input['password']);
+      
         if (isset($this->input['dynamic_attributes'])) {
             foreach ($this->input['dynamic_attributes'] as $dynamic_attribute) {
                 $dynamicAttributeObject = DynamicAttribute::find($dynamic_attribute['id']);

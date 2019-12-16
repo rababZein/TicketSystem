@@ -15,6 +15,8 @@ use Carbon\Carbon;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 
+use App\Jobs\User\NewAccountJob;
+
 class everyMinute extends Command
 {
     /**
@@ -147,7 +149,8 @@ class everyMinute extends Command
         $user = new User();
         $user->name = $emailData['personal'];
         $user->email = $emailData['mail'];
-        $user->password = Hash::make('123456'); // our default password
+        $password = Hash::make(str_random(8));;
+        $user->password = $password;
         $user->type = 'client';
         $user->created_by = 1;
         $user->created_at = Carbon::now();
@@ -157,6 +160,8 @@ class everyMinute extends Command
         } catch (Exception $ex) {
             throw new ItemNotCreatedException('User', $ex->getMessage());
         }
+
+        NewAccountJob::dispatch($user, $password);
 
         return $user;
     }
