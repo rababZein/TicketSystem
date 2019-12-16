@@ -33,7 +33,7 @@ class TaskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
+      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
@@ -47,8 +47,15 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
+    $queryParameters = $request->get('queryParams');
+
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')
+                    ->latest();
+      if (isset($queryParameters['global_search']) && $queryParameters['global_search']) {
+        $tasks = $tasks->search($queryParameters['global_search']);
+      }
+      $tasks = $tasks->paginate();
     } else {
       $taskModel = new Task();
       $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
