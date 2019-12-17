@@ -20,7 +20,18 @@
           :config="config"
           @on-change-query="onChangeQuery"
           :total-rows="total_rows"
-        ></vue-bootstrap4-table>
+          :classes="classes"
+        >
+          <template slot="sort-asc-icon">
+            <i class="fas fa-sort-up"></i>
+          </template>
+          <template slot="sort-desc-icon">
+            <i class="fas fa-sort-down"></i>
+          </template>
+          <template slot="no-sort-icon">
+            <i class="fas fa-sort"></i>
+          </template>
+        </vue-bootstrap4-table>
       </div>
       <!-- /.card-body -->
     </div>
@@ -219,15 +230,6 @@ export default {
     return {
       columns: [
         {
-          label: "id",
-          name: "id",
-          filter: {
-            type: "simple",
-            placeholder: "id"
-          },
-          sort: true
-        },
-        {
           label: "title",
           name: "name",
           filter: {
@@ -274,15 +276,22 @@ export default {
         }
       ],
       config: {
-        server_mode: true, // by default false
+        server_mode: true,
         card_mode: false,
-        show_refresh_button: false
+        show_refresh_button: false,
+        pagination: true,
+        pagination_info: true,
+      },
+      classes: {
+        table : {
+        "table-sm" : true
+        }
       },
       queryParams: {
         sort: [],
         filters: [],
         global_search: "",
-        per_page: 2,
+        per_page: 15,
         page: 1
       },
       total_rows: 0,
@@ -330,7 +339,7 @@ export default {
         })
         .then(function(response) {
           self.rows = response.data.data;
-          self.total_rows = response.data.total;
+          self.total_rows = response.data.data.total;
         })
         .catch(function(error) {
           console.log(error);
