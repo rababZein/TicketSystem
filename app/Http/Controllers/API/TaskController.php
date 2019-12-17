@@ -47,21 +47,29 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    $queryParameters = $request->get('queryParams');
-    dd($queryParameters->global_search);
+    $input = json_decode($request->queryParams,true);    
 
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')
-                    ->latest();
-      if (isset($queryParameters['global_search']) && $queryParameters['global_search']) {
-        $tasks = $tasks->search($queryParameters['global_search']);
-      }
-      $tasks = $tasks->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
+      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest();
     }
 
+    if (isset($input['global_search']) && $input['global_search']) {
+      $tasks = $tasks->whereHas('task_status', function($query) use($input) {
+                $query->where('name', 'like', '%'.$input['global_search'].'%');
+              })
+              ->whereHas('project', function($query) use($input) {
+                $query->where('name', 'like', '%'.$input['global_search'].'%');
+              })
+              ->orWhere('id','LIKE','%'.$input['global_search'].'%')
+              ->orWhere('name','LIKE','%'.$input['global_search'].'%')
+              ->orWhere('priority','LIKE','%'.$input['global_search'].'%')
+              ->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+    }
+
+    $tasks = $tasks->paginate();
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
