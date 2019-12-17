@@ -47,7 +47,7 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    $input = json_decode($request->queryParams,true);    
+    $input = json_decode($request->queryParams, true);    
 
     if (auth()->user()->isAdmin()) {
       $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
@@ -67,6 +67,12 @@ class TaskController extends BaseController
               ->orWhere('name','LIKE','%'.$input['global_search'].'%')
               ->orWhere('priority','LIKE','%'.$input['global_search'].'%')
               ->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+    }
+
+    if (isset($input['sort']) && $input['sort']) {
+      foreach ($input['sort'] as $sortObj) {
+        $tasks = $tasks->orderBy($sortObj['name'], $sortObj['order']);
+      }
     }
 
     $tasks = $tasks->paginate();
