@@ -57,15 +57,17 @@ class TaskController extends BaseController
     }
 
     if (isset($input['global_search']) && $input['global_search']) {
-      $tasks = $tasks->whereHas('task_status', function($query) use($input) {
-                $query->where('name', 'like', '%'.$input['global_search'].'%');
-              })
-              ->orWhereHas('project', function($query) use($input) {
-                $query->where('name', 'like', '%'.$input['global_search'].'%');
-              })
-              ->orWhere('name','LIKE','%'.$input['global_search'].'%')
-              ->orWhere('priority','LIKE','%'.$input['global_search'].'%')
-              ->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+      $tasks->where(function($query) use ($input){
+        $query->whereHas('task_status', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhere('name','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('priority','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+      });
     }
 
     if (isset($input['sort']) && $input['sort']) {
