@@ -48,7 +48,7 @@ class TaskController extends BaseController
   public function index(ListTaskRequest $request)
   {
     $input = $request->validated()['params'];   
-
+dd($input);
     if (auth()->user()->isAdmin()) {
       $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
     } else {
@@ -71,7 +71,17 @@ class TaskController extends BaseController
 
     if (isset($input['sort']) && $input['sort']) {
       foreach ($input['sort'] as $sortObj) {
-        $tasks = $tasks->orderBy($sortObj['name'], $sortObj['order']);
+        if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+          $tasks = $tasks->orderBy($sortObj['name'], $sortObj['order']);
+        } elseif ($sortObj['name'] == 'status.name') {
+          $tasks = $tasks->orWhereHas('task_status', function($query) use($sortObj) {
+            $query->orderBy('name', $sortObj['order']);
+          });
+        } elseif ($sortObj['name'] == 'project.name') {
+          $tasks = $tasks->orWhereHas('project', function($query) use($sortObj) {
+            $query->orderBy('name', $sortObj['order']);
+          });
+        }
       }
     }
 
