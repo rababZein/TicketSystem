@@ -76,11 +76,11 @@ class TaskController extends BaseController
         } elseif ($sortObj['name'] == 'status.name') {
           $tasks->join('status', 'status.id', '=', 'tasks.status_id')
           ->orderBy('status.name', $sortObj['order'])
-          ->select('tasks.*, status.name');
+          ->select('tasks.*', 'status.name');
         } elseif ($sortObj['name'] == 'project.name') {
           $tasks->join('projects', 'projects.id', '=', 'tasks.project_id')
           ->orderBy('projects.name', $sortObj['order'])
-          ->select('tasks.*, projects.name');
+          ->select('tasks.*', 'projects.name');
         }
       }
     }
