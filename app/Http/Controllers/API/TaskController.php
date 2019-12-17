@@ -60,7 +60,7 @@ class TaskController extends BaseController
       $tasks = $tasks->whereHas('task_status', function($query) use($input) {
                 $query->where('name', 'like', '%'.$input['global_search'].'%');
               })
-              ->whereHas('project', function($query) use($input) {
+              ->orWhereHas('project', function($query) use($input) {
                 $query->where('name', 'like', '%'.$input['global_search'].'%');
               })
               ->orWhere('id','LIKE','%'.$input['global_search'].'%')
