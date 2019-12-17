@@ -47,7 +47,7 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
-    $input = json_decode($request->queryParams, true);    
+    $input = $request->validated()['params'];   
 
     if (auth()->user()->isAdmin()) {
       $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
@@ -88,6 +88,14 @@ class TaskController extends BaseController
             $tasks = $tasks->orWhereHas('task_status', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
+          }
+        } elseif ($filterObj['type'] == 'select') {
+          if ($filterObj['name'] == 'status.name') {
+            $tasks = $tasks->orWhereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'in', $filterObj['selected_options']);
+            });
+          } elseif ($filterObj['name'] == 'priority') {
+            $tasks = $tasks->orWhere($filterObj['name'], 'in', $filterObj['selected_options']);
           }
         }
       }

@@ -27,7 +27,7 @@ class ListTaskRequest extends FormRequest
     public function all($keys = null)
     {
         $data = parent::all($keys);
-        $data = json_decode($this->get('queryParams'), true);
+        $data['params'] = json_decode($this->get('queryParams'), true);
 
         return $data;
     }
@@ -40,18 +40,19 @@ class ListTaskRequest extends FormRequest
     public function rules()
     {
         return [
-            "sort" => "required|array",
-            "sort.*.name" => "string",
-            "sort.*.order" => "string",
-            "filters"  => "required|array",
-            "filters.*.type" => "string",
-            "filters.*.mode" => "string",
-            "filters.*.selected_options" => "string",
-            "filters.*.name" => "string",
-            "filters.*.text" => "string",
-            "global_search" => "required|string",
-            "per_page" => "required|integer",
-            "page" => "required|integer",
+            "params" => "nullable|array",
+            "params.sort" => "array",
+            "params.sort.*.name" => "string",
+            "params.sort.*.order" => "string",
+            "params.filters"  => "array",
+            "params.filters.*.type" => "string",
+            "params.filters.*.mode" => "string",
+            "params.filters.*.selected_options" => "string",
+            "params.filters.*.name" => "string",
+            "params.filters.*.text" => "string",
+            "params.global_search" => "string",
+            "params.per_page" => "integer",
+            "params.page" => "integer",
 
         ];
     }
