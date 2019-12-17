@@ -13,25 +13,59 @@
       </div>
       <!-- /.card-header -->
       <div class="card-body table-responsive p-0">
-        <vue-bootstrap4-table
-          v-if="resultTasks"
-          :rows="resultTasks"
-          :columns="columns"
-          :config="config"
-          @on-change-query="onChangeQuery"
-          :total-rows="total_rows"
-          :classes="classes"
-        >
-          <template slot="sort-asc-icon">
-            <i class="fas fa-sort-up"></i>
-          </template>
-          <template slot="sort-desc-icon">
-            <i class="fas fa-sort-down"></i>
-          </template>
-          <template slot="no-sort-icon">
-            <i class="fas fa-sort"></i>
-          </template>
-        </vue-bootstrap4-table>
+        <table class="table table-hover table-sm">
+          <thead>
+            <tr>
+              <th width="2%">ID</th>
+              <th width="20%">Name</th>
+              <th width="10%">Status</th>
+              <th width="12%">Created at</th>
+              <th width="10%">Priority</th>
+              <th width="10%">Deadline</th>
+              <th width="10%">Project</th>
+              <th width="10%">Responsible</th>
+              <th width="10%">action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="task in tasks.data" :key="task.id">
+              <td>{{ task.id }}</td>
+              <td>
+                <router-link :to="'/admin/task/' + task.id">{{ task.name }}</router-link>
+              </td>
+              <td>
+                <div class="badge bg-primary">{{ task.status.name }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.created_at | DateWithTime }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.priority }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.deadline | DateOnly}}</div>
+              </td>
+              <td>
+                <span v-if="task.project">
+                  <router-link :to="'/admin/project/' + task.project.id">{{ task.project.name }}</router-link>
+                </span>
+              </td>
+              <td>
+                <span v-if="task.responsible">
+                  <router-link :to="'/admin/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
+                </span>
+              </td>
+              <td>
+                <a href="#" @click="editModel(task)" class="btn btn-primary btn-xs">
+                  <i class="fas fa-edit fa-fw"></i>
+                </a>
+                <a href="#" @click="deleteTask(task.id)" class="btn btn-danger btn-xs">
+                  <i class="fas fa-trash fa-fw"></i>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <!-- /.card-body -->
     </div>
@@ -216,9 +250,7 @@
 import { mapGetters, mapActions } from "vuex";
 import { quillEditor } from "vue-quill-editor";
 import DatePicker from "vue2-datepicker";
-import moment from "moment";
-import VueBootstrap4Table from "vue-bootstrap4-table";
-import axios from "axios";
+import moment from 'moment';
 
 // require styles
 import "quill/dist/quill.core.css";
@@ -228,73 +260,6 @@ import "quill/dist/quill.bubble.css";
 export default {
   data() {
     return {
-      columns: [
-        {
-          label: "title",
-          name: "name",
-          filter: {
-            type: "simple",
-            placeholder: "Enter first name"
-          },
-          sort: true
-        },
-        {
-          label: "status",
-          name: "status.name",
-          filter: {
-            type: "simple",
-            placeholder: "Enter first name"
-          },
-          sort: true
-        },
-        {
-          label: "priority",
-          name: "priority",
-          filter: {
-            type: "simple",
-            placeholder: "Enter first name"
-          },
-          sort: true
-        },
-        {
-          label: "project",
-          name: "project.name",
-          filter: {
-            type: "simple",
-            placeholder: "Enter first name"
-          },
-          sort: true
-        },
-        {
-          label: "Deadline",
-          name: "deadline",
-          filter: {
-            type: "simple",
-            placeholder: "Enter first name"
-          },
-          sort: true
-        }
-      ],
-      config: {
-        server_mode: true,
-        card_mode: false,
-        show_refresh_button: false,
-        pagination: true,
-        pagination_info: true
-      },
-      classes: {
-        table: {
-          "table-sm": true
-        }
-      },
-      queryParams: {
-        sort: [],
-        filters: [],
-        global_search: "",
-        per_page: 15,
-        page: 1
-      },
-      total_rows: 0,
       editMode: false,
       isDisabled: false,
       form: new Form({
@@ -324,19 +289,13 @@ export default {
     };
   },
   methods: {
-    onChangeQuery(queryParams) {
-      this.queryParams = queryParams;
-      this.getTasks();
-    },
     newModel() {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
       $("#newTask").modal("show");
       this.form.priority = "normal";
-      this.form.deadline = moment()
-        .add(1, "day")
-        .format("YYYY-MM-DD HH:mm:ss");
+      this.form.deadline = moment().add(1, 'day').format("YYYY-MM-DD HH:mm:ss");
     },
     editModel(task) {
       this.editMode = true;
@@ -447,23 +406,6 @@ export default {
             });
         }
       });
-    },
-    getTasks() {
-      this.$Progress.start();
-      this.$store
-        .dispatch("task/getTasks", {
-            queryParams: this.queryParams,
-            page: this.queryParams.page
-        })
-        .then(response => {
-          this.rows = response.data.data;
-          this.total_rows = response.data.data.total;
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-          console.log(error);
-        });
     }
   },
   mounted() {
@@ -479,10 +421,7 @@ export default {
       responsible: "regularUser/activeRegularUser",
       ticket: "ticket/activeTicket",
       tickets: "ticket/activeTickets"
-    }),
-    resultTasks() {
-      return this.tasks.data;
-    }
+    })
   },
   props: {
     tasks: {
@@ -506,8 +445,7 @@ export default {
   },
   components: {
     quillEditor,
-    DatePicker,
-    VueBootstrap4Table
+    DatePicker
   }
 };
 </script>
