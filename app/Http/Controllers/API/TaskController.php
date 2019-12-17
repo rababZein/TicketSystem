@@ -48,7 +48,7 @@ class TaskController extends BaseController
   public function index(ListTaskRequest $request)
   {
     $input = $request->validated()['params'];   
-dd($input);
+
     if (auth()->user()->isAdmin()) {
       $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
     } else {
