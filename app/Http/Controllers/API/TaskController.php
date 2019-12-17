@@ -89,23 +89,23 @@ class TaskController extends BaseController
       foreach ($input['filters'] as $filterObj) {
         if ($filterObj['type'] == 'simple') {
           if (in_array($filterObj['name'], ['id', 'name', 'deadline', 'priority'])) {
-            $tasks = $tasks->orWhere($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+             $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
           } elseif ($filterObj['name'] == 'project.name') {
-            $tasks = $tasks->orWhereHas('project', function($query) use($filterObj) {
+            $tasks->whereHas('project', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           } elseif ($filterObj['name'] == 'status.name') {
-            $tasks = $tasks->orWhereHas('task_status', function($query) use($filterObj) {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           }
         } elseif ($filterObj['type'] == 'select') {
           if ($filterObj['name'] == 'status.name') {
-            $tasks = $tasks->orWhereHas('task_status', function($query) use($filterObj) {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
               $query->where('name', 'in', $filterObj['selected_options']);
             });
           } elseif ($filterObj['name'] == 'priority') {
-            $tasks = $tasks->orWhere($filterObj['name'], 'in', $filterObj['selected_options']);
+            $tasks->where($filterObj['name'], 'in', $filterObj['selected_options']);
           }
         }
       }
