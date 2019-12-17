@@ -63,10 +63,9 @@ class TaskController extends BaseController
               ->orWhereHas('project', function($query) use($input) {
                 $query->where('name', 'like', '%'.$input['global_search'].'%');
               })
-              ->orWhere('id','LIKE','%'.$input['global_search'].'%')
               ->orWhere('name','LIKE','%'.$input['global_search'].'%')
               ->orWhere('priority','LIKE','%'.$input['global_search'].'%')
-              ->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+              ->orWhere('x','LIKE','%'.$input['global_search'].'%');
     }
 
     if (isset($input['sort']) && $input['sort']) {
@@ -74,13 +73,13 @@ class TaskController extends BaseController
         if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
           $tasks->orderBy($sortObj['name'], $sortObj['order']);
         } elseif ($sortObj['name'] == 'status.name') {
-          $tasks->join('status', 'status.id', '=', 'tasks.status_id')
-          ->orderBy('status.name', $sortObj['order'])
-          ->select('tasks.*', 'status.name');
+          // $tasks->join('status', 'status.id', '=', 'tasks.status_id')
+          // $tasks->orderBy('status.name', $sortObj['order']);
+          // ->select('tasks.*', 'status.name');
         } elseif ($sortObj['name'] == 'project.name') {
-          $tasks->join('projects', 'projects.id', '=', 'tasks.project_id')
-          ->orderBy('projects.name', $sortObj['order'])
-          ->select('tasks.*', 'projects.name');
+          // $tasks->join('projects', 'projects.id', '=', 'tasks.project_id')
+          // ->orderBy('projects.name', $sortObj['order'])
+          // ->select('tasks.*', 'projects.name');
         }
       }
     }
@@ -88,7 +87,7 @@ class TaskController extends BaseController
     if (isset($input['filters']) && $input['filters']) {
       foreach ($input['filters'] as $filterObj) {
         if ($filterObj['type'] == 'simple') {
-          if (in_array($filterObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+          if (in_array($filterObj['name'], ['name', 'deadline', 'priority'])) {
              $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
           } elseif ($filterObj['name'] == 'project.name') {
             $tasks->whereHas('project', function($query) use($filterObj) {
