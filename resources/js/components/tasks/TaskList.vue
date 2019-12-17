@@ -280,11 +280,11 @@ export default {
         card_mode: false,
         show_refresh_button: false,
         pagination: true,
-        pagination_info: true,
+        pagination_info: true
       },
       classes: {
-        table : {
-        "table-sm" : true
+        table: {
+          "table-sm": true
         }
       },
       queryParams: {
@@ -326,24 +326,7 @@ export default {
   methods: {
     onChangeQuery(queryParams) {
       this.queryParams = queryParams;
-      this.fetchData();
-    },
-    fetchData() {
-      let self = this;
-      axios
-        .get("/v-api/tasks/", {
-          params: {
-            queryParams: this.queryParams,
-            page: this.queryParams.page
-          }
-        })
-        .then(function(response) {
-          self.rows = response.data.data;
-          self.total_rows = response.data.data.total;
-        })
-        .catch(function(error) {
-          console.log(error);
-        });
+      this.getTasks();
     },
     newModel() {
       this.editMode = false;
@@ -464,6 +447,23 @@ export default {
             });
         }
       });
+    },
+    getTasks() {
+      this.$Progress.start();
+      this.$store
+        .dispatch("task/getTasks", {
+            queryParams: this.queryParams,
+            page: this.queryParams.page
+        })
+        .then(response => {
+          this.rows = response.data.data;
+          this.total_rows = response.data.data.total;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          console.log(error);
+        });
     }
   },
   mounted() {

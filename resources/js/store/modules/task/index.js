@@ -10,9 +10,9 @@ export default {
         tickets: [],
     },
     actions: {
-        getTasks({ commit }, page) {
+        getTasks({ commit }, params) {
             return new Promise((resolve, reject) => {
-                tasks.get({ page: page }).then(response => {
+                tasks.get(params).then(response => {
                     commit('setTasks', response.data.data);
                     resolve(response);
                 }).catch(error => {
