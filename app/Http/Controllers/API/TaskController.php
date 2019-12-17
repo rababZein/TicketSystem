@@ -65,7 +65,7 @@ class TaskController extends BaseController
               })
               ->orWhere('name','LIKE','%'.$input['global_search'].'%')
               ->orWhere('priority','LIKE','%'.$input['global_search'].'%')
-              ->orWhere('x','LIKE','%'.$input['global_search'].'%');
+              ->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
     }
 
     if (isset($input['sort']) && $input['sort']) {
