@@ -75,6 +75,24 @@ class TaskController extends BaseController
       }
     }
 
+    if (isset($input['filters']) && $input['filters']) {
+      foreach ($input['filters'] as $filterObj) {
+        if ($filterObj['type'] == 'simple') {
+          if (in_array($filterObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+            $tasks = $tasks->orWhere($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+          } elseif ($filterObj['name'] == 'project.name') {
+            $tasks = $tasks->orWhereHas('project', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'status.name') {
+            $tasks = $tasks->orWhereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          }
+        }
+      }
+    }
+
     $tasks = $tasks->paginate();
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
