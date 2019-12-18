@@ -22,22 +22,14 @@
           <div class="row">
             <div class="col-sm-12">
               <div class="form-group">
-<<<<<<< HEAD
-                <label for="Description" class="col-form-label">status:</label>
-                <span class="badge bg-primary">{{ ticket.status.name }}</span>
-              </div>
-              <div class="form-group">
-=======
->>>>>>> master
                 <label for="Description" class="col-form-label">Description:</label>
                 <div
                   class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light"
                   v-html="ticket.description"
                   style="min-height:100px; max-height: 600px;"
                 ></div>
-<<<<<<< HEAD
               </div>
-              <div class="card-footer bg-white" v-if="ticket.files.length > 0">
+              <div class="card-footer bg-white" v-if="ticket.files && ticket.files.length > 0">
                 <ul class="mailbox-attachments d-flex align-items-stretch clearfix">
                   <li v-for="file in ticket.files" :key="file.id">
                     <div class="mailbox-attachment-info">
@@ -51,8 +43,6 @@
                     </div>
                   </li>
                 </ul>
-=======
->>>>>>> master
               </div>
             </div>
           </div>
