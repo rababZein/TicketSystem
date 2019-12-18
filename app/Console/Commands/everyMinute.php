@@ -17,11 +17,6 @@ use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 use App\Exceptions\InvalidDataException;
 
-use Illuminate\Http\Request;
-use Validator;
-use Illuminate\Support\Facades\File;
-use Illuminate\Http\UploadedFile;
-
 use App\Jobs\User\NewAccountJob;
 
 class everyMinute extends Command
