@@ -80,13 +80,24 @@ class TaskController extends BaseController
           }
           
         } elseif ($sortObj['name'] == 'status.name') {
-          // $tasks->join('status', 'status.id', '=', 'tasks.status_id')
-          // $tasks->orderBy('status.name', $sortObj['order']);
-          // ->select('tasks.*', 'status.name');
+          $tasks->join('status', 'status.id', '=', 'tasks.status_id');
+          $tasks->orderBy('status.name', $sortObj['order']);
+          $tasks->select('tasks.*', 'status.name');
         } elseif ($sortObj['name'] == 'project.name') {
-          // $tasks->join('projects', 'projects.id', '=', 'tasks.project_id')
-          // ->orderBy('projects.name', $sortObj['order'])
-          // ->select('tasks.*', 'projects.name');
+          // $tasks->whereHas('project', function ($q) use ($sortObj) {
+          //   if ($sortObj['order'] == 'desc') {
+          //     $q->latest('name');
+          //   } else {
+          //     $q->oldest('name');
+          //   }
+          // });
+
+          // $tasks->with(['project' => function ($q) use ($sortObj) {
+          //   $q->orderBy('x', $sortObj['order']);
+          // }]);
+          
+          
+          
         }
       }
     }
