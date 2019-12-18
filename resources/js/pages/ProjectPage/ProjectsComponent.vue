@@ -34,14 +34,14 @@
                   <div class="inner">
                     <h3>
                       <router-link
-                        :to="'/project/' + project.id"
+                        :to="'/admin/project/' + project.id"
                         class="text-white"
                       >{{ project.name }}</router-link>
                     </h3>
 
-                    <p>
+                    <p v-if="project.owner">
                       <router-link
-                        :to="'/profile/' + project.owner.id"
+                        :to="'/admin/profile/' + project.owner.id"
                         class="text-white"
                       >{{ project.owner.name }}</router-link>
                     </p>
@@ -55,7 +55,7 @@
                   <div class="icon">
                     <i class="fas fa-briefcase"></i>
                   </div>
-                  <router-link :to="'/project/' + project.id" class="small-box-footer">
+                  <router-link :to="'/admin/project/' + project.id" class="small-box-footer">
                     More info
                     <i class="fas fa-arrow-circle-right"></i>
                   </router-link>
@@ -153,6 +153,29 @@
                 <has-error :form="form" field="owner_id"></has-error>
               </div>
               <div class="form-group">
+                <label for="name">Assigned Users</label>
+                <multiselect
+                  v-model="form.project_assign"
+                  :options="responsible"
+                  :multiple="true"
+                  :close-on-select="false"
+                  :clear-on-select="false"
+                  :preserve-search="true"
+                  placeholder="Pick some"
+                  label="name"
+                  track-by="id"
+                  :preselect-first="true"
+                >
+                  <template slot="selection" slot-scope="{ values, search, isOpen }">
+                    <span
+                      class="multiselect__single"
+                      v-if="values.length &amp;&amp; !isOpen"
+                    >{{ values.length }} options selected</span>
+                  </template>
+                </multiselect>
+                <has-error :form="form" field="project_assign"></has-error>
+              </div>
+              <div class="form-group">
                 <label for="task_rate">task rate</label>
                 <input
                   v-model="form.task_rate"
@@ -206,7 +229,8 @@ export default {
         budget_hours: "",
         project_assign: []
       }),
-      owner_id: ""
+      owner_id: "",
+      selected: null
     };
   },
   methods: {
@@ -250,9 +274,24 @@ export default {
       this.form.clear();
       $("#Modal").modal("show");
       this.form.fill(item);
+      this.form.selected = _.map(this.form.project_assign, function(
+        value,
+        key
+      ) {
+        return value.name;
+      });
     },
     createProject() {
       this.$Progress.start();
+      // get user id only form assigned users
+      this.form.project_assign.forEach(element => {
+        this.form.project_assign = this.form.project_assign.filter(function(
+          obj
+        ) {
+          return obj.id !== element.id;
+        });
+        this.form.project_assign.push(element.id);
+      });
       this.$store
         .dispatch("project/createProject", this.form)
         .then(response => {
@@ -272,12 +311,20 @@ export default {
     },
     editProject(id) {
       this.$Progress.start();
+      // get user id only form assigned users
+      this.form.project_assign.forEach(element => {
+        this.form.project_assign = this.form.project_assign.filter(function(
+          obj
+        ) {
+          return obj.id !== element.id;
+        });
+        this.form.project_assign.push(element.id);
+      });
       this.$store
         .dispatch("project/editProject", this.form)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getProjects();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -321,11 +368,20 @@ export default {
             });
         }
       });
+    },
+    getResponsibles() {
+      this.$store
+        .dispatch("regularUser/getRegularUser")
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   mounted() {
     this.getProjects(this.$route.params.page || 1);
     this.getOwners();
+    this.getResponsibles();
   },
   beforeRouteUpdate(to, from, next) {
     this.getProjects(to.params.page);
@@ -334,7 +390,8 @@ export default {
   computed: {
     ...mapGetters({
       projects: "project/activeProjects",
-      owners: "owner/activeOwners"
+      owners: "owner/activeOwners",
+      responsible: "regularUser/activeRegularUser"
     })
   }
 };

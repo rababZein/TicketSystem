@@ -5,20 +5,29 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ ticket.name }}</span>
-          <div class="float-right font-weight-light">{{ ticket.created_at | DateOnly }}</div>
+          <div class="float-right font-weight-light">{{ ticket.created_at | DateWithTime }}</div>
         </div>
 
         <div class="card-body">
           <div class="row">
+            <div class="form-group col-sm-12 col-md-6">
+              <label for="ticket number" class="col-form-label">ticket#:</label>
+              <span class="font-weight-light">{{ ticket.number }}</span>
+            </div>
+            <div class="form-group col-sm-12 col-md-6">
+              <label for="Description" class="col-form-label">status:</label>
+              <span class="font-weight-light badge bg-primary">{{ ticket.status.name }}</span>
+            </div>
+          </div>
+          <div class="row">
             <div class="col-sm-12">
               <div class="form-group">
                 <label for="Description" class="col-form-label">Description:</label>
-                <div class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light" v-html="ticket.description" style="min-height:100px; max-height: 600px;">
-                </div>
-              </div>
-              <div class="form-group">
-                <label for="Description" class="col-form-label">status:</label>
-                  <span>{{ ticket.status.name }}</span>
+                <div
+                  class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light"
+                  v-html="ticket.description"
+                  style="min-height:100px; max-height: 600px;"
+                ></div>
               </div>
             </div>
           </div>
@@ -28,9 +37,12 @@
     <!-- tasks for this ticket -->
     <div class="col-md-12">
       <task-list :tasks="tasks" :singlePage="true"></task-list>
+      <ticket-comment></ticket-comment>
     </div>
   </div>
-  <div class="card" v-else><div class="card-body  justify-content-center">loading...</div></div>
+  <div class="card" v-else>
+    <div class="card-body justify-content-center">loading...</div>
+  </div>
 </template>
 
 <script>
@@ -59,7 +71,7 @@ export default {
     getTasksByTicketId(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("task/getTasksByTicketId", {id: this.ticketId, page: page})
+        .dispatch("task/getTasksByTicketId", { id: this.ticketId, page: page })
         .then(response => {
           this.$Progress.finish();
         })

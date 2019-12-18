@@ -50,8 +50,11 @@ class UpdateTaskRequest extends FormRequest
             'project_id' => 'integer|exists:projects,id',
             'ticket_id' => 'nullable|integer|exists:tickets,id',
             'responsible_id' => 'integer|exists:users,id',
-            'status_id' => 'nullable|integer|exists:status,id',
-            'count_hours' => 'nullable|numeric|min:0'
+            'status_id' => 'integer|exists:status,id',
+            'count_hours' => 'nullable|numeric|min:0',
+            'priority' => 'string',
+            'deadline' => 'date_format:"Y-m-d H:i:s"',
+            'start_at' => 'date_format:"Y-m-d"',
         ];
     }
 }

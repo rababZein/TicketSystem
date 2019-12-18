@@ -6,6 +6,7 @@ use App\Http\Requests\TrackingRequest\AddTrackingRequest;
 use App\Http\Requests\TrackingRequest\EditTrackingRequest;
 use App\Http\Requests\TrackingRequest\DeleteTrackingRequest;
 use App\Http\Requests\TrackingRequest\ListTrackingRequest;
+use App\Http\Requests\TrackingRequest\TimeReportingTrackingRequest;
 use App\Models\Tracking_task;
 use App\Models\Task;
 use Validator;
@@ -32,7 +33,7 @@ class Tracking_taskController extends BaseController
       $this->middleware('permission:tracking_task-create', ['only' => ['store', 'checkTrackingInProgress', 'tracking']]);
       $this->middleware('permission:tracking_task-edit', ['only' => ['update']]);
       $this->middleware('permission:tracking_task-delete', ['only' => ['destroy']]);
-      $this->middleware('permission:tracking_task-list', ['only' => ['getHistory']]);
+      $this->middleware('permission:tracking_task-list', ['only' => ['getHistory', 'timeReporting']]);
   }
 
   /**
@@ -216,6 +217,33 @@ public function checkTrackingInProgress($task_id)
       throw new ItemsNotFoundException();
 
     return $this->sendResponse(TrackingResource::collection($tracking), 'Traking History retrieved successfully.');
+  }
+
+  public function timeReporting(TimeReportingTrackingRequest $request)
+  {
+    $input = $request->validated();
+    
+    $tracking_model = new Tracking_task();
+    $timeReporting = $tracking_model->timeReporting(
+                                      $input['from_date'],
+                                      $input['to_date'],
+                                      isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
+                                      isset($input['project_id']) ? $input['project_id'] : null );
+    
+    $timeReportingSummation = $tracking_model->timeReportingSummation(
+                                      $input['from_date'],
+                                      $input['to_date'],
+                                      isset($input['employee_id']) ? $input['employee_id'] : auth()->user()->id,
+                                      isset($input['project_id']) ? $input['project_id'] : null );
+    $output = [];
+    if ($timeReporting)
+      $output[] = arrayPaginator($timeReporting, $request);
+
+    if ($timeReportingSummation)
+      $output[] = $timeReportingSummation;
+    
+
+    return $this->sendResponse($output, 'Traking History retrieved successfully.');
   }
 }
 

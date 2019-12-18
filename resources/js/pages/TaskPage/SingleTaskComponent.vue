@@ -9,49 +9,86 @@
         </div>
 
         <div class="card-body">
-          <div class="form-group row">
-            <label for="Description" class="col-sm-2 col-form-label">Description:</label>
-            <div class="col-sm-10">
-              <textarea v-model="task.description" class="form-control" id="Description" disabled></textarea>
+          <div class="form-group">
+            <label for="Description" class="col-form-label">Description:</label>
+            <div
+              class="overflow-auto p-3 mb-3 mb-md-0 mr-md-3 bg-light"
+              style="min-height: 100px; max-height: 600px;"
+            >
+              <p v-html="task.description" id="Description"></p>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="Client" class="col-sm-2 col-form-label">Client name:</label>
-            <div class="col-sm-10">
-              <input
-                v-if="task.project"
-                v-model="task.project.owner.name"
-                type="text"
-                class="form-control"
-                id="Client"
-                disabled
-              />
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="Client">Client name:</label>
+                <input
+                  v-if="task.project"
+                  v-model="task.project.owner.name"
+                  type="text"
+                  class="form-control"
+                  id="Client"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="status">status:</label>
+                <input
+                  v-if="task.status"
+                  v-model="task.status.name"
+                  type="text"
+                  class="form-control"
+                  id="status"
+                  disabled
+                />
+              </div>
             </div>
           </div>
-          <div class="form-group row">
-            <label for="Project" class="col-sm-2 col-form-label">Project name:</label>
-            <div class="col-sm-10">
-              <input
-                v-if="task.project"
-                v-model="task.project.name"
-                type="text"
-                class="form-control"
-                id="Project"
-                disabled
-              />
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="Project">Project name:</label>
+                <input
+                  v-if="task.project"
+                  v-model="task.project.name"
+                  type="text"
+                  class="form-control"
+                  id="Project"
+                  disabled
+                />
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="deadline">deadline:</label>
+                <p class="small">{{ task.deadline | DateOnly }}</p>
+              </div>
             </div>
           </div>
-          <div class="form-group row" v-show="duration">
-            <label for="Project" class="col-sm-2 col-form-label">
-              Total duration:
-              <p>
-                <small>(hours:minutes)</small>
-              </p>
-            </label>
-            <div class="col-sm-10">
-              <p
-                class="font-weight-light mt-3"
-              >{{ humanReadableFromSecounds(duration).slice(0, -3) }}</p>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="priority">priority:</label>
+                <input
+                  v-if="task.priority"
+                  v-model="task.priority"
+                  type="text"
+                  class="form-control"
+                  id="priority"
+                  disabled
+                />
+              </div>
+            </div>
+
+            <div class="col-sm-6" v-show="duration">
+              <div class="form-group">
+                <label for="duration">Total duration:</label>
+                <div
+                  class="font-weight-light"
+                >{{ humanReadableFromSecounds(duration).slice(0, -3) }}</div>
+              </div>
             </div>
           </div>
           <center>
@@ -266,7 +303,9 @@ export default {
       );
       vm.counter.ticker = setInterval(() => {
         vm.counted_time = null;
-        vm.activeTimerString = vm.humanReadableFromSecounds(++vm.duration);
+        vm.activeTimerString = vm.humanReadableFromSecounds(
+          ++vm.duration + vm.counter.seconds
+        );
       }, 1000);
     },
     stopTracking() {
@@ -326,7 +365,7 @@ export default {
           });
         });
     },
-    // fun to check if this track is in progress
+    // check if this track is in progress
     checkTrackingInProgress(task_id) {
       trackApi
         .checkTrackingInProgress(task_id)
@@ -413,7 +452,9 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
+    // count total duration
+    this.countTaskDuration(this.task_id);
     // check if this track is in progress
     this.checkTrackingInProgress(this.task_id);
 
@@ -426,10 +467,7 @@ export default {
       .catch(error => {
         this.$Progress.fail();
       });
-    // count total duration
-    this.countTaskDuration(this.task_id);
   },
-  mounted() {},
   computed: {
     orderedTrack: function() {
       return this.listTracking_Task.reverse();

@@ -13,7 +13,7 @@ class Task extends Model
 
     protected $table = 'tasks';
     public $timestamps = false;
-    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours', 'status_id');
+    protected $fillable = array('created_at', 'updated_at', 'name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id','count_hours', 'status_id', 'priority', 'deadline');
 
     public function responsible()
     {

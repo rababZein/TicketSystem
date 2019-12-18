@@ -15,7 +15,7 @@
           <tr v-for="tasks in tasks.data" :key="tasks.id">
             <td>{{ tasks.id }}</td>
             <td>
-              <router-link :to="'/task/' + tasks.id">{{ tasks.name }}</router-link>
+              <router-link :to="'/admin/task/' + tasks.id">{{ tasks.name }}</router-link>
             </td>
             <td>{{ tasks.created_at | DateWithTime }}</td>
             <td>{{ tasks.project.name }}</td>

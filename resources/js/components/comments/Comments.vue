@@ -3,7 +3,7 @@
     <div class="user-block">
       <img class="img-circle img-bordered-sm" src="/../../assets/img/profile.png" alt="user image" />
       <span class="username">
-        <router-link :to="/profile/ + comment.created_by.id" v-if="comment.created_by">{{ comment.created_by.name }}</router-link>
+        <router-link :to="'/admin/profile/' + comment.created_by.id" v-if="comment.created_by">{{ comment.created_by.name }}</router-link>
       </span>
       <span class="description">{{ comment.created_at | DateWithTime}}</span>
     </div>

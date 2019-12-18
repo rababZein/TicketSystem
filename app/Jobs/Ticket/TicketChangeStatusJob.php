@@ -10,7 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 
 use App\Models\Ticket;
 
-use App\Notifications\TicketChangeStatusNotification;
+use App\Notifications\Ticket\TicketChangeStatusNotification;
 
 class TicketChangeStatusJob implements ShouldQueue
 {

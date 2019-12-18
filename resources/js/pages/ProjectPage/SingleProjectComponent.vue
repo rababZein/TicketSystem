@@ -5,7 +5,14 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ project.name }}</span>
-          <div class="float-right font-weight-light">{{ project.created_at | DateOnly }}</div>
+          <div class="card-tools">
+            <router-link
+              :to="{ name: 'board', params: { projectId: project.id, pagetitle: project.name }}"
+              class="btn btn-primary btn-sm"
+            >
+              <i class="fab fa-trello fa-fw"></i> kanban
+            </router-link>
+          </div>
         </div>
 
         <div class="card-body">
@@ -27,6 +34,12 @@
                 style="width: 70%"
               >
                 <tbody>
+                  <tr>
+                    <td>
+                      <small>Created at:</small>
+                    </td>
+                    <td>{{ project.created_at | DateOnly }}</td>
+                  </tr>
                   <tr>
                     <td>
                       <small>Tickets:</small>
@@ -91,7 +104,10 @@ export default {
     getTicketsByProjectId(page = 1) {
       this.$Progress.start();
       this.$store
-        .dispatch("ticket/getTicketsByProjectId", {id: this.projectId, page: page})
+        .dispatch("ticket/getTicketsByProjectId", {
+          id: this.projectId,
+          page: page
+        })
         .then(response => {
           this.showTickets = true;
           this.$Progress.finish();
@@ -99,8 +115,7 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
-    },
-
+    }
   },
   mounted() {
     this.getPrjectById(this.projectId);

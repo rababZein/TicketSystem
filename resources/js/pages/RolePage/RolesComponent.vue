@@ -193,7 +193,7 @@ export default {
     createRole() {
       this.$Progress.start();
       this.form
-        .post("/v-api/roles/")
+        .post("/v-api/roles")
         .then(response => {
           $("#newRole").modal("hide");
           this.$Progress.finish();

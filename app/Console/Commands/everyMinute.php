@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
 
+use App\Jobs\User\NewAccountJob;
+
 class everyMinute extends Command
 {
     /**
@@ -52,7 +54,9 @@ class everyMinute extends Command
         $oClient = Client::account('default');
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
-        $aMessage = $aFolder->query()->unseen()->setFetchAttachment(true)->get();
+
+        $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(true)->get();
+
         foreach($aMessage as $oMessage){
             $emailData = [];
             $emailData['email_id'] = $oMessage->getMessageId();
@@ -84,6 +88,13 @@ class everyMinute extends Command
             } else {
                 $this->createNewTicket($emailData);
             }
+
+            //Move the current Message to 'INBOX.read'
+            if($oMessage->moveToFolder('INBOX.read') == true){
+                echo 'Message has ben moved';
+            }else{
+                echo 'Message could not be moved';
+            }
         }
     }
 
@@ -91,10 +102,25 @@ class everyMinute extends Command
     {
         $client = $this->getClient($emailData);
 
+        /**
+         * if client has one project with open status add new tickets to it
+         */
+        $count = Project::where('owner_id', $client->id)->count();
+        if ($count == 1) {
+            return Project::where('owner_id', $client->id)
+                          ->first();
+        }
+
+        /**
+         * else return other project
+         */
         $project = Project::where('name', 'other')
                           ->where('owner_id', $client->id)
                           ->first();
 
+        /**
+         * else create new project with name other
+         */
         if (! $project) {
             $project = $this->createOtherProject($client);
         }
@@ -140,7 +166,8 @@ class everyMinute extends Command
         $user = new User();
         $user->name = $emailData['personal'];
         $user->email = $emailData['mail'];
-        $user->password = Hash::make('123456'); // our default password
+        $password = Hash::make(str_random(8));;
+        $user->password = $password;
         $user->type = 'client';
         $user->created_by = 1;
         $user->created_at = Carbon::now();
@@ -150,6 +177,8 @@ class everyMinute extends Command
         } catch (Exception $ex) {
             throw new ItemNotCreatedException('User', $ex->getMessage());
         }
+
+        NewAccountJob::dispatch($user, $password);
 
         return $user;
     }
