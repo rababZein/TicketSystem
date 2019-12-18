@@ -64,9 +64,9 @@ class TaskController extends BaseController
         $query->orWhereHas('project', function($query) use($input) {
           $query->where('name', 'like', '%'.$input['global_search'].'%');
         });
-        $query->orWhere('name','LIKE','%'.$input['global_search'].'%');
-        $query->orWhere('priority','LIKE','%'.$input['global_search'].'%');
-        $query->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.name','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.priority','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.deadline','LIKE','%'.$input['global_search'].'%');
       });
     }
 
@@ -82,11 +82,11 @@ class TaskController extends BaseController
         } elseif ($sortObj['name'] == 'status.name') {
           $tasks->join('status', 'status.id', '=', 'tasks.status_id');
           $tasks->orderBy('status.name', $sortObj['order']);
-          $tasks->select('tasks.*', 'status.name');
+          
         } elseif ($sortObj['name'] == 'project.name') {
           $tasks->join('projects', 'projects.id', '=', 'tasks.project_id');
           $tasks->orderBy('projects.name', $sortObj['order']);
-          $tasks->select('tasks.*', 'projects.name');
+          
         }
       }
     }
@@ -117,6 +117,7 @@ class TaskController extends BaseController
       }
     }
 
+    $tasks->select('tasks.*');
     $tasks->latest();
 
     $tasks = $tasks->paginate();
