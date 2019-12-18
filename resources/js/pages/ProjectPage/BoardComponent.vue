@@ -42,10 +42,112 @@
                       :key="$taskIndex"
                       draggable
                       @dragstart="pickupTask($event, task.id, $columnIndex)"
+                      @click="editModal(task)"
                     >{{ task.name }}</div>
+                  </div>
+                  <div class="card-footer p-2">
+                    <input
+                      type="text"
+                      class="block p-0 col-12 bg-transparent border-0"
+                      placeholder="+ Enter new task"
+                      @keyup.enter="createTask($event, $columnIndex)"
+                    />
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+        <!-- Modal -->
+        <div
+          class="modal fade"
+          id="newTask"
+          tabindex="-1"
+          role="dialog"
+          aria-labelledby="newTaskLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="newTaskLabel">Edit Task</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <form @submit.prevent="editTask(form)" @keydown="form.onKeydown($event)">
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label for="name">Task Name</label>
+                    <input
+                      v-model="form.name"
+                      type="text"
+                      name="name"
+                      class="form-control"
+                      :class="{ 'is-invalid': form.errors.has('name') }"
+                    />
+                    <has-error :form="form" field="name"></has-error>
+                  </div>
+                  <div class="form-group">
+                    <label for="description">Task Description</label>
+                    <quill-editor
+                      id="comments-editor"
+                      v-model="form.description"
+                      ref="myQuillEditor"
+                      :options="editorOption"
+                    ></quill-editor>
+                    <has-error :form="form" field="description"></has-error>
+                  </div>
+                  <div class="form-group">
+                    <label for="name">Responsible</label>
+                    <multiselect
+                      v-model="form.responsible"
+                      :options="responsible"
+                      :close-on-select="true"
+                      :clear-on-select="false"
+                      :preserve-search="true"
+                      placeholder="Select one"
+                      label="name"
+                      :preselect-first="true"
+                      @input="opt => form.responsible_id = opt.id"
+                    ></multiselect>
+                    <has-error :form="form" field="responsible_id"></has-error>
+                  </div>
+                  <div class="form-group" v-if="form.priority">
+                    <label for="priority">priority</label>
+                    <multiselect
+                      class="clearfix"
+                      v-model="form.priority"
+                      :options="priorityList"
+                      :close-on-select="true"
+                      :allow-empty="false"
+                      :show-labels="false"
+                      placeholder="Select one"
+                    ></multiselect>
+                    <has-error :form="form" field="priority"></has-error>
+                  </div>
+                  <div class="form-group">
+                    <label for="deadline">deadline</label>
+                    <date-picker
+                      v-model="form.deadline"
+                      lang="en"
+                      type="datetime"
+                      format="YYYY-MM-DD HH:mm:ss"
+                      :minute-step="15"
+                      value-type="format"
+                      input-class="form-control"
+                    ></date-picker>
+                    <has-error :form="form" field="deadline"></has-error>
+                  </div>
+                </div>
+
+                <div class="modal-footer">
+                  <button
+                    type="submit"
+                    class="btn btn-success"
+                  >Update</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -58,13 +160,44 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { quillEditor } from "vue-quill-editor";
+import DatePicker from "vue2-datepicker";
+import { mapGetters, mapState } from "vuex";
+
+// require styles
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 export default {
   data() {
     return {
       loading: true,
-      projectTitle: this.$route.params.pagetitle || "board"
+      projectTitle: this.$route.params.pagetitle || "board",
+      form: new Form({
+        id: "",
+        name: "",
+        description: "",
+        status: {},
+        project: {},
+        project_id: "",
+        ticket: [],
+        ticket_id: "",
+        responsible: {},
+        responsible_id: "",
+        priority: "",
+        deadline: ""
+      }),
+      priorityList: ["normal", "high", "low"],
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
+        }
+      }
     };
   },
   methods: {
@@ -99,13 +232,64 @@ export default {
         toColumnIndex,
         taskId
       });
+    },
+    createTask(e, columnIndex) {
+      const projectId = this.$route.params.projectId;
+      this.$store.dispatch("board/createTask", {
+        columnIndex,
+        projectId,
+        title: e.target.value
+      });
+      // clear the input
+      e.target.value = "";
+    },
+    editModal(task) {
+      this.form.reset();
+      this.form.clear();
+      this.form.fill(task);
+      $("#newTask").modal("show");
+    },
+    editTask(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("board/editTask", data)
+        .then(response => {
+          $("#newTask").modal("hide");
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    getResponsibles() {
+      this.$store
+        .dispatch("regularUser/getRegularUser")
+        .then()
+        .catch(error => {
+          console.log(error);
+        });
     }
   },
   computed: {
-    ...mapState(["board"])
+    ...mapState(["board"]),
+    ...mapGetters({
+      responsible: "regularUser/activeRegularUser"
+    })
+  },
+  components: {
+    quillEditor,
+    DatePicker
   },
   mounted() {
     this.getTasksForBoard(this.$route.params.projectId);
+    this.getResponsibles();
   }
 };
 </script>
@@ -123,5 +307,10 @@ export default {
 
 #scrollbar-style::-webkit-scrollbar-thumb {
   background-color: #3b3b3b;
+}
+
+.mx-datepicker {
+  display: block;
+  width: unset;
 }
 </style>
