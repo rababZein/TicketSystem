@@ -73,7 +73,12 @@ class TaskController extends BaseController
     if (isset($input['sort']) && $input['sort']) {
       foreach ($input['sort'] as $sortObj) {
         if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
-          $tasks->orderBy($sortObj['name'], $sortObj['order']);
+          if ($sortObj['order'] == 'desc') {
+            $tasks->latest($sortObj['name']);
+          } else {
+            $tasks->older($sortObj['name']);
+          }
+          
         } elseif ($sortObj['name'] == 'status.name') {
           // $tasks->join('status', 'status.id', '=', 'tasks.status_id')
           // $tasks->orderBy('status.name', $sortObj['order']);
