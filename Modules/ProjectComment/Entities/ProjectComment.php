@@ -4,10 +4,12 @@ namespace Modules\ProjectComment\Entities;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ProjectComment extends Model 
 {
     use HasRoles;
+    use SoftDeletes;
 
     protected $table = 'project_comments';
     public $timestamps = false;

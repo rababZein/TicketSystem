@@ -13,7 +13,11 @@ class ListPermissionRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (auth()->user()->isAdmin() || auth()->user()->can('permission-list')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

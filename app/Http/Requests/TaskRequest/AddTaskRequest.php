@@ -48,12 +48,15 @@ class AddTaskRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'description' => 'required|string',
+            'description' => 'string',
             'project_id' => 'required|integer|exists:projects,id|in:'.$this->route('project_id'),
             'ticket_id' => 'nullable|integer|exists:tickets,id',
-            'responsible_id' => 'required|integer|exists:users,id',
-            'status_id' => 'nullable|integer|exists:status,id',
-            'count_hours' => 'nullable|numeric|min:0'
+            'responsible_id' => 'integer|exists:users,id',
+            'status_id' => 'integer|exists:status,id',
+            'count_hours' => 'nullable|numeric|min:0',
+            'priority' => 'string',
+            'deadline' => 'date_format:"Y-m-d H:i:s"',
+            'start_at' => 'date_format:"Y-m-d"',
         ];
     }
 }

@@ -34,10 +34,37 @@ class UsersController extends BaseController
         $this->middleware('permission:user-delete', ['only' => ['destroy']]);
     }
 
+    /**
+     * Retrive all users paginated.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index(ListUserRequest $request)
     {
         $users = User::with('roles')->paginate();
         return $this->sendResponse(new UserCollection($users), 'users retrieved successfully.');
+    }
+
+    /**
+     * Retrive all clients paginated.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getClientsPaginated(ListUserRequest $request)
+    {
+        $users = User::where('type', 'client')->with('roles')->latest()->paginate();
+        return $this->sendResponse(new UserCollection($users), 'clients retrieved successfully.');
+    }
+
+    /**
+     * Retrive all employees paginated.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getEmployeesPaginated(ListUserRequest $request)
+    {
+        $users = User::where('type', 'regular-user')->with('roles')->latest()->paginate();
+        return $this->sendResponse(new UserCollection($users), 'employees retrieved successfully.');
     }
 
     /**

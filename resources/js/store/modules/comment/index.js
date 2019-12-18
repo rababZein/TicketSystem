@@ -27,6 +27,16 @@ export default {
                 })
             });
         },
+        createCommentForTicket({ commit }, data) {
+            return new Promise((resolve, reject) => {
+                comments.postForTicket(data).then(response => {
+                    commit('setComment', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
         getCommentsPerClient({ commit }, id) {
             return new Promise((resolve, reject) => {
                 comments.getPerClient(id).then(response => {
@@ -46,6 +56,16 @@ export default {
                     reject(error);
                 })
             });
+        },
+        getCommentsPerTicket({commit}, params) {
+            return new Promise((resolve, reject) => {
+                comments.getPerTicket(params).then(response => {
+                    commit('setCommentsPerTicket', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
         }
     },
     mutations: {
@@ -58,6 +78,9 @@ export default {
         setComment(state, comment) {
             state.items.data.push(comment);
         },
+        setCommentsPerTicket(state, comments) {
+            state.items = comments;
+        }
         
     },
     getters: {

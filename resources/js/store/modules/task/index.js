@@ -10,9 +10,9 @@ export default {
         tickets: [],
     },
     actions: {
-        getTasks({ commit }, page) {
+        getTasks({ commit }, params) {
             return new Promise((resolve, reject) => {
-                tasks.get({ page: page }).then(response => {
+                tasks.get(params).then(response => {
                     commit('setTasks', response.data.data);
                     resolve(response);
                 }).catch(error => {
@@ -96,14 +96,7 @@ export default {
             state.items = Object.assign({}, tasks);
         },
         setNewTask(state, task) {
-            const taskObj = {
-                id: task.id,
-                name: task.name,
-                description: task.description,
-                status: task.status,
-                project: task.project,
-                responsible: task.responsible
-            };
+            const taskObj = task;
             state.items.data.unshift(taskObj);
         },
         setStatus(state, status) {

@@ -1,0 +1,36 @@
+.bg-gradient-warning h2{
+
+	color: #fff;
+
+}
+
+.bg-gradient-warning .text-muted, .bg-gradient-warning .title{
+
+	color: #fff !important;
+}
+
+.mb-lg, .my-lg {
+    margin-bottom: 2rem !important;
+}
+
+.mb-lg-0, .my-lg-0 {
+    margin-bottom: 50px !important;
+}
+
+.pt-lg, .py-lg {
+    padding-top: 0rem !important;
+}
+
+.footer.has-cards::before {
+    position: absolute;
+    right: 0;
+    left: 0;
+    height: 2000px;
+    content: '';
+    transform: none;
+    background: #f4f5f7;
+}
+
+.footer.has-cards{
+	padding-top: 400px;
+}

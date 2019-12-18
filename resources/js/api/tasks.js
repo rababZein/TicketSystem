@@ -10,4 +10,5 @@ export default {
     getTasksByTicketId: params => API.get('/tickets/' + params.id + '/tasks', {params}),
     getTaskCountPerClient: params => API.get('/clients/'+ params +'/tasksNumber'),
     getTasksPerClient: params => API.get('/clients/'+ params.id +'/tasks', {params}),
+    getTasksForBoard: params => API.get('/tasks/cards', {params}),
 }

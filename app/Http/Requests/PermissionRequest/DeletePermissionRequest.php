@@ -7,13 +7,13 @@ use Illuminate\Foundation\Http\FormRequest;
 class DeletePermissionRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the permission is authorized to make this request.
      *
      * @return bool
      */
     public function authorize()
     {
-        if (auth()->user()->isAdmin()) {
+        if (auth()->permission()->isAdmin() || auth()->user()->can('permission-delete')) {
             return true;
         }
 

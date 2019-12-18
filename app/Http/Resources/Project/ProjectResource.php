@@ -17,7 +17,6 @@ class ProjectResource extends JsonResource
      */
     public function toArray($request)
     {
-        // dd($this->assigns);
         return [
             "id" => $this->id,
             "name" => $this->name,
@@ -29,7 +28,7 @@ class ProjectResource extends JsonResource
             "created_by" => new UserResource($this->whenLoaded('creator')),
             "updated_by" => new UserResource($this->whenLoaded('updater')),
             "owner" => UserResource::make($this->whenLoaded('owner')),
-            "assigns" => UserResource::collection($this->whenLoaded('assigns')),
+            "project_assign" => UserResource::collection($this->assigns),
             "tasks" => TaskResource::collection($this->whenLoaded('tasks')),
             "tickets" => TicketResource::collection($this->whenLoaded('tickets')),
         ];

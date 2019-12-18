@@ -16,76 +16,97 @@ Vue.use(VueRouter);
 // routes
 let routes = [
     {
-        path: "/home",
+        path: "/admin",
         component: require("./pages/DashboardPage/DashboardComponent.vue")
             .default,
         alias: "",
         meta: { title: "Dashboard" }
     },
     {
-        path: "/dashboard",
+        path: "/admin/dashboard",
         component: require("./pages/DashboardPage/DashboardComponent.vue")
             .default,
         meta: { title: "Dashboard" }
     },
     {
-        path: "/users",
+        path: "/admin/clients",
+        component: require("./pages/ClientPage/ClientsComponent.vue").default,
+        meta: { title: "Users" }
+    },
+    {
+        path: "/admin/users",
         component: require("./pages/UserPage/UsersComponent.vue").default,
         meta: { title: "Users" }
     },
     {
-        path: "/profile/:id",
+        path: "/admin/profile/:id",
         component: require("./pages/UserPage/profileComponent.vue").default,
         meta: { title: "Users" }
     },
     {
-        path: "/projects/:page?",
+        path: "/admin/project/:id",
+        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
+            .default,
+        name: "project",
+        meta: { title: "Project" }
+    },
+    {
+        path: "/admin/projects/:page?",
         name: "projects.list",
         component: require("./pages/ProjectPage/ProjectsComponent.vue").default,
         meta: { title: "Projects" }
     },
     {
-        path: "/project/:id",
-        component: require("./pages/ProjectPage/SingleProjectComponent.vue")
-            .default,
-        meta: { title: "Project" }
-    },
-    {
-        path: "/tickets/:page?",
+        path: "/admin/tickets/:page?",
         name: "tickets.list",
         component: require("./pages/TicketPage/TicketsComponent.vue").default,
         meta: { title: "Tickets" }
     },
     {
-        path: "/ticket/:id",
+        path: "/admin/ticket/:id",
         component: require("./pages/TicketPage/SingleTicketComponent.vue")
             .default,
         meta: { title: "Ticket" }
     },
     {
-        path: "/tasks/:page?",
+        path: "/admin/task/:id",
+        name: "task",
+        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
+        meta: { title: "Task" }
+    },
+    {
+        path: "/admin/tasks/:page?",
         name: "tasks.list",
         component: require("./pages/TaskPage/TasksComponent.vue").default,
         meta: { title: "Tasks" }
     },
     {
-        path: "/task/:id",
-        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
-        meta: { title: "Task" }
+        path: "/admin/board/:projectId",
+        name: "board",
+        component: require("./pages/ProjectPage/BoardComponent.vue").default,
+        meta: { title: "Board" }
     },
     {
-        path: "/receipts",
+        path: "/admin/receipts",
         component: require("./pages/ReceiptPage/ReceiptsComponent.vue").default,
         meta: { title: "Receipts" }
     },
     {
-        path: "/permissions",
+        alias: "/admin/time-report",
+        path: "/admin/time-report",
+        name: "timeReport.list",
+        component: require("./pages/TimeReportingPage/TimeReportingComponent.vue")
+            .default,
+        meta: { title: "Time Report" }
+    },
+    {
+        path: "/admin/permissions",
         component: require("./pages/PermissionPage/PermissionsComponent.vue")
             .default,
         meta: { title: "Permissions" }
     },
     {
-        path: "/roles",
+        path: "/admin/roles",
         component: require("./pages/RolePage/RolesComponent.vue").default,
         meta: { title: "Roles" }
     },
