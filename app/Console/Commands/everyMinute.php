@@ -176,7 +176,7 @@ class everyMinute extends Command
         $user = new User();
         $user->name = $emailData['personal'];
         $user->email = $emailData['mail'];
-        $password = Hash::make(str_random(8));;
+        $password = Hash::make(str_random(8));
         $user->password = $password;
         $user->type = 'client';
         $user->created_by = 1;
