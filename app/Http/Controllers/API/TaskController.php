@@ -33,7 +33,7 @@ class TaskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
+      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
@@ -47,13 +47,72 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
+    $input = $request->validated()['params'];   
+
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
+      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest();
     }
 
+    if (isset($input['global_search']) && $input['global_search']) {
+      $tasks->where(function($query) use ($input){
+        $query->whereHas('task_status', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhere('name','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('priority','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('deadline','LIKE','%'.$input['global_search'].'%');
+      });
+    }
+
+    if (isset($input['sort']) && $input['sort']) {
+      foreach ($input['sort'] as $sortObj) {
+        if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+          $tasks->orderBy($sortObj['name'], $sortObj['order']);
+        } elseif ($sortObj['name'] == 'status.name') {
+          // $tasks->join('status', 'status.id', '=', 'tasks.status_id')
+          // $tasks->orderBy('status.name', $sortObj['order']);
+          // ->select('tasks.*', 'status.name');
+        } elseif ($sortObj['name'] == 'project.name') {
+          // $tasks->join('projects', 'projects.id', '=', 'tasks.project_id')
+          // ->orderBy('projects.name', $sortObj['order'])
+          // ->select('tasks.*', 'projects.name');
+        }
+      }
+    }
+
+    if (isset($input['filters']) && $input['filters']) {
+      foreach ($input['filters'] as $filterObj) {
+        if ($filterObj['type'] == 'simple') {
+          if (in_array($filterObj['name'], ['name', 'deadline', 'priority'])) {
+             $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+          } elseif ($filterObj['name'] == 'project.name') {
+            $tasks->whereHas('project', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'status.name') {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          }
+        } elseif ($filterObj['type'] == 'select') {
+          if ($filterObj['name'] == 'status.name') {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'in', $filterObj['selected_options']);
+            });
+          } elseif ($filterObj['name'] == 'priority') {
+            $tasks->where($filterObj['name'], 'in', $filterObj['selected_options']);
+          }
+        }
+      }
+    }
+
+    $tasks = $tasks->paginate();
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 

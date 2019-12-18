@@ -69,15 +69,16 @@ let routes = [
         meta: { title: "Ticket" }
     },
     {
+        path: "/admin/task/:id",
+        name: "task",
+        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
+        meta: { title: "Task" }
+    },
+    {
         path: "/admin/tasks/:page?",
         name: "tasks.list",
         component: require("./pages/TaskPage/TasksComponent.vue").default,
         meta: { title: "Tasks" }
-    },
-    {
-        path: "/admin/task/:id",
-        component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
-        meta: { title: "Task" }
     },
     {
         path: "/admin/board/:projectId",
