@@ -15,6 +15,7 @@ use Carbon\Carbon;
 
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
+use App\Exceptions\InvalidDataException;
 
 use App\Jobs\User\NewAccountJob;
 
@@ -69,6 +70,15 @@ class everyMinute extends Command
             // attachments
             $emailData['attachmentPaths'] = [];
             foreach ($oMessage->getAttachments() as $oAttachment) {
+                // validate extention
+                if (in_array($oAttachment->getExtension(), ['png', 'jpg', 'jpeg', 'txt', 'csv', 'docx', 'doc', 'xlsx', 'xls']) ) {
+                    throw new InvalidDataException([
+                        'file extension' => $oAttachment->getExtension()
+                        ],
+                        'file extension not allowed'
+                    );
+                }
+                // storage
                 $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
                 $dirName = dirname($attachmentPath);
                 if (!is_dir($dirName))
