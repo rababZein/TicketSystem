@@ -50,10 +50,10 @@ class TaskController extends BaseController
     $input = $request->validated()['params'];   
 
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest();      
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status');      
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest();
+      $tasks = $taskModel->ownTasks(auth()->user()->id);
     }
 
     if (isset($input['global_search']) && $input['global_search']) {
@@ -76,7 +76,7 @@ class TaskController extends BaseController
           if ($sortObj['order'] == 'desc') {
             $tasks->latest($sortObj['name']);
           } else {
-            $tasks->older($sortObj['name']);
+            $tasks->oldest($sortObj['name']);
           }
           
         } elseif ($sortObj['name'] == 'status.name') {
@@ -116,6 +116,8 @@ class TaskController extends BaseController
         }
       }
     }
+
+    $tasks->latest();
 
     $tasks = $tasks->paginate();
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');

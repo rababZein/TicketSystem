@@ -274,6 +274,16 @@ export default {
       },
       columns: [
         {
+          label: "id",
+          name: "id",
+          filter: {
+            type: "simple",
+            placeholder: "Enter task title"
+          },
+          sort: true,
+          row_text_alignment: "text-left"
+        },
+        {
           label: "title",
           name: "name",
           id: "id",
