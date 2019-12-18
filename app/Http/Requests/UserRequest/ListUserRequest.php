@@ -13,7 +13,11 @@ class ListUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (auth()->user()->isAdmin() || auth()->user()->can('user-list')) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

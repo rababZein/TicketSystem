@@ -33,7 +33,7 @@ class TicketCommentController extends BaseController
      */
     public function __construct()
     {
-        $this->middleware('permission:ticketComment-list|ticketComment-create|ticketComment-edit|ticketComment-delete', ['only' => ['index', 'show', 'getTicketCommentsPerTicket']]);
+        $this->middleware('permission:ticketComment-list|ticketComment-create|ticketComment-edit|ticketComment-delete', ['only' => ['index', 'show', 'getCommentsPerTicket']]);
         $this->middleware('permission:ticketComment-create', ['only' => ['store']]);
         $this->middleware('permission:ticketComment-edit', ['only' => ['update']]);
         $this->middleware('permission:ticketComment-delete', ['only' => ['destroy']]);
@@ -126,7 +126,7 @@ class TicketCommentController extends BaseController
      * @param $ticketId
      * @return Response
      */
-    public function getTicketCommentsPerTicket($ticketId)
+    public function getCommentsPerTicket($ticketId)
     {
         $ticketComments = TicketComment::where('ticket_id', $ticketId)
                                        ->paginate();

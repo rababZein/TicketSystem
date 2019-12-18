@@ -31,6 +31,7 @@ class UpdateTicketCommentRequest extends FormRequest
     {
         return [
             'comment' => 'min:3|max:1000',
+            'send_mail' => 'boolean'
         ];
     }
 }

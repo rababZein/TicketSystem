@@ -11,6 +11,16 @@ export default {
             })
         });
     },
+    getAllProjects({commit}) {
+        return new Promise((resolve, reject) => {
+            projects.getAllProjects().then(response => {
+                commit('setAllProjects', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
+    },
     createProject({ commit }, data) {
         return new Promise((resolve, reject) => {
             projects.createProject(data).then(response => {

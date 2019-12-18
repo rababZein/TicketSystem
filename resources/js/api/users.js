@@ -9,6 +9,8 @@ export default {
 
     // get clients
     getOwners: () => API.get('/owner/getall'),
+    getClientsPaginated: params => API.get('/user/getClientsPaginated', { params }),
+    getEmployeesPaginated: params => API.get('/user/getEmployeesPaginated', { params }),
         
     // get regular-user
     getRegularUsers : () => API.get('/user/getAllResponsibles'),

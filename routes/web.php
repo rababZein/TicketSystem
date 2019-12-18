@@ -14,10 +14,12 @@
 
 
 Auth::routes();
+Route::group(['namespace' => 'Frontend'], function () {
+    Route::get('/', 'HomeController@index');
+});
 
 Route::group(['middleware' => ['auth'], 'namespace' => 'Vue'], function () {
-    Route::get('/', 'VueController@index');
-    Route::get('/home', 'VueController@index')->name('home');
+    Route::get('/admin', 'VueController@index')->name('admin');
 });
 
 
@@ -34,6 +36,8 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
 
     // users
     Route::get('/user/getAllResponsibles', 'UsersController@getAllResponsibles');
+    Route::get('/user/getClientsPaginated', 'UsersController@getClientsPaginated');
+    Route::get('/user/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
     Route::resource('/users', 'UsersController')->except('create');
 
     // projects
@@ -45,6 +49,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::resource('/projects', 'ProjectController')->except('create');
 
     // tracking tasks
+    Route::get('/tracking/timeReporting', 'Tracking_taskController@timeReporting');
     Route::patch('/tracking/{task_id}/{tracking_id}', 'Tracking_taskController@update');
     Route::post('/tracking/{task_id}', 'Tracking_taskController@store');
     Route::delete('/tracking/{task_id}/{tracking_id}', 'Tracking_taskController@destroy');
@@ -60,11 +65,14 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::resource('/tickets', 'TicketController')->except('create');
 
     // task
+    Route::get('/tasks', 'TaskController@index');
     Route::get('/tickets/{ticket_id}/tasks/', 'TaskController@getTasksByTicketId');
     Route::get('/clients/{client_id}/tasksNumber', 'TaskController@getTasksCountPerClient');
     Route::get('/clients/{client_id}/tasks', 'TaskController@getTasksPerClient');
+    Route::get('/tasks/filter', 'TaskController@filterTasks');
+    Route::get('/tasks/cards', 'TaskController@tasksCard');
     Route::post('/tasks/{project_id}', 'TaskController@store');
-    Route::resource('/tasks', 'TaskController')->except('create', 'store');
+    Route::resource('/tasks', 'TaskController')->except('create', 'store', 'index');
 
     // owner
     Route::get('/owner/getall', 'UsersController@getClients');

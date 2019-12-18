@@ -12,7 +12,7 @@
         <tbody>
           <tr v-for="project in projects.data" :key="project.id">
             <td>{{ project.id }}</td>
-            <td><router-link :to="'/project/' + project.id">{{ project.name }}</router-link></td>
+            <td><router-link :to="'/admin/project/' + project.id">{{ project.name }}</router-link></td>
             <td>{{ project.created_at | DateWithTime }}</td>
           </tr>
         </tbody>

@@ -50,8 +50,10 @@ class TaskObserver
     {
         if($task->isDirty('status_id') && ($task->status_id == 2 || $task->status_id == 3)){ 
             // status is changed && new status is pending or in-progress
-            $task->ticket->status_id = $task->status_id;
-            // $task->ticket->save();
+            if ($task->ticket) {
+                $task->ticket->status_id = $task->status_id;
+                $task->ticket->save();
+            }
           }
     }
 

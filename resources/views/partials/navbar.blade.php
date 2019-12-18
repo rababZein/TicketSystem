@@ -80,7 +80,7 @@
             <i class="far fa-user"></i>
         </a>
         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-            <router-link :to="'/profile/' + {{ Auth::user()->id }}" class="dropdown-item">
+            <router-link :to="'/admin/profile/' + {{ Auth::user()->id }}" class="dropdown-item">
                 <i class="fas fa-user mr-2"></i> profile
             </router-link>
             <div class="dropdown-divider"></div>

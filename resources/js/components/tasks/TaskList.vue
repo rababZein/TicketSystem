@@ -18,8 +18,10 @@
             <tr>
               <th width="2%">ID</th>
               <th width="20%">Name</th>
-              <th width="30%">Description</th>
               <th width="10%">Status</th>
+              <th width="12%">Created at</th>
+              <th width="10%">Priority</th>
+              <th width="10%">Deadline</th>
               <th width="10%">Project</th>
               <th width="10%">Responsible</th>
               <th width="10%">action</th>
@@ -29,22 +31,28 @@
             <tr v-for="task in tasks.data" :key="task.id">
               <td>{{ task.id }}</td>
               <td>
-                <router-link :to="'/task/' + task.id">{{ task.name }}</router-link>
+                <router-link :to="'/admin/task/' + task.id">{{ task.name }}</router-link>
               </td>
-              <td v-trim="4">{{ task.description }}</td>
               <td>
                 <div class="badge bg-primary">{{ task.status.name }}</div>
               </td>
               <td>
+                <div class="small">{{ task.created_at | DateWithTime }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.priority }}</div>
+              </td>
+              <td>
+                <div class="small">{{ task.deadline | DateOnly}}</div>
+              </td>
+              <td>
                 <span v-if="task.project">
-                  <router-link :to="'/project/' + task.project.id">{{ task.project.name }}</router-link>
+                  <router-link :to="'/admin/project/' + task.project.id">{{ task.project.name }}</router-link>
                 </span>
               </td>
               <td>
                 <span v-if="task.responsible">
-                  <router-link
-                    :to="'/profile/' + task.responsible.id"
-                  >{{ task.responsible.name }}</router-link>
+                  <router-link :to="'/admin/profile/' + task.responsible.id">{{ task.responsible.name }}</router-link>
                 </span>
               </td>
               <td>
@@ -99,13 +107,12 @@
               </div>
               <div class="form-group">
                 <label for="description">Task Description</label>
-                <input
+                <quill-editor
+                  id="comments-editor"
                   v-model="form.description"
-                  type="text"
-                  name="description"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('description') }"
-                />
+                  ref="myQuillEditor"
+                  :options="editorOption"
+                ></quill-editor>
                 <has-error :form="form" field="description"></has-error>
               </div>
               <div class="form-group">
@@ -190,11 +197,47 @@
                 </multiselect>
                 <has-error :form="form" field="responsible_id"></has-error>
               </div>
+              <div class="form-group" v-if="form.priority">
+                <label for="priority">priority</label>
+                <multiselect
+                  class="clearfix"
+                  v-model="form.priority"
+                  :options="priorityList"
+                  :close-on-select="true"
+                  :allow-empty="false"
+                  :show-labels="false"
+                  placeholder="Select one"
+                ></multiselect>
+                <has-error :form="form" field="priority"></has-error>
+              </div>
+              <div class="form-group">
+                <label for="deadline">deadline</label>
+                <date-picker
+                  v-model="form.deadline"
+                  lang="en"
+                  type="datetime"
+                  format="YYYY-MM-DD HH:mm:ss"
+                  :minute-step="15"
+                  value-type="format"
+                  input-class="form-control"
+                ></date-picker>
+                <has-error :form="form" field="deadline"></has-error>
+              </div>
             </div>
 
             <div class="modal-footer">
-              <button v-show="!editMode" type="submit" class="btn btn-primary" :disabled="form.project_id == ''">Save</button>
-              <button v-show="editMode" type="submit" class="btn btn-success" :disabled="form.project_id == ''">Update</button>
+              <button
+                v-show="!editMode"
+                type="submit"
+                class="btn btn-primary"
+                :disabled="form.project_id == ''"
+              >Save</button>
+              <button
+                v-show="editMode"
+                type="submit"
+                class="btn btn-success"
+                :disabled="form.project_id == ''"
+              >Update</button>
             </div>
           </form>
         </div>
@@ -205,10 +248,14 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
+import { quillEditor } from "vue-quill-editor";
+import DatePicker from "vue2-datepicker";
+import moment from 'moment';
+
 // require styles
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
 export default {
   data() {
@@ -225,8 +272,20 @@ export default {
         ticket: [],
         ticket_id: "",
         responsible: {},
-        responsible_id: ""
-      })
+        responsible_id: "",
+        priority: "",
+        deadline: ""
+      }),
+      priorityList: ["normal", "high", "low"],
+      editorOption: {
+        modules: {
+          toolbar: [
+            ["bold", "italic", "underline", "strike"],
+            ["blockquote", "code-block"],
+            [{ list: "ordered" }, { list: "bullet" }]
+          ]
+        }
+      }
     };
   },
   methods: {
@@ -234,12 +293,9 @@ export default {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
-      if (this.singlePage) {
-        this.form.project = this.ticket.project;
-        this.form.project_id = this.ticket.project.id;
-        this.isDisabled = true;
-      }
       $("#newTask").modal("show");
+      this.form.priority = "normal";
+      this.form.deadline = moment().add(1, 'day').format("YYYY-MM-DD HH:mm:ss");
     },
     editModel(task) {
       this.editMode = true;
@@ -248,11 +304,6 @@ export default {
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
-      if (this.singlePage) {
-        this.form.project = this.ticket.project;
-        this.form.project_id = this.ticket.project.id;
-        this.isDisabled = true;
-      }
     },
     getStatus() {
       this.$store
@@ -391,9 +442,17 @@ export default {
         el.innerHTML = resultString;
       }
     }
+  },
+  components: {
+    quillEditor,
+    DatePicker
   }
 };
 </script>
 
-<style>
+<style scoped>
+.mx-datepicker {
+  display: block;
+  width: unset;
+}
 </style>

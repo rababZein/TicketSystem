@@ -8,7 +8,7 @@
 
           <p>
             We could not find the page you were looking for.
-            Meanwhile, you may <router-link to="/dashboard">return to dashboard</router-link> or try using the search form.
+            Meanwhile, you may <router-link to="/admin/dashboard">return to dashboard</router-link> or try using the search form.
           </p>
 
         </div>
