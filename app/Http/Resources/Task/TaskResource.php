@@ -28,7 +28,7 @@ class TaskResource extends JsonResource
             "priority" => $this->priority,
             "start_at" => $this->start_at,
             "deadline" => $this->deadline,
-            "status" => new StatusResource($this->task_status),
+            "status" => new StatusResource($this->whenLoaded('task_status')),
             "created_at" => $this->created_at,
             "updated_at" => $this->updated_at,
             "created_by" => new UserResource($this->whenLoaded('creator')),

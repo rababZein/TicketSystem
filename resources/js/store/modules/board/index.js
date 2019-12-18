@@ -32,9 +32,41 @@ export default {
                         });
                 }
             });
-        }
+        },
+        createTask({ commit }, { columnIndex, projectId, title }) {
+            return new Promise((resolve, reject) => {
+                tasks.createTask({ project_id: projectId, name: title, status_id: columnIndex })
+                    .then(response => {
+                        commit("CREATE_TASK", response.data.data);
+                        resolve(response);
+                    })
+                    .catch(error => {
+                        reject(error);
+                    });
+            });
+        },
+        editTask({commit}, task) {
+            return new Promise((resolve, reject) => {
+                tasks.editTask(task).then(response => {
+                    commit('EDIT_TASK', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
     },
     mutations: {
+        EDIT_TASK(state, task) {
+            const columnTasks = state.board.columns[task.status.id - 1].tasks;
+            console.log(columnTasks);
+            const taskObj = columnTasks.find(items => items.id == task.id);
+            Object.assign(taskObj, task);    
+        },
+        CREATE_TASK(state, task) {
+            let toColumnTasks = state.board.columns[task.status.id - 1].tasks;
+            toColumnTasks.push(task)
+        },
         MOVE_TASK(state, { fromColumnIndex, toColumnIndex, taskId }) {
             let fromColumnTasks = state.board.columns[fromColumnIndex - 1].tasks;
             const toColumnTasks = state.board.columns[toColumnIndex - 1].tasks;
