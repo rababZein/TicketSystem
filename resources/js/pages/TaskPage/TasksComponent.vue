@@ -44,6 +44,9 @@
                 :to="{ name: 'project', params: { id: props.row.project.id }}"
               >{{ props.cell_value }}</router-link>
             </template>
+            <template slot="deadline" slot-scope="props">
+              {{ props.cell_value | DateOnly }}
+            </template>
             <template slot="action-buttons" slot-scope="props">
               <a href="#" @click="editModel(props.row)" class="btn btn-primary btn-xs">
                 <i class="fas fa-edit fa-fw"></i>
@@ -274,16 +277,6 @@ export default {
       },
       columns: [
         {
-          label: "id",
-          name: "id",
-          filter: {
-            type: "simple",
-            placeholder: "Enter task title"
-          },
-          sort: true,
-          row_text_alignment: "text-left"
-        },
-        {
           label: "title",
           name: "name",
           id: "id",
@@ -321,9 +314,6 @@ export default {
         {
           label: "Deadline",
           name: "deadline",
-          filter: {
-            type: "simple"
-          },
           sort: true
         },
         {
