@@ -74,6 +74,31 @@ class TicketController extends BaseController
     }
 
 
+    // sorting
+    if (isset($input['sort']) && $input['sort']) {
+      foreach ($input['sort'] as $sortObj) {
+        //direct relation then in-direct relation
+        if (in_array($sortObj['name'], ['created_at', 'name', 'number', 'read'])) {
+          if ($sortObj['order'] == 'desc') {
+            $tickets->latest($sortObj['name']);
+          } else {
+            $tickets->oldest($sortObj['name']);
+          }
+          // inndirect relation
+        } elseif ($sortObj['name'] == 'status.name') {
+          $tickets->join('status', 'status.id', '=', 'tickets.status_id');
+          $tickets->orderBy('status.name', $sortObj['order']);
+        } elseif ($sortObj['name'] == 'project.name') {
+          $tickets->join('projects', 'projects.id', '=', 'tickets.project_id');
+          $tickets->orderBy('projects.name', $sortObj['order']);
+        } elseif ($sortObj['name'] == 'project.owner.name') {
+          $tickets->join('projects', 'projects.id', '=', 'tickets.project_id');
+          $tickets->join('users as owners', 'owners.id', '=', 'projects.owner_id');
+          $tickets->orderBy('owners.name', $sortObj['order']);
+        }
+      }
+    }
+
     $tickets->select('tickets.*');
     $tickets->latest();
 
