@@ -67,6 +67,11 @@ class TaskObserver
             TaskAssignJob::dispatch($this->input['responsible_id'], $task);
         }
 
+        $task->project;
+        $task->responsible;
+        $task->task_status;
+        $task->deadline;
+
         $ticket_id = null;
         if ($task->ticket) {
             $ticket_id = $task->ticket->id;
