@@ -85,7 +85,6 @@ class TaskController extends BaseController
           } else {
             $tasks->oldest($sortObj['name']);
           }
-          
         } elseif ($sortObj['name'] == 'status.name') {
           $tasks->join('status', 'status.id', '=', 'tasks.status_id');
           $tasks->orderBy('status.name', $sortObj['order']);
@@ -107,7 +106,7 @@ class TaskController extends BaseController
       foreach ($input['filters'] as $filterObj) {
         if ($filterObj['type'] == 'simple') {
           if (in_array($filterObj['name'], ['name', 'deadline', 'priority', 'created_at'])) {
-             $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+             $tasks->where('tasks.'.$filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
           } elseif ($filterObj['name'] == 'project.name') {
             $tasks->whereHas('project', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
