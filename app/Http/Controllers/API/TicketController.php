@@ -99,6 +99,38 @@ class TicketController extends BaseController
       }
     }
 
+    // filter 
+    if (isset($input['filters']) && $input['filters']) {
+      foreach ($input['filters'] as $filterObj) {
+        // first type of filter
+        if ($filterObj['type'] == 'simple') {
+          if (in_array($filterObj['name'], ['name', 'number', 'created_at', 'read'])) {
+             $tickets->where('tickets.'.$filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+          } elseif ($filterObj['name'] == 'project.name') {
+            $tickets->whereHas('project', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'status.name') {
+            $tickets->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'project.owner.name') {
+            $tickets->whereHas('project.owner', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          }
+        // second type of filter
+        } elseif ($filterObj['type'] == 'select') {
+          if ($filterObj['name'] == 'status.name') {
+            $tickets->whereHas('ticket_status', function($query) use($filterObj) {
+              $query->where('name', 'in', $filterObj['selected_options']);
+            });
+          }
+        }
+      }
+    }
+
+
     $tickets->select('tickets.*');
     $tickets->latest();
 
