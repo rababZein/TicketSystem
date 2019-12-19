@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 use Modules\TicketComment\Entities\TicketComment;
 
-class UpdateReplyTicketNotification extends Notification
+class UpdateUpdateReplyTicketNotification extends Notification
 {
     use Queueable;
 
@@ -45,10 +45,11 @@ class UpdateReplyTicketNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The ticket '.$this->ticketComment->ticket->name.' has a modification in one reply.')
-                    ->line('The Reply is modified to be: '.$this->ticketComment->comment)
-                    ->action('See more ..', url('/').'/ticket/'.$this->ticketComment->ticket->id)
-                    ->line('Thank you for using our application!');
+                    ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'))
+                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
+                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
+                    ->action(__('Mail/Ticket/UpdateReplyTicketNotification.seeMore'), url('/ticket/'. $this->ticketComment->ticket->id))
+                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'));
     }
 
     /**

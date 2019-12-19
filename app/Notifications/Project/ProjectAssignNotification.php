@@ -19,7 +19,7 @@ class ProjectAssignNotification extends Notification
      * @return void
      */
     public function __construct(Project $project)
-    {
+    {        
         $this->project = $project;
     }
 
@@ -43,11 +43,12 @@ class ProjectAssignNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The Project '.$this->project->name.' has been assigned to you')
-                    ->line('Description: '.$this->project->description)
-                    ->line('Owner: '.$this->project->owner->name)
-                    ->action('See More ..', url('/project/'. $this->project->id))
-                    ->line('Thank you for using our application!');
+                    ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
+                    ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
+                    ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
+                    ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
+                    ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/project/'. $this->project->id))
+                    ->line(__('Mail/Project/ProjectAssignNotification.footer'));
     }
 
     /**
