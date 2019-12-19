@@ -109,8 +109,8 @@ export default {
   filters: {
     filePath(path) {
       let str = path;
-      let n = str.indexOf("storage");
-      return "/storage/attachments" + str.substring(n + 7);
+      let n = str.indexOf("public");
+      return "/storage" + str.substring(n + 6);
     },
     fileName(path) {
       let str = path;
