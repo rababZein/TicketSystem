@@ -3,9 +3,9 @@ import projects from '../../../api/projects';
 import status from '../../../api/status';
 
 export default {
-    getTickets({ commit }, page) {
+    getTickets({ commit }, params) {
         return new Promise((resolve, reject) => {
-            tickets.get({page: page}).then(response => {
+            tickets.get(params).then(response => {
                 commit('setTickets', response.data.data);
                 resolve(response);
             }).catch(error => {

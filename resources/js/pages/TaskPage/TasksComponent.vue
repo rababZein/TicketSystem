@@ -279,7 +279,6 @@ export default {
         {
           label: "title",
           name: "name",
-          id: "id",
           filter: {
             type: "simple",
             placeholder: "Enter task title"
@@ -367,12 +366,6 @@ export default {
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
     },
-    // onPaginate(page) {
-    //   this.$router.push({
-    //     name: "tasks.list",
-    //     params: { page }
-    //   });
-    // },
     getTasks() {
       this.$Progress.start();
       this.$store
