@@ -39,11 +39,17 @@ class TaskAssignJob implements ShouldQueue
         if (!$responsible) {
             throw new ItemNotFoundException($responsible);
         }
+
+        $temp = \App::getLocale();
+
+        \App::setLocale(isset($responsible->metadata->language) ? $responsible->metadata->language : 'de');
         
         try {
             $responsible->notify(new TaskAssignNotification($this->task));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
+
+        \App::setLocale($temp);
     }
 }

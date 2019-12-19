@@ -32,10 +32,16 @@ class ReceiptPaidJob implements ShouldQueue
      */
     public function handle()
     {
+        $temp = \App::getLocale();
+
+        \App::setLocale(isset($this->receipt->task->project->owner->metadata->language) ? $this->receipt->task->project->owner->metadata->language : 'de');
+        
         try {
             $this->receipt->task->project->owner->notify(new ReceiptPaidNotification($this->receipt));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
+
+        \App::setLocale($temp);
     }
 }

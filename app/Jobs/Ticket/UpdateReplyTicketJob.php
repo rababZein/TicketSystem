@@ -35,10 +35,16 @@ class UpdateReplyTicketJob implements ShouldQueue
      */
     public function handle()
     {
+        $temp = \App::getLocale();
+
+        \App::setLocale(isset($this->ticketComment->ticket->project->owner->metadata->language) ? $this->ticketComment->ticket->project->owner->metadata->language : 'de');
+        
         try {
             $this->ticketComment->ticket->project->owner->notify(new UpdateReplyTicketNotification($this->ticketComment));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
+
+        \App::setLocale($temp);
     }
 }

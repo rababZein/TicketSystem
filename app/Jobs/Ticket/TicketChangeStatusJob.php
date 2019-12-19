@@ -35,10 +35,16 @@ class TicketChangeStatusJob implements ShouldQueue
      */
     public function handle()
     {
+        $temp = \App::getLocale();
+
+        \App::setLocale(isset($this->ticket->project->owner->metadata->language) ? $this->ticket->project->owner->metadata->language : 'de');
+        
         try {
             $this->ticket->project->owner->notify(new TicketChangeStatusNotification($this->ticket));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }
+
+        \App::setLocale($temp);
     }
 }

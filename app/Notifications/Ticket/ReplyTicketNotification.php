@@ -45,10 +45,12 @@ class ReplyTicketNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The ticket '.$this->ticketComment->ticket->name.' has a reply.')
-                    ->line('Reply: '.$this->ticketComment->comment)
-                    ->action('See more ..', url('/admin/ticket/' . $this->ticketComment->ticket->id))
-                    ->line('Thank you for using our application!');
+
+                    ->subject(__('Mail/Ticket/ReplyTicketNotification.subject'))
+                    ->line(__('Mail/Ticket/ReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
+                    ->line(__('Mail/Ticket/ReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
+                    ->action(__('Mail/Ticket/ReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
+                    ->line(__('Mail/Ticket/ReplyTicketNotification.footer'));
     }
 
     /**

@@ -33,7 +33,7 @@ class TaskController extends BaseController
    */
   public function __construct()
   {
-      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index', 'getAll']]);
+      $this->middleware('permission:task-list|task-create|task-edit|task-delete', ['only' => ['index']]);
       $this->middleware('permission:task-create', ['only' => ['store']]);
       $this->middleware('permission:task-edit', ['only' => ['update']]);
       $this->middleware('permission:task-delete', ['only' => ['destroy']]);
@@ -47,13 +47,80 @@ class TaskController extends BaseController
    */
   public function index(ListTaskRequest $request)
   {
+    $input = $request->validated()['params'];   
+
     if (auth()->user()->isAdmin()) {
-      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->latest()->paginate();
+      $tasks = Task::with('project.owner', 'ticket', 'responsible', 'task_status');      
     } else {
       $taskModel = new Task();
-      $tasks = $taskModel->ownTasks(auth()->user()->id)->latest()->paginate();
+      $tasks = $taskModel->ownTasks(auth()->user()->id);
     }
 
+    if (isset($input['global_search']) && $input['global_search']) {
+      $tasks->where(function($query) use ($input){
+        $query->whereHas('task_status', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhere('tasks.name','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.priority','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.deadline','LIKE','%'.$input['global_search'].'%');
+      });
+    }
+
+    if (isset($input['sort']) && $input['sort']) {
+      foreach ($input['sort'] as $sortObj) {
+        if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+          if ($sortObj['order'] == 'desc') {
+            $tasks->latest($sortObj['name']);
+          } else {
+            $tasks->oldest($sortObj['name']);
+          }
+          
+        } elseif ($sortObj['name'] == 'status.name') {
+          $tasks->join('status', 'status.id', '=', 'tasks.status_id');
+          $tasks->orderBy('status.name', $sortObj['order']);
+          
+        } elseif ($sortObj['name'] == 'project.name') {
+          $tasks->join('projects', 'projects.id', '=', 'tasks.project_id');
+          $tasks->orderBy('projects.name', $sortObj['order']);
+          
+        }
+      }
+    }
+
+    if (isset($input['filters']) && $input['filters']) {
+      foreach ($input['filters'] as $filterObj) {
+        if ($filterObj['type'] == 'simple') {
+          if (in_array($filterObj['name'], ['name', 'deadline', 'priority'])) {
+             $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+          } elseif ($filterObj['name'] == 'project.name') {
+            $tasks->whereHas('project', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'status.name') {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          }
+        } elseif ($filterObj['type'] == 'select') {
+          if ($filterObj['name'] == 'status.name') {
+            $tasks->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'in', $filterObj['selected_options']);
+            });
+          } elseif ($filterObj['name'] == 'priority') {
+            $tasks->where($filterObj['name'], 'in', $filterObj['selected_options']);
+          }
+        }
+      }
+    }
+
+    $tasks->select('tasks.*');
+    $tasks->latest();
+
+    $tasks = $tasks->paginate();
     return $this->sendResponse(new TaskCollection($tasks), 'Tasks retrieved successfully.');
   }
 
@@ -74,9 +141,14 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
+    $task = Task::find($task->id);
+
+    $task->project;
+    $task->responsible;
+    $task->task_status;
     $task->deadline;
 
-    return $this->sendResponse(new TaskResource(Task::find($task->id)), 'Task created successfully.'); 
+    return $this->sendResponse(new TaskResource($task), 'Task created successfully.'); 
   }
 
   /**
@@ -87,7 +159,7 @@ class TaskController extends BaseController
    */
   public function show(ViewTaskRequest $request, $id)
   {
-    $task = Task::with('project.owner', 'ticket', 'responsible')->get();
+    $task = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
     $task = $task->find($id);
 
     if (is_null($task)) {
@@ -160,7 +232,7 @@ class TaskController extends BaseController
 
   public function getTasksByTicketId($id, ListTaskRequest $request)
   {
-    $tasks = Task::with('project.owner', 'responsible')->whereHas('ticket', function ($query) use ($id) {
+    $tasks = Task::with('project.owner', 'responsible', 'task_status')->whereHas('ticket', function ($query) use ($id) {
       $query->where('id', $id);
     })->latest()->paginate();
 
@@ -195,14 +267,14 @@ class TaskController extends BaseController
     $input = $request->validated();
     $tasks = Task::with('responsible', 'project', 'task_status')
                   ->where('project_id', $input['project_id'])
-                  ->paginate();
+                  ->get();
 
-    if (! $tasks->toArray()['data']) {
+    if (! $tasks->toArray()) {
       return $this->sendResponse([], 'Tasks retrieved successfully.');
     }
 
     $project = [];
-    $project['name'] = $tasks->toArray()['data'][0]['project']['name'];
+    $project['name'] = $tasks->toArray()[0]['project']['name'];
 
     // generate all status
     $allStatus = ['open', 'pending', 'in-progress', 'done'];
@@ -212,7 +284,7 @@ class TaskController extends BaseController
       $project['columns'][] = $arr;
     }
 
-    foreach ($tasks->toArray()['data'] as $task) {         
+    foreach ($tasks->toArray() as $task) {         
       $i=0;
       if (isset($project['columns'])) {
         foreach($project['columns'] as $status) {

@@ -40,11 +40,15 @@ class Ticket extends Model
         return $this->hasOne('App\Models\Status', 'id', 'status_id');
     }
 
+    public function files()
+    {
+        return $this->hasMany('App\Models\Ticket_file');
+    }
+  
     public function setting()
     {
         return $this->hasOne('App\Models\Setting', 'id', 'setting_id');
     }
-
 
     public function ownTickets($id)
     {
