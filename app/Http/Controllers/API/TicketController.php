@@ -111,7 +111,7 @@ class TicketController extends BaseController
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           } elseif ($filterObj['name'] == 'status.name') {
-            $tickets->whereHas('task_status', function($query) use($filterObj) {
+            $tickets->whereHas('ticket_status', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           } elseif ($filterObj['name'] == 'project.owner.name') {
