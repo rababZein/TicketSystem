@@ -316,6 +316,7 @@ export default {
         {
           label: "Created at",
           name: "created_at",
+          sort: true
         },
         {
           label: "Deadline",
@@ -327,11 +328,16 @@ export default {
           name: "project.owner.name",
           filter: {
             type: "simple"
-          }
+          },
+          sort: true
         },
         {
           label: "Responsible",
           name: "responsible.name",
+          filter: {
+            type: "simple"
+          },
+          sort: true
         },
         {
           label: "action",
