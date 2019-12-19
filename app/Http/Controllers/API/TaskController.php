@@ -64,15 +64,22 @@ class TaskController extends BaseController
         $query->orWhereHas('project', function($query) use($input) {
           $query->where('name', 'like', '%'.$input['global_search'].'%');
         });
+        $query->orWhereHas('responsible', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project.owner', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
         $query->orWhere('tasks.name','LIKE','%'.$input['global_search'].'%');
         $query->orWhere('tasks.priority','LIKE','%'.$input['global_search'].'%');
         $query->orWhere('tasks.deadline','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tasks.created_at','LIKE','%'.$input['global_search'].'%');
       });
     }
 
     if (isset($input['sort']) && $input['sort']) {
       foreach ($input['sort'] as $sortObj) {
-        if (in_array($sortObj['name'], ['id', 'name', 'deadline', 'priority'])) {
+        if (in_array($sortObj['name'], ['created_at', 'name', 'deadline', 'priority'])) {
           if ($sortObj['order'] == 'desc') {
             $tasks->latest($sortObj['name']);
           } else {
@@ -82,11 +89,16 @@ class TaskController extends BaseController
         } elseif ($sortObj['name'] == 'status.name') {
           $tasks->join('status', 'status.id', '=', 'tasks.status_id');
           $tasks->orderBy('status.name', $sortObj['order']);
-          
         } elseif ($sortObj['name'] == 'project.name') {
           $tasks->join('projects', 'projects.id', '=', 'tasks.project_id');
           $tasks->orderBy('projects.name', $sortObj['order']);
-          
+        } elseif ($sortObj['name'] == 'project.owner.name') {
+          $tasks->join('projects', 'projects.id', '=', 'tasks.project_id');
+          $tasks->join('users as owners', 'owners.id', '=', 'projects.owner_id');
+          $tasks->orderBy('owners.name', $sortObj['order']);
+        } elseif ($sortObj['name'] == 'responsible.name') {
+          $tasks->join('users', 'users.id', '=', 'tasks.responsible_id');
+          $tasks->orderBy('users.name', $sortObj['order']);
         }
       }
     }
@@ -94,7 +106,7 @@ class TaskController extends BaseController
     if (isset($input['filters']) && $input['filters']) {
       foreach ($input['filters'] as $filterObj) {
         if ($filterObj['type'] == 'simple') {
-          if (in_array($filterObj['name'], ['name', 'deadline', 'priority'])) {
+          if (in_array($filterObj['name'], ['name', 'deadline', 'priority', 'created_at'])) {
              $tasks->where($filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
           } elseif ($filterObj['name'] == 'project.name') {
             $tasks->whereHas('project', function($query) use($filterObj) {
@@ -102,6 +114,14 @@ class TaskController extends BaseController
             });
           } elseif ($filterObj['name'] == 'status.name') {
             $tasks->whereHas('task_status', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'responsible.name') {
+            $tasks->whereHas('responsible', function($query) use($filterObj) {
+              $query->where('name', 'like', '%'.$filterObj['text'].'%');
+            });
+          } elseif ($filterObj['name'] == 'project.owner.name') {
+            $tasks->whereHas('project.owner', function($query) use($filterObj) {
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           }
