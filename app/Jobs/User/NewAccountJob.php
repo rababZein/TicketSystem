@@ -38,7 +38,7 @@ class NewAccountJob implements ShouldQueue
     public function handle()
     {
         try {
-            $this->user->notify(new NewAccountNotification($this->user, $password));
+            $this->user->notify(new NewAccountNotification($this->user, $this->password));
         } catch (\Exception $ex) {
             throw new \Exception($ex);
         }

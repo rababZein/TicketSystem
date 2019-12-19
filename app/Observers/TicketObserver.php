@@ -33,7 +33,7 @@ class TicketObserver
             $ticket->number = $ticketSetting->key . sprintf("%08d", $ticketSetting->last_number + 1);
         
             $ticketSetting->last_number = sprintf("%08d", $ticketSetting->last_number + 1);
-            $ticketSetting->updated_by = auth()->user()->id ? auth()->user()->id  : 1; // admin
+            $ticketSetting->updated_by = isset(auth()->user()->id) ? auth()->user()->id  : 1; // admin
             $ticketSetting->save();
         }
     }
