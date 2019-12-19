@@ -29,10 +29,6 @@ class TaskObserver
         if (isset($this->input['responsible_id'])) {
             TaskAssignJob::dispatch($this->input['responsible_id'], $task);
         }
-        $task->project;
-        $task->responsible;
-        $task->task_status;
-        $task->deadline;
 
         $ticket_id = null;
         if ($task->ticket) {
