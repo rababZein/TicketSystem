@@ -250,15 +250,6 @@ export default {
           sort: true
         },
         {
-          label: "Project",
-          name: "project.name",
-          filter: {
-            type: "simple",
-            placeholder: "Enter Project"
-          },
-          sort: true
-        },
-        {
           label: "Read",
           name: "read",
           sort: true
