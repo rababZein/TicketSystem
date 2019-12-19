@@ -38,6 +38,9 @@
                 :to="{ name: 'ticket', params: { id: props.row.id }}"
               >{{ props.cell_value }}</router-link>
             </template>
+            <template slot="created_at" slot-scope="props">
+              {{ props.cell_value | DateOnly }}
+            </template>
             <template slot="read" slot-scope="props">
               <p  v-if="!props.cell_value">Not Read</p>
               <p v-else>Read</p>
@@ -247,6 +250,11 @@ export default {
             type: "simple",
             placeholder: "Enter Project"
           },
+          sort: true
+        },
+        {
+          label: "Created at",
+          name: "created_at",
           sort: true
         },
         {
