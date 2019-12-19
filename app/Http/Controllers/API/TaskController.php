@@ -141,8 +141,6 @@ class TaskController extends BaseController
       throw new ItemNotCreatedException('Task');
     }
 
-    $task->deadline;
-
     return $this->sendResponse(new TaskResource(Task::find($task->id)), 'Task created successfully.'); 
   }
 
@@ -154,7 +152,7 @@ class TaskController extends BaseController
    */
   public function show(ViewTaskRequest $request, $id)
   {
-    $task = Task::with('project.owner', 'ticket', 'responsible')->get();
+    $task = Task::with('project.owner', 'ticket', 'responsible', 'task_status')->get();
     $task = $task->find($id);
 
     if (is_null($task)) {
@@ -227,7 +225,7 @@ class TaskController extends BaseController
 
   public function getTasksByTicketId($id, ListTaskRequest $request)
   {
-    $tasks = Task::with('project.owner', 'responsible')->whereHas('ticket', function ($query) use ($id) {
+    $tasks = Task::with('project.owner', 'responsible', 'task_status')->whereHas('ticket', function ($query) use ($id) {
       $query->where('id', $id);
     })->latest()->paginate();
 
