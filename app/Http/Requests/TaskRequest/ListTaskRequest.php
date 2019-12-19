@@ -16,7 +16,6 @@ class ListTaskRequest extends FormRequest
         return true;
     }
 
-
     /**
      * Inject GET parameters into validation data
      *

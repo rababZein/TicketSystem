@@ -57,16 +57,17 @@ let routes = [
         meta: { title: "Projects" }
     },
     {
+        path: "/admin/ticket/:id",
+        name: "ticket",
+        component: require("./pages/TicketPage/SingleTicketComponent.vue")
+            .default,
+        meta: { title: "Ticket" }
+    },
+    {
         path: "/admin/tickets/:page?",
         name: "tickets.list",
         component: require("./pages/TicketPage/TicketsComponent.vue").default,
         meta: { title: "Tickets" }
-    },
-    {
-        path: "/admin/ticket/:id",
-        component: require("./pages/TicketPage/SingleTicketComponent.vue")
-            .default,
-        meta: { title: "Ticket" }
     },
     {
         path: "/admin/task/:id",

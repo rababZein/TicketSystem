@@ -44,6 +44,9 @@
                 :to="{ name: 'project', params: { id: props.row.project.id }}"
               >{{ props.cell_value }}</router-link>
             </template>
+            <template slot="created_at" slot-scope="props">
+              {{ props.cell_value | DateOnly }}
+            </template>
             <template slot="deadline" slot-scope="props">
               {{ props.cell_value | DateOnly }}
             </template>
@@ -279,7 +282,6 @@ export default {
         {
           label: "title",
           name: "name",
-          id: "id",
           filter: {
             type: "simple",
             placeholder: "Enter task title"
@@ -312,8 +314,29 @@ export default {
           sort: true
         },
         {
+          label: "Created at",
+          name: "created_at",
+          sort: true
+        },
+        {
           label: "Deadline",
           name: "deadline",
+          sort: true
+        },
+        {
+          label: "client",
+          name: "project.owner.name",
+          filter: {
+            type: "simple"
+          },
+          sort: true
+        },
+        {
+          label: "Responsible",
+          name: "responsible.name",
+          filter: {
+            type: "simple"
+          },
           sort: true
         },
         {
@@ -367,12 +390,6 @@ export default {
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
     },
-    // onPaginate(page) {
-    //   this.$router.push({
-    //     name: "tasks.list",
-    //     params: { page }
-    //   });
-    // },
     getTasks() {
       this.$Progress.start();
       this.$store
@@ -523,3 +540,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mx-datepicker {
+  display: block;
+  width: unset;
+}
+</style>
