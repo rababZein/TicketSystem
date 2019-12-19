@@ -43,6 +43,7 @@ class ProjectAssignNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+                    ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
                     ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
                     ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
                     ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))

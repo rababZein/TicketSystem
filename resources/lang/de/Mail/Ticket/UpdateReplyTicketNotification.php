@@ -12,9 +12,10 @@ return [
     |
     */
 
-    'ticketName' => 'The ticket: :ticket_name , has a modification in one reply.',
-    'reply' => 'The Reply is modified to be: :reply .',
-    'seeMore' => 'See More...',
-    'footer' => 'Thank you for using our application!'
+    'subject' => 'Änderung bei Antwort auf Ticket Benachrichtigung',
+    'ticketName' => 'Das Ticket: :ticket_name ,  hat eine Änderung in einer Antwort.',
+    'reply' => 'Die Antwort die verändert wurde: :reply .',
+    'seeMore' => 'Siehe meh...',
+    'footer' => 'Vielen Dank, dass Sie unsere Anwendung benutzen!'
 
 ];

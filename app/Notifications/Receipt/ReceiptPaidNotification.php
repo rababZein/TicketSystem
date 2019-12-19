@@ -43,6 +43,7 @@ class ReceiptPaidNotification extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+                    ->subject(__('Mail/Receipt/ReceiptPaidNotification.subject'))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.receiptName', ['receipt_name' => $this->receipt->name]))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.taskName', ['task_name' => $this->receipt->task->name]))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.amount', ['amount' => $this->receipt->amount]))
