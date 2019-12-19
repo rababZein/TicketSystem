@@ -44,6 +44,9 @@
                 :to="{ name: 'project', params: { id: props.row.project.id }}"
               >{{ props.cell_value }}</router-link>
             </template>
+            <template slot="created_at" slot-scope="props">
+              {{ props.cell_value | DateOnly }}
+            </template>
             <template slot="deadline" slot-scope="props">
               {{ props.cell_value | DateOnly }}
             </template>
@@ -311,9 +314,24 @@ export default {
           sort: true
         },
         {
+          label: "Created at",
+          name: "created_at",
+        },
+        {
           label: "Deadline",
           name: "deadline",
           sort: true
+        },
+        {
+          label: "client",
+          name: "project.owner.name",
+          filter: {
+            type: "simple"
+          }
+        },
+        {
+          label: "Responsible",
+          name: "responsible.name",
         },
         {
           label: "action",
