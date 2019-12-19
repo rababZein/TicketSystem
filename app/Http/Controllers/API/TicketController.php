@@ -43,12 +43,41 @@ class TicketController extends BaseController
    */
   public function index(ListTicketRequest $request)
   {
+    $input = $request->validated()['params']; 
+    
     if (auth()->user()->isAdmin()) {
-      $tickets = Ticket::with('project.owner')->latest()->paginate();
+      $tickets = Ticket::with('project.owner');
     } else {
       $ticketModel = new Ticket();
       $tickets = $ticketModel->ownTickets(auth()->user()->id);
     }
+
+    // global search
+    if (isset($input['global_search']) && $input['global_search']) {
+      // to be all between ()
+      $tickets->where(function($query) use ($input){
+        // in direct relation
+        $query->whereHas('ticket_status', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        $query->orWhereHas('project.owner', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        // direct relation
+        $query->orWhere('tickets.name','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tickets.number','LIKE','%'.$input['global_search'].'%');
+        $query->orWhere('tickets.created_at','LIKE','%'.$input['global_search'].'%');
+      });
+    }
+
+
+    $tickets->select('tickets.*');
+    $tickets->latest();
+
+    $tickets = $tickets->paginate();
 
     return $this->sendResponse(new TicketCollection($tickets), 'Tickets retrieved successfully.');
   }

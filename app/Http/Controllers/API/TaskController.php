@@ -56,8 +56,11 @@ class TaskController extends BaseController
       $tasks = $taskModel->ownTasks(auth()->user()->id);
     }
 
+    // global search
     if (isset($input['global_search']) && $input['global_search']) {
+      // to be all between ()
       $tasks->where(function($query) use ($input){
+        // in direct relation
         $query->whereHas('task_status', function($query) use($input) {
           $query->where('name', 'like', '%'.$input['global_search'].'%');
         });
@@ -70,6 +73,7 @@ class TaskController extends BaseController
         $query->orWhereHas('project.owner', function($query) use($input) {
           $query->where('name', 'like', '%'.$input['global_search'].'%');
         });
+        // direct relation
         $query->orWhere('tasks.name','LIKE','%'.$input['global_search'].'%');
         $query->orWhere('tasks.priority','LIKE','%'.$input['global_search'].'%');
         $query->orWhere('tasks.deadline','LIKE','%'.$input['global_search'].'%');
@@ -77,14 +81,17 @@ class TaskController extends BaseController
       });
     }
 
+    // sorting
     if (isset($input['sort']) && $input['sort']) {
       foreach ($input['sort'] as $sortObj) {
+        //direct relation then in-direct relation
         if (in_array($sortObj['name'], ['created_at', 'name', 'deadline', 'priority'])) {
           if ($sortObj['order'] == 'desc') {
             $tasks->latest($sortObj['name']);
           } else {
             $tasks->oldest($sortObj['name']);
           }
+          // inndirect relation
         } elseif ($sortObj['name'] == 'status.name') {
           $tasks->join('status', 'status.id', '=', 'tasks.status_id');
           $tasks->orderBy('status.name', $sortObj['order']);
@@ -102,8 +109,10 @@ class TaskController extends BaseController
       }
     }
 
+    // filter 
     if (isset($input['filters']) && $input['filters']) {
       foreach ($input['filters'] as $filterObj) {
+        // first type of filter
         if ($filterObj['type'] == 'simple') {
           if (in_array($filterObj['name'], ['name', 'deadline', 'priority', 'created_at'])) {
              $tasks->where('tasks.'.$filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
@@ -124,6 +133,7 @@ class TaskController extends BaseController
               $query->where('name', 'like', '%'.$filterObj['text'].'%');
             });
           }
+        // second type of filter
         } elseif ($filterObj['type'] == 'select') {
           if ($filterObj['name'] == 'status.name') {
             $tasks->whereHas('task_status', function($query) use($filterObj) {
