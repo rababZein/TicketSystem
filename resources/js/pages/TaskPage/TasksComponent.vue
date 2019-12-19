@@ -540,3 +540,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.mx-datepicker {
+  display: block;
+  width: unset;
+}
+</style>
