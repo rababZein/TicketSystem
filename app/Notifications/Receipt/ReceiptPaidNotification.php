@@ -47,7 +47,7 @@ class ReceiptPaidNotification extends Notification
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.receiptName', ['receipt_name' => $this->receipt->name]))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.taskName', ['task_name' => $this->receipt->task->name]))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.amount', ['amount' => $this->receipt->amount]))
-                    ->action(__('Mail/Receipt/ReceiptPaidNotification.seeMore'), url('/receipts/list'))
+                    ->action(__('Mail/Receipt/ReceiptPaidNotification.seeMore'), url('/admin/receipts/list'))
                     ->line(__('Mail/Receipt/ReceiptPaidNotification.footer'));
     }
 
