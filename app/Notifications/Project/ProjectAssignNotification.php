@@ -8,6 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\Project;
 
+use Webklex\IMAP\Facades\Client;
+
 class ProjectAssignNotification extends Notification
 {
     use Queueable;
@@ -42,6 +44,20 @@ class ProjectAssignNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $oClient = Client::account('default');
+        $oClient->connect();
+        $aFolder = $oClient->getFolder('[Gmail]/Sent Mail');
+        $date = now()->format('d-M-Y H:i:s O');
+        /**
+         * \\Seen" or null to be un-seen
+         */
+        $aFolder->appendMessage( "From: rabab.recsee.de@gmail.com\r\n"
+        . "To: rabab.recsee.de@gmail.com\r\n"
+        . "Subject: test\r\n"
+        . "\r\n"
+        . "this is a test message, please ignore\r\n", "\\Seen", $date
+        );
+
         return (new MailMessage)
                     ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
                     ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
