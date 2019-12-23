@@ -56,7 +56,7 @@ class everyMinute extends Command
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
 
-        $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(true)->get();
+        $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(true)->leaveUnread()->get();
 
         foreach($aMessage as $oMessage){
             $emailData = [];
@@ -72,12 +72,6 @@ class everyMinute extends Command
             foreach ($oMessage->getAttachments() as $oAttachment) {
                 // validate extention
                 if (in_array($oAttachment->getExtension(), ['png', 'jpg', 'jpeg', 'txt', 'csv', 'docx', 'doc', 'xlsx', 'xls']) ) {
-                    throw new InvalidDataException([
-                        'file extension' => $oAttachment->getExtension()
-                        ],
-                        'file extension not allowed'
-                    );
-                }
                 // storage
                 $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
                 $dirName = dirname($attachmentPath);
@@ -89,6 +83,7 @@ class everyMinute extends Command
                 fclose($fp);
 
                 $emailData['attachmentPaths'][] = $attachmentPath;
+                }
             }
 
             $emailData['project'] = $this->getProjectByClientEmail($emailData);
