@@ -188,7 +188,8 @@ class everyMinute extends Command
             throw new ItemNotCreatedException('User', $ex->getMessage());
         }
 
-        NewAccountJob::dispatch($user, $password);
+        // no-need to send mail now, user will click forget password
+        //NewAccountJob::dispatch($user, $password);
 
         return $user;
     }

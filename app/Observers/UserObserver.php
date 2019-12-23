@@ -28,8 +28,9 @@ class UserObserver
             $user->assignRole($this->input['roles']);
         }
 
-        if (isset($this->input['password'])) 
-            NewAccountJob::dispatch($user, $this->input['password']);
+        // no-need to send mail now, user will click forget password
+        // if (isset($this->input['password'])) 
+        //     NewAccountJob::dispatch($user, $this->input['password']);
       
         if (isset($this->input['dynamic_attributes'])) {
             foreach ($this->input['dynamic_attributes'] as $dynamic_attribute) {
