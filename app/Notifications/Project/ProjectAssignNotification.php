@@ -44,27 +44,25 @@ class ProjectAssignNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        $oClient = Client::account('default');
-        $oClient->connect();
-        $aFolder = $oClient->getFolder('[Gmail]/Sent Mail');
-        $date = now()->format('d-M-Y H:i:s O');
-        /**
-         * \\Seen" or null to be un-seen
-         */
-        $aFolder->appendMessage( "From: rabab.recsee.de@gmail.com\r\n"
-        . "To: rabab.recsee.de@gmail.com\r\n"
-        . "Subject: test\r\n"
-        . "\r\n"
-        . "this is a test message, please ignore\r\n", "\\Seen", $date
+        $message = (new MailMessage)
+        ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
+        ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
+        ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
+        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
+        ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
+        ->line(__('Mail/Project/ProjectAssignNotification.footer'));
+
+        // dd($message->toArray());
+
+        
+        saveSysMailToSentFolder(
+            'rabab.recsee.de@gmail.com',
+            'rabab.recsee.de@gmail.com',
+            __('Mail/Project/ProjectAssignNotification.subject'),
+
         );
 
-        return (new MailMessage)
-                    ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
-                    ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
-                    ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
-                    ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
-                    ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
-                    ->line(__('Mail/Project/ProjectAssignNotification.footer'));
+        return $message;
     }
 
     /**

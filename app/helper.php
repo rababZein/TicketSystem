@@ -15,4 +15,23 @@ if(!function_exists('arrayPaginator')) {
         ['path' => $request->url(), 'query' => $request->query()]);
   }
 }
+
+if(!function_exists('saveSysMailToSentFolder')) {
+    function saveSysMailToSentFolder($from, $to, $subject, $body) {
+
+        $oClient = Webklex\IMAP\Facades\Client::account('default');
+        $oClient->connect();
+        $aFolder = $oClient->getFolder('[Gmail]/Sent Mail');
+        $date = now()->format('d-M-Y H:i:s O');
+        /**
+         * \\Seen" or null to be un-seen
+         */
+        $aFolder->appendMessage( "From: ".$from."\r\n"
+        . "To: ".$to."\r\n"
+        . "Subject: ".$subject."\r\n"
+        . "\r\n"
+        . $body."\r\n", "\\Seen", $date
+        );
+  }
+}
 ?>
