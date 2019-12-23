@@ -13,7 +13,8 @@ class ChangeAttachmentPathTypeTicketFilesTable extends Migration
      */
     public function up()
     {
-        //
+        DB::statement('ALTER TABLE ticket_files MODIFY attachment_path  LONGTEXT;');
+
     }
 
     /**
