@@ -44,6 +44,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
     Route::get('/projects/list', 'ProjectController@list');
     Route::get('/project/getAllByOwner/{owner_id}', 'ProjectController@getAllByOwner');
+    Route::get('/project/search/{search_key}', 'ProjectController@search');
     Route::get('/clients/{client_id}/projectsNumber', 'ProjectController@getProjectsCountPerClient');
     Route::get('/clients/{client_id}/projects', 'ProjectController@getProjectsPerClient');
     Route::resource('/projects', 'ProjectController')->except('create');

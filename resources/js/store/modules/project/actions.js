@@ -103,5 +103,15 @@ export default {
                 reject(error);
             })
         });
+    },
+    search({commit}, params) {
+        return new Promise((resolve, reject) => {
+            projects.search(params).then(response => {
+                commit('setProjects', response.data.data);
+                resolve(response);
+            }).catch(error => {
+                reject(error);
+            })
+        });
     }
 }

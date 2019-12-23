@@ -1,5 +1,8 @@
 <template>
   <div class="row">
+    <div class="col-12 mb-3" v-if="isLoading">
+      <span>Searching...</span>
+    </div>
     <div class="col-12 mb-3">
       <div class="card card-default">
         <div class="card-header">
@@ -10,6 +13,8 @@
                 name="table_search"
                 class="form-control float-right"
                 placeholder="Search"
+                @input="isTyping = true" 
+                v-model="searchQuery"
               />
 
               <div class="input-group-append">
@@ -215,11 +220,16 @@
 
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
+import _ from 'lodash';
 
 export default {
   data() {
     return {
       editMode: false,
+      searchQuery: "",
+      isTyping: false,
+      searchResult: [],
+      isLoading: false,
       form: new Form({
         id: "",
         name: "",
@@ -246,6 +256,19 @@ export default {
         .dispatch("project/getProjects", page)
         .then(() => {
           this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    searchProject(searchQuery) {
+      this.$Progress.start();
+      this.isLoading = true;
+      this.$store
+        .dispatch("project/search", searchQuery)
+        .then(() => {
+          this.$Progress.finish();
+          this.isLoading = false;
         })
         .catch(error => {
           this.$Progress.fail();
@@ -393,6 +416,16 @@ export default {
       owners: "owner/activeOwners",
       responsible: "regularUser/activeRegularUser"
     })
+  },
+  watch: {
+    searchQuery: _.debounce(function() {
+      this.isTyping = false;
+    }, 1000),
+    isTyping: function(value) {
+      if (!value) {
+        this.searchProject(this.searchQuery);
+      }
+    }
   }
 };
 </script>
