@@ -31,7 +31,7 @@ if(!function_exists('saveSysMailToSentFolder')) {
             $body .= $introLine."\r\n";
         }
 
-        $body .= $data['actionText']."\r\n".$data['actionUrl'];
+        $body .= $data['actionText']."\r\n".$data['actionUrl']."\r\n";
 
         foreach ($data['outroLines'] as $outroLine) {
             $body .= $outroLine."\r\n";
