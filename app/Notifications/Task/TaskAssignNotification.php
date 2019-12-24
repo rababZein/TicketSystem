@@ -42,13 +42,16 @@ class TaskAssignNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-
+        $message = (new MailMessage)
                     ->subject(__('Mail/Task/TaskAssignNotification.subject'))
                     ->line(__('Mail/Task/TaskAssignNotification.taskName', ['task_name' => $this->task->name]))
                     ->line(__('Mail/Task/TaskAssignNotification.description', ['description' => $this->task->description]))
                     ->action(__('Mail/Task/TaskAssignNotification.seeMore'), url('/admin/task/'.$this->task->id))
                     ->line(__('Mail/Task/TaskAssignNotification.footer'));
+
+        saveSysMailToSentFolder($notifiable->email, $message->data());
+
+        return $message;
     }
 
     /**

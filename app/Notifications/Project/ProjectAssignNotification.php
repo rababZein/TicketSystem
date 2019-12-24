@@ -52,15 +52,7 @@ class ProjectAssignNotification extends Notification
         ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
         ->line(__('Mail/Project/ProjectAssignNotification.footer'));
 
-        // dd($message->toArray());
-
-        
-        saveSysMailToSentFolder(
-            'rabab.recsee.de@gmail.com',
-            'rabab.recsee.de@gmail.com',
-            __('Mail/Project/ProjectAssignNotification.subject'),
-
-        );
+        saveSysMailToSentFolder($notifiable->email, $message->data());
 
         return $message;
     }

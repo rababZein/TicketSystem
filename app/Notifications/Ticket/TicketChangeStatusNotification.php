@@ -43,12 +43,15 @@ class TicketChangeStatusNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $message = (new MailMessage)
+                    ->subject(__('Mail/Ticket/TicketChangeStatusNotification.subject'))
+                    ->line(__('Mail/Ticket/TicketChangeStatusNotification.ticketName', ['ticket_name' => $this->ticket->name, 'status' => $this->ticket->ticket_status->name]))
+                    ->action(__('Mail/Ticket/TicketChangeStatusNotification.seeMore'), url('/admin/ticket/'. $this->ticket->id))
+                    ->line(__('Mail/Ticket/TicketChangeStatusNotification.footer'));
+    
+        saveSysMailToSentFolder($notifiable->email, $message->data());
 
-                    ->subject(__('Mail/Ticket/UpdateTicketChangeStatusNotification.subject'))
-                    ->line(__('Mail/Ticket/UpdateTicketChangeStatusNotification.ticketName', ['ticket_name' => $this->ticket->name, 'status' => $this->ticket->ticket_status->name]))
-                    ->action(__('Mail/Ticket/UpdateTicketChangeStatusNotification.seeMore'), url('/admin/ticket/'. $this->ticket->id))
-                    ->line(__('Mail/Ticket/UpdateTicketChangeStatusNotification.footer'));
+        return $message;
     }
 
     /**

@@ -17,16 +17,31 @@ if(!function_exists('arrayPaginator')) {
 }
 
 if(!function_exists('saveSysMailToSentFolder')) {
-    function saveSysMailToSentFolder($from, $to, $subject, $body) {
+    function saveSysMailToSentFolder($to, $data) {
 
         $oClient = Webklex\IMAP\Facades\Client::account('default');
         $oClient->connect();
         $aFolder = $oClient->getFolder('[Gmail]/Sent Mail');
         $date = now()->format('d-M-Y H:i:s O');
+
+        $subject = $data['subject'];
+
+        $body = '';
+        foreach ($data['introLines'] as $introLine) {
+            $body .= $introLine."\r\n";
+        }
+
+        $body .= $data['actionText']."\r\n".$data['actionUrl'];
+
+        foreach ($data['outroLines'] as $outroLine) {
+            $body .= $outroLine."\r\n";
+        }
+        
+
         /**
          * \\Seen" or null to be un-seen
          */
-        $aFolder->appendMessage( "From: ".$from."\r\n"
+        $aFolder->appendMessage( "From: ".config('imap.accounts')['default']['username']."\r\n"
         . "To: ".$to."\r\n"
         . "Subject: ".$subject."\r\n"
         . "\r\n"
