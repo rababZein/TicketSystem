@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 use Modules\TicketComment\Entities\TicketComment;
 
-class UpdateUpdateReplyTicketNotification extends Notification
+class UpdateReplyTicketNotification extends Notification
 {
     use Queueable;
 
