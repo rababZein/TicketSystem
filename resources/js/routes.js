@@ -61,7 +61,15 @@ let routes = [
         name: "ticket",
         component: require("./pages/TicketPage/SingleTicketComponent.vue")
             .default,
-        meta: { title: "Ticket" }
+        meta: { title: "Ticket" },
+    },
+    {
+        path: '/admin/ticket/:id/edit',
+        name: "ticket.edit",
+        component: require("./components/tickets/editTicket.vue").default,
+        meta: {
+            title: 'edit ticket'
+        }
     },
     {
         path: "/admin/tickets/:page?",
