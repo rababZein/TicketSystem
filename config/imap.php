@@ -151,5 +151,14 @@ return [
     'masks' => [
         'message' => \Webklex\IMAP\Support\Masks\MessageMask::class,
         'attachment' => \Webklex\IMAP\Support\Masks\AttachmentMask::class
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sent Box For Mail
+    |--------------------------------------------------------------------------
+    |
+    | 
+     */
+    'sent_box_folder' => env('MAIL_SENT_BOX_FOLDER', 'Sent')
 ];

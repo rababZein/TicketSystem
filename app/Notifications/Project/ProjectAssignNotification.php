@@ -8,6 +8,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Models\Project;
 
+use Webklex\IMAP\Facades\Client;
+
 class ProjectAssignNotification extends Notification
 {
     use Queueable;
@@ -42,13 +44,17 @@ class ProjectAssignNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
-                    ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
-                    ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
-                    ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
-                    ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
-                    ->line(__('Mail/Project/ProjectAssignNotification.footer'));
+        $message = (new MailMessage)
+        ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
+        ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
+        ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
+        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
+        ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
+        ->line(__('Mail/Project/ProjectAssignNotification.footer'));
+
+        saveSysMailToSentFolder($notifiable->email, $message->data());
+
+        return $message;
     }
 
     /**
