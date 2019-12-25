@@ -263,10 +263,10 @@
                 <div class="col-md-6">
                   <ul class="nav nav-footer justify-content-end">
                     <li class="nav-item">
-                      <a href="#" class="nav-link">Help</a>
+                      <a href="{{ route('impressum') }}" class="nav-link">Impressum</a>
                     </li>
                     <li class="nav-item">
-                      <a href="#" class="nav-link">About Us</a>
+                      <a href="{{ route('agb') }}" class="nav-link">AGB</a>
                     </li>
                     <li class="nav-item">
                       <a href="#" class="nav-link">Features</a>

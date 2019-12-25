@@ -16,6 +16,8 @@
 Auth::routes();
 Route::group(['namespace' => 'Frontend'], function () {
     Route::get('/', 'HomeController@index');
+    Route::get('/impressum', 'HomeController@impressum')->name('impressum');
+    Route::get('/agb', 'HomeController@agb')->name('agb');
 });
 
 Route::group(['middleware' => ['auth'], 'namespace' => 'Vue'], function () {
