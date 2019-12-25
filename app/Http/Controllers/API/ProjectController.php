@@ -45,12 +45,30 @@ class ProjectController extends BaseController
 
   public function index(ListProjectRequest $request)
   {
+    $input = $request->validated()['params']; 
+
     if (auth()->user()->isAdmin()) {
-      $projects = Project::with('owner')->paginate();
+      $projects = Project::with('owner');
     } else {
       $projectModel = new Project();
       $projects = $projectModel->ownProjects(auth()->user()->id);
     }
+
+    // global search
+    if (isset($input['global_search']) && $input['global_search']) {
+      // to be all between ()
+      $tasks->where(function($query) use ($input){
+        // in direct relation
+        $query->orWhereHas('owner', function($query) use($input) {
+          $query->where('name', 'like', '%'.$input['global_search'].'%');
+        });
+        // direct relation
+        $query->orWhere('name','LIKE','%'.$input['global_search'].'%');
+      });
+    }
+
+    $projects->latest();
+    $projects->paginate();
 
     return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
