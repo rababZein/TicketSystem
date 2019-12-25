@@ -21,7 +21,7 @@ if(!function_exists('saveSysMailToSentFolder')) {
 
         $oClient = Webklex\IMAP\Facades\Client::account('default');
         $oClient->connect();
-        $aFolder = $oClient->getFolder('[Gmail]/Sent Mail');
+        $aFolder = $oClient->getFolder(config('imap.sent_box_folder'));
         $date = now()->format('d-M-Y H:i:s O');
 
         $subject = $data['subject'];
