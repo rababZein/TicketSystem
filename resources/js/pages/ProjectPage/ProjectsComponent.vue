@@ -14,7 +14,7 @@
                 class="form-control float-right"
                 placeholder="Search"
                 @input="isTyping = true" 
-                v-model="searchQuery"
+                v-model="queryParams.global_search"
               />
 
               <div class="input-group-append">
@@ -264,6 +264,7 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
+          this.isLoading = false;
         });
     },
     getOwners() {
@@ -407,15 +408,18 @@ export default {
       projects: "project/activeProjects",
       owners: "owner/activeOwners",
       responsible: "regularUser/activeRegularUser"
-    })
+    }),
+    global_search() {
+      return this.queryParams.global_search;
+    }
   },
   watch: {
-    searchQuery: _.debounce(function() {
+    global_search: _.debounce(function() {
       this.isTyping = false;
     }, 1000),
     isTyping: function(value) {
       if (!value) {
-        this.searchProject(this.searchQuery);
+        this.getProjects(this.queryParams);
       }
     }
   }
