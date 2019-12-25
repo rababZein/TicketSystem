@@ -46,11 +46,15 @@ class NewAccountNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $message = (new MailMessage)
                     ->line('Welcom '.$this->user->name.', Your account has been created')
                     ->line('Your password is: '.$this->password)
                     ->action('See more ..', url('/').'users/'.$this->user->id)
                     ->line('Thank you for using our application!');
+            
+        saveSysMailToSentFolder($notifiable->email, $message->data());
+
+        return $message;
     }
 
     /**

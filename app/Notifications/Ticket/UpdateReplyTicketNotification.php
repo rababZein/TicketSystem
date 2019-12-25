@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 
 use Modules\TicketComment\Entities\TicketComment;
 
-class UpdateUpdateReplyTicketNotification extends Notification
+class UpdateReplyTicketNotification extends Notification
 {
     use Queueable;
 
@@ -44,13 +44,16 @@ class UpdateUpdateReplyTicketNotification extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-
+        $message = (new MailMessage)
                     ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'))
                     ->line(__('Mail/Ticket/UpdateReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
                     ->line(__('Mail/Ticket/UpdateReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
                     ->action(__('Mail/Ticket/UpdateReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
                     ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'));
+            
+        saveSysMailToSentFolder($notifiable->email, $message->data());
+
+        return $message;
     }
 
     /**
