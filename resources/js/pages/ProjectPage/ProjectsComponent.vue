@@ -226,7 +226,10 @@ export default {
   data() {
     return {
       editMode: false,
-      searchQuery: "",
+      queryParams: {
+        global_search: "",
+        page: 1
+      },
       isTyping: false,
       searchResult: [],
       isLoading: false,
@@ -250,22 +253,11 @@ export default {
         params: { page }
       });
     },
-    getProjects(page = 1) {
-      this.$Progress.start();
-      this.$store
-        .dispatch("project/getProjects", page)
-        .then(() => {
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
-    searchProject(searchQuery) {
+    getProjects(queryParams) {
       this.$Progress.start();
       this.isLoading = true;
       this.$store
-        .dispatch("project/search", searchQuery)
+        .dispatch("project/getProjects", queryParams)
         .then(() => {
           this.$Progress.finish();
           this.isLoading = false;
@@ -376,7 +368,6 @@ export default {
             .dispatch("project/deleteProject", id)
             .then(response => {
               this.$Progress.finish();
-              this.getProjects();
               Toast.fire({
                 type: "success",
                 title: response.data.message
@@ -402,7 +393,8 @@ export default {
     }
   },
   mounted() {
-    this.getProjects(this.$route.params.page || 1);
+    this.queryParams.page = this.$route.params.page || 1;
+    this.getProjects(this.queryParams);
     this.getOwners();
     this.getResponsibles();
   },

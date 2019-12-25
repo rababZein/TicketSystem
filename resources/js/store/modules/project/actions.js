@@ -1,9 +1,9 @@
 import projects from '../../../api/projects';
 
 export default {
-    getProjects({ commit }, page) {
+    getProjects({ commit }, queryParams) {
         return new Promise((resolve, reject) => {
-            projects.get({ page: page }).then(response => {
+            projects.get({ queryParams: queryParams, page: queryParams.page }).then(response => {
                 commit('setProjects', response.data.data);
                 resolve(response);
             }).catch(error => {
@@ -98,16 +98,6 @@ export default {
         return new Promise((resolve, reject) => {
             projects.getProjectPerClient(params).then(response => {
                 commit('user/setProjectPerUser', response.data.data, { root: true });
-                resolve(response);
-            }).catch(error => {
-                reject(error);
-            })
-        });
-    },
-    search({commit}, params) {
-        return new Promise((resolve, reject) => {
-            projects.search(params).then(response => {
-                commit('setProjects', response.data.data);
                 resolve(response);
             }).catch(error => {
                 reject(error);

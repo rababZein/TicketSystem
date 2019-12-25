@@ -27,5 +27,4 @@ export default {
         
         getProjectCountPerClient: params => API.get('/clients/'+ params +'/projectsNumber'),
         getProjectPerClient: params => API.get('/clients/'+ params.id +'/projects', {params}),
-        search: params => API.get('/project/search/'+ params),
 }
