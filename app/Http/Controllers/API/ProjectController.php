@@ -57,7 +57,7 @@ class ProjectController extends BaseController
     // global search
     if (isset($input['global_search']) && $input['global_search']) {
       // to be all between ()
-      $tasks->where(function($query) use ($input){
+      $projects->where(function($query) use ($input){
         // in direct relation
         $query->orWhereHas('owner', function($query) use($input) {
           $query->where('name', 'like', '%'.$input['global_search'].'%');
@@ -68,7 +68,7 @@ class ProjectController extends BaseController
     }
 
     $projects->latest();
-    $projects->paginate();
+    $projects = $projects->paginate();
 
     return $this->sendResponse(new ProjectCollection($projects), 'Projects retrieved successfully.');
   }
