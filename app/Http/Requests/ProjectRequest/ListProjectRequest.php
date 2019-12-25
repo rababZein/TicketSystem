@@ -17,6 +17,21 @@ class ListProjectRequest extends FormRequest
     }
 
     /**
+     * Inject GET parameters into validation data
+     *
+     * @param array $keys Properties to only return
+     *
+     * @return array
+     */
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        $data['params'] = json_decode($this->get('queryParams'), true);
+
+        return $data;
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array
@@ -24,7 +39,8 @@ class ListProjectRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            "params" => "nullable|array",
+            "params.global_search" => "string"
         ];
     }
 }

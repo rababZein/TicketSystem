@@ -73,8 +73,7 @@ class Project extends Model
                     ->join('project_assigns', 'project_assigns.project_id', '=', 'projects.id')
                     ->where('project_assigns.assign_to', $id)
                     ->orWhere('projects.created_by', $id)
-                    ->with('owner')
-                    ->paginate();
+                    ->with('owner');
 
     }
 
