@@ -18,9 +18,9 @@
               />
 
               <div class="input-group-append">
-                <button type="submit" class="btn btn-default">
+                <a href="#" @click="getProjects(queryParams)" class="btn btn-default">
                   <i class="fas fa-search"></i>
-                </button>
+                </a>
               </div>
             </div>
           </div>
