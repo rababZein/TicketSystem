@@ -1,9 +1,9 @@
 import projects from '../../../api/projects';
 
 export default {
-    getProjects({ commit }, page) {
+    getProjects({ commit }, queryParams) {
         return new Promise((resolve, reject) => {
-            projects.get({ page: page }).then(response => {
+            projects.get({ queryParams: queryParams, page: queryParams.page }).then(response => {
                 commit('setProjects', response.data.data);
                 resolve(response);
             }).catch(error => {

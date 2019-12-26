@@ -15,7 +15,7 @@ export default {
             task_rate: project.task_rate,
             budget_hours: project.budget_hours
         };
-        state.items.data.push(projectObj);
+        state.items.data.unshift(projectObj);
 
     },
     editProject(state, project) {
