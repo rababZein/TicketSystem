@@ -5,7 +5,14 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ task.name }}</span>
-          <div class="float-right font-weight-light">{{ task.created_at | DateOnly }}</div>
+          <div class="card-tools">
+            <router-link :to="{ name: 'task.edit', params: {id: task.id }}" class="btn btn-primary btn-xs">
+              <i class="fas fa-edit fa-fw"></i>
+            </router-link>
+            <a href="#" @click="deleteTask(task.id)" class="btn btn-danger btn-xs">
+              <i class="fas fa-trash fa-fw"></i>
+            </a>
+          </div>
         </div>
 
         <div class="card-body">
@@ -88,6 +95,14 @@
                 <div
                   class="font-weight-light"
                 >{{ humanReadableFromSecounds(duration).slice(0, -3) }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-6">
+              <div class="form-group">
+                <label for="created_at">Created at</label>
+                <div class="font-weight-light">{{ task.created_at | DateOnly }}</div>
               </div>
             </div>
           </div>
@@ -271,6 +286,39 @@ export default {
     };
   },
   methods: {
+    deleteTask(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("task/deleteTask", id)
+            .then(response => {
+              this.$Progress.finish();
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
+              this.$router.push({ name: "tasks.list" });
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              console.log(error);
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
+    },
     startTracking() {
       // Reset the counter and timer string
       this.counted_time = null;

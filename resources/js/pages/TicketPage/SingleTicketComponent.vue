@@ -5,18 +5,53 @@
         <div class="card-header">
           <span>Title:</span>
           <span class="font-weight-light">{{ ticket.name }}</span>
-          <div class="float-right font-weight-light">{{ ticket.created_at | DateWithTime }}</div>
+          <div class="card-tools">
+            <router-link :to="{ name: 'ticket.edit', params: {id: ticket.id }}" class="btn btn-primary btn-xs">
+              <i class="fas fa-edit fa-fw"></i>
+            </router-link>
+            <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
+              <i class="fas fa-trash fa-fw"></i>
+            </a>
+          </div>
         </div>
 
         <div class="card-body">
           <div class="row">
-            <div class="form-group col-sm-12 col-md-6">
+            <div class="form-group col-sm-12 col-md-3">
               <label for="ticket number" class="col-form-label">ticket#:</label>
               <span class="font-weight-light">{{ ticket.number }}</span>
             </div>
-            <div class="form-group col-sm-12 col-md-6">
+            <div class="form-group col-sm-12 col-md-3">
               <label for="Description" class="col-form-label">status:</label>
               <span class="font-weight-light badge bg-primary">{{ ticket.status.name }}</span>
+            </div>
+            <div class="form-group col-sm-12 col-md-3">
+              <label for="Description" class="col-form-label">Project:</label>
+              <span class="font-weight-light">{{ ticket.project.name }}</span>
+            </div>
+            <div class="form-group col-sm-12 col-md-3">
+              <label for="ticket number" class="col-form-label">Created at:</label>
+              <span class="font-weight-light">{{ ticket.created_at | DateWithTime }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="form-group col-sm-12">
+              <div class="card-footer bg-white" v-if="ticket.files && ticket.files.length > 0">
+                <ul class="mailbox-attachments d-flex align-items-stretch clearfix">
+                  <li v-for="file in ticket.files" :key="file.id">
+                    <div class="mailbox-attachment-info">
+                      <a
+                        target="_plank"
+                        :href=" file.attachment_path | filePath"
+                        class="mailbox-attachment-name"
+                      >
+                        <i class="fas fa-paperclip"></i>
+                        {{ file.attachment_path | fileName }}
+                      </a>
+                    </div>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
           <div class="row">
@@ -28,21 +63,6 @@
                   v-html="ticket.description"
                   style="min-height:100px; max-height: 600px;"
                 ></div>
-              </div>
-              <div class="card-footer bg-white" v-if="ticket.files && ticket.files.length > 0">
-                <ul class="mailbox-attachments d-flex align-items-stretch clearfix">
-                  <li v-for="file in ticket.files" :key="file.id">
-                    <div class="mailbox-attachment-info">
-                      <a
-                        target="_plank"
-                        :href=" file.attachment_path | filePath"
-                        class="mailbox-attachment-name"
-                      >
-                        <i class="fas fa-paperclip"></i> {{ file.attachment_path | fileName }}
-                      </a>
-                    </div>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>
@@ -62,7 +82,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Axios from "axios";
 
 export default {
   data() {
@@ -94,6 +113,39 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
+    },
+deleteTicket(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("ticket/deleteTicket", id)
+            .then(response => {
+              this.$Progress.finish();
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
+              this.$router.push({ name: "tickets.list" });
+            })
+            .catch(error => {
+              console.log(error);
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
     }
   },
   mounted() {

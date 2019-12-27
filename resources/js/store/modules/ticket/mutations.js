@@ -5,11 +5,15 @@ export default {
 
 
     deleteTicket(state, ticket) {
-        state.items.data = state.items.data.filter(items => items.id != ticket.id);
+        if (state.items.data) {
+            state.items.data = state.items.data.filter(items => items.id != ticket.id);
+        }
     },
     editTicket(state, ticket) {
-        const ticketObj = state.items.data.find(items => items.id == ticket.id);
-        Object.assign(ticketObj, ticket);
+        if (state.items.data) {
+            const ticketObj = state.items.data.find(items => items.id == ticket.id);
+            Object.assign(ticketObj, ticket);
+        }
     },
     createTicket(state, ticket) {
         const ticketObj = {

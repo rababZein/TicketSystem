@@ -6,6 +6,7 @@ export default {
 
     state: {
         items: {},
+        singleTask: {},
         status: [],
         tickets: [],
     },
@@ -14,6 +15,16 @@ export default {
             return new Promise((resolve, reject) => {
                 tasks.get(params).then(response => {
                     commit('setTasks', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
+        getTaskById({ commit }, id) {
+            return new Promise((resolve, reject) => {
+                tasks.show(id).then(response => {
+                    commit('setTaskById', response.data.data);
                     resolve(response);
                 }).catch(error => {
                     reject(error);
@@ -95,6 +106,9 @@ export default {
         setTasks(state, tasks) {
             state.items = Object.assign({}, tasks);
         },
+        setTaskById(state, task) {
+            state.singleTask = task;
+        },
         setNewTask(state, task) {
             const taskObj = task;
             state.items.data.unshift(taskObj);
@@ -105,8 +119,10 @@ export default {
             });
         },
         editTask(state, task) {
-            const taskObj = state.items.data.find(items => items.id == task.id);
-            Object.assign(taskObj, task);    
+            if (state.items.data) {
+                const taskObj = state.items.data.find(items => items.id == task.id);
+                Object.assign(taskObj, task);    
+            }
         },
         deleteTask(state, task) {
             state.items.data = state.items.data.filter(items => items.id != task.id);
@@ -116,9 +132,9 @@ export default {
         activeTasks(state) {
             return state.items;
         },
-        // activeTask(state) {
-        //     return state.singelTask;
-        // },
+        activeTask(state) {
+            return state.singleTask;
+        },
         activeStatus(state) {
             return state.status;
         }

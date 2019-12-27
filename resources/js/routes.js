@@ -61,7 +61,15 @@ let routes = [
         name: "ticket",
         component: require("./pages/TicketPage/SingleTicketComponent.vue")
             .default,
-        meta: { title: "Ticket" }
+        meta: { title: "Ticket" },
+    },
+    {
+        path: '/admin/ticket/:id/edit',
+        name: "ticket.edit",
+        component: require("./pages/TicketPage/Form.vue").default,
+        meta: {
+            title: 'edit ticket'
+        }
     },
     {
         path: "/admin/tickets/:page?",
@@ -74,6 +82,14 @@ let routes = [
         name: "task",
         component: require("./pages/TaskPage/SingleTaskComponent.vue").default,
         meta: { title: "Task" }
+    },
+    {
+        path: '/admin/task/:id/edit',
+        name: "task.edit",
+        component: require("./pages/TaskPage/Form.vue").default,
+        meta: {
+            title: 'edit Task'
+        }
     },
     {
         path: "/admin/tasks/:page?",
