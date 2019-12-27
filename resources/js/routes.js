@@ -66,7 +66,7 @@ let routes = [
     {
         path: '/admin/ticket/:id/edit',
         name: "ticket.edit",
-        component: require("./components/tickets/editTicket.vue").default,
+        component: require("./pages/TicketPage/Form.vue").default,
         meta: {
             title: 'edit ticket'
         }

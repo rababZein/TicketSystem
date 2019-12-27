@@ -9,7 +9,7 @@
             <router-link :to="{ name: 'ticket.edit', params: {id: ticket.id }}" class="btn btn-primary btn-xs">
               <i class="fas fa-edit fa-fw"></i>
             </router-link>
-            <a href="#" class="btn btn-danger btn-xs">
+            <a href="#" @click="deleteTicket(ticket.id)" class="btn btn-danger btn-xs">
               <i class="fas fa-trash fa-fw"></i>
             </a>
           </div>
@@ -82,7 +82,6 @@
 
 <script>
 import { mapGetters } from "vuex";
-import Axios from "axios";
 
 export default {
   data() {
@@ -114,6 +113,39 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
+    },
+deleteTicket(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("ticket/deleteTicket", id)
+            .then(response => {
+              this.$Progress.finish();
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
+              this.$router.push({ name: "tickets.list" });
+            })
+            .catch(error => {
+              console.log(error);
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
