@@ -84,6 +84,14 @@ let routes = [
         meta: { title: "Task" }
     },
     {
+        path: '/admin/task/:id/edit',
+        name: "task.edit",
+        component: require("./pages/TaskPage/Form.vue").default,
+        meta: {
+            title: 'edit Task'
+        }
+    },
+    {
         path: "/admin/tasks/:page?",
         name: "tasks.list",
         component: require("./pages/TaskPage/TasksComponent.vue").default,
