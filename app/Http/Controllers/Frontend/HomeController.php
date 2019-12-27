@@ -11,4 +11,14 @@ class HomeController extends Controller
     {
         return view('frontend.home.welcome');
     }
+
+    public function impressum()
+    {
+        return view('frontend.home.impressum');
+    }
+
+    public function agb()
+    {
+        return view('frontend.home.agb');
+    }
 }
