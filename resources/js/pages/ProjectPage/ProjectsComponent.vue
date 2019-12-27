@@ -1,5 +1,8 @@
 <template>
   <div class="row">
+    <div class="col-12 mb-3" v-if="isLoading">
+      <span>Searching...</span>
+    </div>
     <div class="col-12 mb-3">
       <div class="card card-default">
         <div class="card-header">
@@ -10,12 +13,14 @@
                 name="table_search"
                 class="form-control float-right"
                 placeholder="Search"
+                @input="isTyping = true" 
+                v-model="queryParams.global_search"
               />
 
               <div class="input-group-append">
-                <button type="submit" class="btn btn-default">
+                <a href="#" @click="getProjects(queryParams)" class="btn btn-default">
                   <i class="fas fa-search"></i>
-                </button>
+                </a>
               </div>
             </div>
           </div>
@@ -215,11 +220,19 @@
 
 <script>
 import { mapGetters, mapState, mapActions } from "vuex";
+import _ from 'lodash';
 
 export default {
   data() {
     return {
       editMode: false,
+      queryParams: {
+        global_search: "",
+        page: 1
+      },
+      isTyping: false,
+      searchResult: [],
+      isLoading: false,
       form: new Form({
         id: "",
         name: "",
@@ -240,15 +253,18 @@ export default {
         params: { page }
       });
     },
-    getProjects(page = 1) {
+    getProjects(queryParams) {
       this.$Progress.start();
+      this.isLoading = true;
       this.$store
-        .dispatch("project/getProjects", page)
+        .dispatch("project/getProjects", queryParams)
         .then(() => {
           this.$Progress.finish();
+          this.isLoading = false;
         })
         .catch(error => {
           this.$Progress.fail();
+          this.isLoading = false;
         });
     },
     getOwners() {
@@ -353,7 +369,6 @@ export default {
             .dispatch("project/deleteProject", id)
             .then(response => {
               this.$Progress.finish();
-              this.getProjects();
               Toast.fire({
                 type: "success",
                 title: response.data.message
@@ -379,7 +394,8 @@ export default {
     }
   },
   mounted() {
-    this.getProjects(this.$route.params.page || 1);
+    this.queryParams.page = this.$route.params.page || 1;
+    this.getProjects(this.queryParams);
     this.getOwners();
     this.getResponsibles();
   },
@@ -392,7 +408,20 @@ export default {
       projects: "project/activeProjects",
       owners: "owner/activeOwners",
       responsible: "regularUser/activeRegularUser"
-    })
+    }),
+    global_search() {
+      return this.queryParams.global_search;
+    }
+  },
+  watch: {
+    global_search: _.debounce(function() {
+      this.isTyping = false;
+    }, 1000),
+    isTyping: function(value) {
+      if (!value) {
+        this.getProjects(this.queryParams);
+      }
+    }
   }
 };
 </script>
