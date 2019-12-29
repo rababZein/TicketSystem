@@ -19,6 +19,8 @@ use App\Exceptions\InvalidDataException;
 
 use App\Jobs\User\NewAccountJob;
 
+use Validator;
+
 class everyMinute extends Command
 {
     /**
@@ -63,7 +65,7 @@ class everyMinute extends Command
             $emailData['email_id'] = $oMessage->getMessageId();
             $emailData['reference'] = $oMessage->getAttributes()['references'];
             $emailData['subject'] = $oMessage->getSubject();
-            $emailData['mail'] = $oMessage->getFrom()[0]->mail;
+            $emailData['email'] = $oMessage->getFrom()[0]->mail;
             $emailData['personal'] = $oMessage->getFrom()[0]->personal;
             $emailData['body'] =  $oMessage->getHTMLBody(true);
             
@@ -73,25 +75,28 @@ class everyMinute extends Command
                 // validate extention
                 if (in_array($oAttachment->getExtension(), ['png', 'jpg', 'jpeg', 'txt', 'csv', 'docx', 'doc', 'xlsx', 'xls']) ) {
                 // storage
-                $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
-                $dirName = dirname($attachmentPath);
-                if (!is_dir($dirName))
-                    mkdir($dirName, 0755, true);
-                
-                $fp = fopen($attachmentPath, "wb");
-                file_put_contents($attachmentPath, $oAttachment->content);
-                fclose($fp);
+                    $attachmentPath = storage_path('app/public/attachments/' . $oMessage->getMessageId() . '/' . $oAttachment->name);
+                    $dirName = dirname($attachmentPath);
+                    if (!is_dir($dirName))
+                        mkdir($dirName, 0755, true);
+                    
+                    $fp = fopen($attachmentPath, "wb");
+                    file_put_contents($attachmentPath, $oAttachment->content);
+                    fclose($fp);
 
-                $emailData['attachmentPaths'][] = $attachmentPath;
+                    $emailData['attachmentPaths'][] = $attachmentPath;
+                } else {
+                    $oMessage->setFlag(['Seen']);
+                    throw new ItemNotCreatedException('Ticket_file', 'unallaow file type');
                 }
             }
 
-            $emailData['project'] = $this->getProjectByClientEmail($emailData);
+            $emailData['project'] = $this->getProjectByClientEmail($emailData, $oMessage);
 
             if ($oMessage->getInReplyTo()) {
-                $this->updateTicket($emailData);
+                $this->updateTicket($emailData, $oMessage);
             } else {
-                $this->createNewTicket($emailData);
+                $this->createNewTicket($emailData, $oMessage);
             }
 
             //Move the current Message to 'INBOX.read'
@@ -103,9 +108,9 @@ class everyMinute extends Command
         }
     }
 
-    private function getProjectByClientEmail($emailData)
+    private function getProjectByClientEmail($emailData, $oMessage)
     {
-        $client = $this->getClient($emailData);
+        $client = $this->getClient($emailData, $oMessage);
 
         /**
          * if client has one project with open status add new tickets to it
@@ -127,13 +132,13 @@ class everyMinute extends Command
          * else create new project with name other
          */
         if (! $project) {
-            $project = $this->createOtherProject($client);
+            $project = $this->createOtherProject($client, $oMessage);
         }
 
         return $project;
     }
 
-    private function createOtherProject($client)
+    private function createOtherProject($client, $oMessage)
     {
         $project = new Project();
         $project->name = 'other';
@@ -147,30 +152,32 @@ class everyMinute extends Command
         try {
             $project->save();
         } catch (Exception $ex) {
+            $oMessage->setFlag(['Seen']);
             throw new ItemNotCreatedException('Project', $ex->getMessage());
         }
 
         return $project;
     }
 
-    private function getClient($emailData)
+    private function getClient($emailData, $oMessage)
     {
-        $client = User::where('email', $emailData['mail'])
+        $client = User::where('email', $emailData['email'])
                       ->where('type', 'client')
                       ->first();
 
         if (! $client) {
-            $client = $this->createNewClient($emailData);
+            $this->validateClientData($emailData, $oMessage);
+            $client = $this->createNewClient($emailData, $oMessage);
         }
 
         return $client;
     }
 
-    private function createNewClient($emailData)
+    private function createNewClient($emailData, $oMessage)
     {
         $user = new User();
         $user->name = $emailData['personal'];
-        $user->email = $emailData['mail'];
+        $user->email = $emailData['email'];
         $password = Hash::make(str_random(8));
         $user->password = $password;
         $user->type = 'client';
@@ -180,6 +187,7 @@ class everyMinute extends Command
         try {
             $user->save();
         } catch (Exception $ex) {
+            $oMessage->setFlag(['Seen']);
             throw new ItemNotCreatedException('User', $ex->getMessage());
         }
 
@@ -189,7 +197,21 @@ class everyMinute extends Command
         return $user;
     }
 
-    private function createNewTicket($emailData){
+    private function validateClientData($emailData, $oMessage)
+    {
+        $validator = Validator::make($emailData, [
+            'email' => 'string|email|unique:users'
+        ]);
+
+        if ($validator->fails()) {
+            $oMessage->setFlag(['Seen']);
+            throw new ItemNotCreatedException('User', $validator->errors());
+        }
+
+    }
+
+    private function createNewTicket($emailData, $oMessage)
+    {
         $ticket = new Ticket();
         $ticket->email_id = $emailData['email_id'];
         $ticket->project_id = $emailData['project']->id;
@@ -201,6 +223,7 @@ class everyMinute extends Command
         try {
             $ticket->save();
         } catch (Exception $ex) {
+            $oMessage->setFlag(['Seen']);
             throw new ItemNotCreatedException('Ticket', $ex->getMessage());
         }
 
@@ -215,6 +238,7 @@ class everyMinute extends Command
                 try {
                     $file->save();
                 } catch (Exception $ex) {
+                    $oMessage->setFlag(['Seen']);
                     throw new ItemNotCreatedException('Ticket_file', $ex->getMessage());
                 }
             }
@@ -224,7 +248,7 @@ class everyMinute extends Command
         echo "<br>";
     }
 
-    private function updateTicket($emailData)
+    private function updateTicket($emailData, $oMessage)
     {
         $subReference = explode(' ', $emailData['reference']);
         $subReference[0] = trim($subReference[0], '<');
@@ -232,12 +256,13 @@ class everyMinute extends Command
         $ticket = Ticket::where('email_id', 'like', '%' . getStrBefore('.', $subReference[0]) . '%')
                         ->first();
         if (! $ticket) {
-            $this->createNewTicket($emailData);
+            $this->createNewTicket($emailData, $oMessage);
         } else {
             $ticket->description .= ' </br> ****reply**** </br> '.$emailData['body'];
             try {
                 $ticket->save();
             } catch (Exception $th) {
+                $oMessage->setFlag(['Seen']);
                 throw new ItemNotUpdatedException('Ticket', $ex->getMessage());
             }
 
