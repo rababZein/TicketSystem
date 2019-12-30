@@ -42,6 +42,9 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::get('/user/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
     Route::resource('/users', 'UsersController')->except('create');
 
+    // metadata
+    Route::resource('/metadata', 'MetadataController')->except('create', 'edit');
+
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');
     Route::get('/projects/list', 'ProjectController@list');

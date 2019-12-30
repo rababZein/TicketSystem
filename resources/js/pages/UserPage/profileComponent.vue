@@ -35,9 +35,14 @@
       <!-- profile card -->
       <profile-card :user="user"></profile-card>
       <!-- /profile card -->
-      <!-- activity list -->
-      <tab-panel></tab-panel>
-      <!-- /activity list -->
+      <div class="col-sm">
+        <meta-data></meta-data>
+
+        <!-- activity list -->
+        <tab-panel></tab-panel>
+        <!-- /activity list -->
+      </div>
+
     </div>
   </div>
   <div class="card" v-else>

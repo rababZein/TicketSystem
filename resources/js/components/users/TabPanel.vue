@@ -1,17 +1,15 @@
 <template>
-  <div class="col-md-9">
-    <div class="card">
-      <div class="card-header p-2">
-        <ul class="nav nav-pills">
-          <li class="nav-item" v-for="tab in tabs" :key="tab.component" >
-            <div class="nav-link" :class="{ active: selected === tab.component }" @click="selected = tab.component;">{{ tab.title }}</div>
-          </li>
-        </ul>
-      </div>
-      <div class="card-body p-0">
-        <div class="tab-content">
-          <component :is="selected" v-bind="{ userId: this.user.id }"></component>
-        </div>
+  <div class="card">
+    <div class="card-header p-2">
+      <ul class="nav nav-pills">
+        <li class="nav-item" v-for="tab in tabs" :key="tab.component" >
+          <div class="nav-link" :class="{ active: selected === tab.component }" @click="selected = tab.component;">{{ tab.title }}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="card-body p-0">
+      <div class="tab-content">
+        <component :is="selected" v-bind="{ userId: this.user.id }"></component>
       </div>
     </div>
   </div>
