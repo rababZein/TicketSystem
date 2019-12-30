@@ -43,7 +43,7 @@ Route::group(['middleware' => ['auth'], 'namespace' => 'API', 'prefix' => 'v-api
     Route::resource('/users', 'UsersController')->except('create');
 
     // metadata
-    Route::resource('/metadata', 'API\MetadataController')->except('create', 'edit');
+    Route::resource('/metadata', 'MetadataController')->except('create', 'edit');
 
     // projects
     Route::get('/projects/index', 'ProjectController@view')->name('project.view');

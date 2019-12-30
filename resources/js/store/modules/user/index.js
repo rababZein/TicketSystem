@@ -54,6 +54,39 @@ export default {
                         reject(error);
                     })
             });
+        },
+        editUser({commit}, data) {
+            return new Promise((resolve, reject) => {
+                users.edit(data).then(response => {
+                    commit('setSingleUser', response.data.data)
+                    resolve(response);
+                })
+                    .catch(error => {
+                        reject(error);
+                    })
+            });
+        },
+        createMetadata({commit}, data) {
+            return new Promise((resolve, reject) => {
+                users.createMetadata(data).then(response => {
+                    commit('setMetaDate', response.data.data)
+                    resolve(response);
+                })
+                    .catch(error => {
+                        reject(error);
+                    })
+            });
+        },
+        editMetadata({commit}, data) {
+            return new Promise((resolve, reject) => {
+                users.editMetadata(data).then(response => {
+                    commit('setMetaDate', response.data.data)
+                    resolve(response);
+                })
+                    .catch(error => {
+                        reject(error);
+                    })
+            });
         }
     },
     mutations: {
@@ -90,6 +123,9 @@ export default {
         },
         setTasksPerClient(state, tasks) {
             state.tasksPerUser = tasks;
+        },
+        setMetaDate(state, metadata) {
+            state.singleUser.metadata = metadata;
         }
     }
 }

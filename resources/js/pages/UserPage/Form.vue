@@ -5,11 +5,7 @@
         <div class="card-header">
           <div class="card-title font-weight-light">Account Settings</div>
         </div>
-        <form
-          @submit.prevent="editUser(form.id)"
-          @keydown="form.onKeydown($event)"
-          autocomplete="off"
-        >
+        <form @submit.prevent="editUser(form)" @keydown="form.onKeydown($event)" autocomplete="off">
           <div class="card-body">
             <div class="row">
               <div class="form-group col-sm-12 col-md-3">
@@ -87,7 +83,7 @@
           <div class="card-title font-weight-light">Account Details</div>
         </div>
         <form
-          @submit.prevent="editUser(form.id)"
+          @submit.prevent="editMode ? editMetadata(metadata) : createMetadata(metadata)"
           @keydown="form.onKeydown($event)"
           autocomplete="off"
         >
@@ -202,24 +198,12 @@
                 <has-error :form="form" field="website"></has-error>
               </div>
               <div class="form-group col-sm-12 col-md-3">
-                <label for="description">Description</label>
-                <input
-                  v-model="metadata.description"
-                  type="text"
-                  name="description"
-                  class="form-control"
-                  :class="{ 'is-invalid': form.errors.has('description') }"
-                  autocomplete="off"
-                />
-                <has-error :form="form" field="description"></has-error>
-              </div>
-              <div class="form-group col-sm-12 col-md-3">
                 <label for="birth_date">Birth Date</label>
                 <date-picker
-                  v-model="form.start_at"
+                  v-model="metadata.birth_date"
                   lang="en"
                   type="date"
-                  format="YYYY-MM-DD HH:mm:ss"
+                  format="YYYY-MM-DD"
                   :minute-step="1"
                   value-type="format"
                   input-class="form-control"
@@ -238,12 +222,16 @@
 </template>
 
 <script>
+import roleApi from "../../api/roles";
 import DatePicker from "vue2-datepicker";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   components: { DatePicker },
   data() {
     return {
+      editMode: true,
+      userId: this.$route.params.id,
       form: new Form({
         id: "",
         name: "",
@@ -252,11 +240,136 @@ export default {
         roles: "",
         type: ""
       }),
-      metadata: new Form({}),
+      metadata: new Form({
+        user_id: this.$route.params.id,
+        id: "",
+        first_name: "",
+        last_name: "",
+        company: "",
+        address: "",
+        language: "",
+        telephone: "",
+        mobile: "",
+        fax: "",
+        website: "",
+        birth_date: ""
+      }),
       roles: [],
       types: ["regular-user", "client"],
       language: ["de", "en"]
     };
+  },
+  methods: {
+    ...mapActions("user", ["getUserById"]),
+    editUser(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("user/editUser", data)
+        .then(response => {
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+          this.$router.push({
+            name: "profile",
+            params: { id: this.userId }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    createMetadata(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("user/createMetadata", data)
+        .then(response => {
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+          this.$router.push({
+            name: "profile",
+            params: { id: this.userId }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    editMetadata(data) {
+      this.$Progress.start();
+      this.$store
+        .dispatch("user/editMetadata", data)
+        .then(response => {
+          this.$Progress.finish();
+          Toast.fire({
+            type: "success",
+            title: response.data.message
+          });
+          this.$router.push({
+            name: "profile",
+            params: { id: this.userId }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+          this.$Progress.fail();
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
+        });
+    },
+    getAllRoles() {
+      roleApi
+        .getAll()
+        .then(response => {
+          this.roles = _.map(response.data.data, function(key, value) {
+            return { id: key.id, name: key.name };
+          });
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    },
+    async loadEditData() {
+      this.$Progress.start();
+      let response = await this.getUserById(this.userId)
+        .then(() => {
+          this.$Progress.finish();
+          this.loading = false;
+          this.form.fill(this.user);
+          if (this.user.metadata !== null) {
+            this.metadata.fill(this.user.metadata);
+            this.metadata.user_id = this.$route.params.id;
+          } else {
+            this.editMode = false;
+          }
+        })
+        .catch(error => {
+          this.$Progress.fail();
+        });
+    }
+  },
+  mounted() {
+    this.getAllRoles();
+    this.loadEditData();
+  },
+  computed: {
+    ...mapGetters({
+      user: "user/activeSingleUser"
+    })
   }
 };
 </script>

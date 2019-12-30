@@ -138,7 +138,6 @@ export default {
       this.$store
         .dispatch("ticket/editTicket", data)
         .then(response => {
-          $("#Modal").modal("hide");
           this.$Progress.finish();
           Toast.fire({
             type: "success",
