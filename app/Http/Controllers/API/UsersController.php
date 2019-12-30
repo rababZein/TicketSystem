@@ -112,6 +112,7 @@ class UsersController extends BaseController
      */
     public function show(User $user, ViewUserRequest $request)
     {
+        $user->metadata;
         return $this->sendResponse(new UserResource($user), 'User retrieved successfully.');
     }
 

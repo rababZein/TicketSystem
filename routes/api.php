@@ -48,7 +48,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['jwt.verify', 'setLang']], f
         Route::get('/getClientsPaginated', 'UsersController@getClientsPaginated');
         Route::get('/getEmployeesPaginated', 'UsersController@getEmployeesPaginated');
     });
-    Route::resource('/users', 'API\UsersController')->except('show', 'create');
+    Route::resource('/users', 'API\UsersController')->except('create');
 
     Route::group(['prefix' => 'project'], function () {
         Route::get('/list', 'API\ProjectController@list');
