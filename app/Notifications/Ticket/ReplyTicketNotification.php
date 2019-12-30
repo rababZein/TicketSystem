@@ -44,12 +44,20 @@ class ReplyTicketNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $cc = [];
+        if($this->ticketComment->ticket->mails){
+            foreach ($this->ticketComment->ticket->mails as $mail) {
+                $cc[] = $mail->email;
+            }
+            
+        }
         $message = (new MailMessage)
                     ->subject(__('Mail/Ticket/ReplyTicketNotification.subject'))
                     ->line(__('Mail/Ticket/ReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
                     ->line(__('Mail/Ticket/ReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
                     ->action(__('Mail/Ticket/ReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
-                    ->line(__('Mail/Ticket/ReplyTicketNotification.footer'));
+                    ->line(__('Mail/Ticket/ReplyTicketNotification.footer'))
+                    ->cc($cc);
     
         saveSysMailToSentFolder($notifiable->email, $message->data());
 

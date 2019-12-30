@@ -44,6 +44,11 @@ class Ticket extends Model
     {
         return $this->hasMany('App\Models\Ticket_file');
     }
+
+    public function mails()
+    {
+        return $this->hasMany('App\Models\Ticket_mail');
+    }
   
     public function setting()
     {
