@@ -101,7 +101,8 @@ class everyMinute extends Command
             }
 
             //Move the current Message to 'INBOX.read'
-            if($oMessage->moveToFolder('INBOX.read') == true){
+            $oMessage->setFlag(['Seen']);
+            if($oMessage->moveToFolder('TICKETS') == true){
                 echo 'Message has ben moved';
             }else{
                 echo 'Message could not be moved';
