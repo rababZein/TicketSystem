@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\Ticket_file;
+use App\Models\Ticket_mail;
 
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -226,8 +227,19 @@ class everyMinute extends Command
             $oMessage->setFlag(['Seen']);
             throw new ItemNotCreatedException('Ticket', $ex->getMessage());
         }
-
+        
         // insert attachment
+        $this->insertAttachmentFiles($ticket, $emailData, $oMessage);
+
+        // insert cc 
+        $this->insertCCMails($ticket, $oMessage);
+
+        echo nl2br('email: '.$emailData['subject'].' is inserted as a ticket id = '.$ticket->id);
+        echo "<br>";
+    }
+
+    private function insertAttachmentFiles($ticket, $emailData, $oMessage)
+    {
         if (isset($emailData['attachmentPaths'])) {
             foreach ($emailData['attachmentPaths'] as $attachmentPath) {
                 $file = new Ticket_file();
@@ -244,8 +256,24 @@ class everyMinute extends Command
             }
         }
 
-        echo nl2br('email: '.$emailData['subject'].' is inserted as a ticket id = '.$ticket->id);
-        echo "<br>";
+    }
+
+    private function insertCCMails($ticket, $oMessage)
+    {
+        if ($oMessage->getCc()) {
+            foreach ($oMessage->getCc() as $ccMail) {
+                $ticket_cc_mail = new Ticket_mail();
+                $ticket_cc_mail->email = $ccMail->mail;
+                $ticket_cc_mail->ticket_id = $ticket->id;
+                $ticket_cc_mail->created_by = 1;
+                try {
+                    $ticket_cc_mail->save();
+                } catch (Exception $ex) {
+                    $oMessage->setFlag(['Seen']);
+                    throw new ItemNotCreatedException('Ticket_mail', $ex->getMessage());
+                }
+            }
+        }
     }
 
     private function updateTicket($emailData, $oMessage)
@@ -265,6 +293,12 @@ class everyMinute extends Command
                 $oMessage->setFlag(['Seen']);
                 throw new ItemNotUpdatedException('Ticket', $ex->getMessage());
             }
+
+            // insert attachment
+            $this->insertAttachmentFiles($ticket, $emailData, $oMessage);
+
+            // insert cc 
+            $this->insertCCMails($ticket, $oMessage);
 
             echo nl2br('email: '.$emailData['subject'].' is updated in the ticket id = '.$ticket->id);
             echo "<br>";
