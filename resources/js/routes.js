@@ -40,8 +40,15 @@ let routes = [
     },
     {
         path: "/admin/profile/:id",
+        name: "profile",
         component: require("./pages/UserPage/profileComponent.vue").default,
         meta: { title: "Users" }
+    },
+    {
+        path: "/admin/profile/:id/edit",
+        name: "profile.edit",
+        component: require("./pages/UserPage/Form.vue").default,
+        meta: { title: "Edit Profile" }
     },
     {
         path: "/admin/project/:id",
