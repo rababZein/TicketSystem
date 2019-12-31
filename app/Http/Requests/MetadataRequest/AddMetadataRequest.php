@@ -36,6 +36,7 @@ class AddMetadataRequest extends FormRequest
             'address' => 'nullable|string',
             'first_name' => 'nullable|string',
             'last_name' => 'nullable|string',
+            'gender' => 'nullable|string',
             'telephone' => 'nullable|string',
             'mobile' => 'nullable|string',
             'fax' => 'nullable|string',
