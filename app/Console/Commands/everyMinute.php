@@ -59,8 +59,8 @@ class everyMinute extends Command
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
 
-        $aMessage = $aFolder->query()->unseen()->OLD()->limit(10)->setFetchAttachment(true)->leaveUnread()->get();
-        
+        $aMessage = $aFolder->query()->unseen()->limit(2)->setFetchAttachment(true)->leaveUnread()->get()->reverse();
+
         foreach($aMessage as $oMessage){
             $emailData = [];
             $emailData['email_id'] = $oMessage->getMessageId();
