@@ -59,8 +59,8 @@ class everyMinute extends Command
         $oClient->connect();
         $aFolder = $oClient->getFolder('INBOX');
 
-        $aMessage = $aFolder->query()->unseen()->limit(10)->setFetchAttachment(true)->leaveUnread()->get();
-
+        $aMessage = $aFolder->query()->unseen()->OLD()->limit(10)->setFetchAttachment(true)->leaveUnread()->get();
+        
         foreach($aMessage as $oMessage){
             $emailData = [];
             $emailData['email_id'] = $oMessage->getMessageId();
@@ -102,11 +102,7 @@ class everyMinute extends Command
 
             //Move the current Message to 'INBOX.read'
             $oMessage->setFlag(['Seen']);
-            if($oMessage->moveToFolder('TICKETS') == true){
-                echo 'Message has ben moved';
-            }else{
-                echo 'Message could not be moved';
-            }
+            $oMessage->moveToFolder('TICKETS');
         }
     }
 
