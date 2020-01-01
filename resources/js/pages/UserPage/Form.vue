@@ -150,6 +150,18 @@
                 <has-error :form="form" field="language"></has-error>
               </div>
               <div class="form-group col-sm-12 col-md-3">
+                <label for="gender">Gender</label>
+                <multiselect
+                  v-model="metadata.gender"
+                  :options="gender"
+                  :searchable="false"
+                  :close-on-select="true"
+                  :show-labels="false"
+                  placeholder="Pick a value"
+                ></multiselect>
+                <has-error :form="form" field="gender"></has-error>
+              </div>
+              <div class="form-group col-sm-12 col-md-3">
                 <label for="telephone">Telephone</label>
                 <input
                   v-model="metadata.telephone"
@@ -256,7 +268,8 @@ export default {
       }),
       roles: [],
       types: ["regular-user", "client"],
-      language: ["de", "en"]
+      language: ["de", "en"],
+      gender: ["male", "female"]
     };
   },
   methods: {
@@ -374,5 +387,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.mx-datepicker {
+  display: block;
+  width: 100%;
+}
 </style>
