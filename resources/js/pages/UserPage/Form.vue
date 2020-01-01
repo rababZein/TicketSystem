@@ -260,6 +260,7 @@ export default {
         company: "",
         address: "",
         language: "",
+        gender: "",
         telephone: "",
         mobile: "",
         fax: "",
