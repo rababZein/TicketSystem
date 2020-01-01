@@ -29,6 +29,7 @@ class Metadata extends Model
         'address',
         'first_name',
         'last_name',
+        'gender',
         'telephone',
         'mobile',
         'fax',
