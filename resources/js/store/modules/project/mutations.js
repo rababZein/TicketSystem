@@ -19,8 +19,10 @@ export default {
 
     },
     editProject(state, project) {
-        const projectObj = state.items.data.find(items => items.id == project.id);
-        Object.assign(projectObj, project);
+        if (state.items.data) {
+            const projectObj = state.items.data.find(items => items.id == project.id);
+            Object.assign(projectObj, project);
+        }
     },
     deleteProject(state, project) {
         state.items.data = state.items.data.filter(items => items.id != project.id);
