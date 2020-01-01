@@ -37,16 +37,16 @@
           <div class="font-weight-light">{{ user.metadata.language }}</div>
         </div>
         <div class="form-group col-sm-12 col-md-3">
+          <label for="language">Gender:</label>
+          <div class="font-weight-light">{{ user.metadata.gender }}</div>
+        </div>
+        <div class="form-group col-sm-12 col-md-3">
           <label for="telephone">Telephone:</label>
           <div class="font-weight-light">{{ user.metadata.telephone }}</div>
         </div>
         <div class="form-group col-sm-12 col-md-3">
           <label for="mobile">Mobile:</label>
           <div class="font-weight-light">{{ user.metadata.mobile }}</div>
-        </div>
-        <div class="form-group col-sm-12 col-md-3">
-          <label for="fax">Fax:</label>
-          <div class="font-weight-light">{{ user.metadata.fax }}</div>
         </div>
       </div>
       <hr>
@@ -58,6 +58,10 @@
         <div class="form-group col-sm-12 col-md-3">
           <label for="birth_date">Birth Date:</label>
           <div class="font-weight-light">{{ user.metadata.birth_date | DateOnly }}</div>
+        </div>
+        <div class="form-group col-sm-12 col-md-3">
+          <label for="fax">Fax:</label>
+          <div class="font-weight-light">{{ user.metadata.fax }}</div>
         </div>
       </div>
     </div>
