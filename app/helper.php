@@ -17,7 +17,7 @@ if(!function_exists('arrayPaginator')) {
 }
 
 if(!function_exists('saveSysMailToSentFolder')) {
-    function saveSysMailToSentFolder($to, $data) {
+    function saveSysMailToSentFolder($to, $data, $cc = []) {
 
         $oClient = Webklex\IMAP\Facades\Client::account('default');
         $oClient->connect();
@@ -43,6 +43,7 @@ if(!function_exists('saveSysMailToSentFolder')) {
          */
         $aFolder->appendMessage( "From: ".config('imap.accounts')['default']['username']."\r\n"
         . "To: ".$to."\r\n"
+        . "Cc: ".$cc."\r\n"
         . "Subject: ".$subject."\r\n"
         . "\r\n"
         . $body."\r\n", "\\Seen", $date

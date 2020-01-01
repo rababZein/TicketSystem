@@ -59,7 +59,7 @@ class ReplyTicketNotification extends Notification
                     ->line(__('Mail/Ticket/ReplyTicketNotification.footer'))
                     ->cc($cc);
     
-        saveSysMailToSentFolder($notifiable->email, $message->data());
+        saveSysMailToSentFolder($notifiable->email, $message->data(), $cc);
 
         return $message;
     }
