@@ -48,7 +48,7 @@ class ProjectAssignNotification extends Notification
         ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
         ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
         ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
-        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
+        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner' => $this->project->owner->name]))
         ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
         ->line(__('Mail/Project/ProjectAssignNotification.footer'));
 
