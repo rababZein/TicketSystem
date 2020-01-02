@@ -12,6 +12,7 @@ return [
     |
     */
 
+    'subject' => 'Reply Ticket Notification',
     'ticketName' => 'The ticket: :ticket_name , has a reply.',
     'reply' => 'Reply: :reply .',
     'seeMore' => 'See More...',

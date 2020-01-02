@@ -12,6 +12,7 @@ return [
     |
     */
 
+    'subject' => 'Ticket Change Status',
     'ticketName' => 'The ticket: :ticket_name , has been changed to, :status .',
     'seeMore' => 'See More...',
     'footer' => 'Thank you for using our application!'

@@ -3,13 +3,14 @@
 namespace App\Notifications\Ticket;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+use App\Notifications\BaseNotification;
+
 use Modules\TicketComment\Entities\TicketComment;
 
-class UpdateReplyTicketNotification extends Notification
+class UpdateReplyTicketNotification extends BaseNotification
 {
     use Queueable;
 
@@ -45,11 +46,14 @@ class UpdateReplyTicketNotification extends Notification
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-                    ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'))
-                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
-                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
-                    ->action(__('Mail/Ticket/UpdateReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
-                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'));
+                    ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'));
+
+        $message = $this->intro($message, $notifiable);
+
+        $message->line(__('Mail/Ticket/UpdateReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
+                ->line(__('Mail/Ticket/UpdateReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
+                ->action(__('Mail/Ticket/UpdateReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
+                ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'));
             
         saveSysMailToSentFolder($notifiable->email, $message->data());
 

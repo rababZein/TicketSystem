@@ -12,6 +12,7 @@ return [
     |
     */
 
+    'subject' => 'Task Assign Notification',
     'taskName' => 'The task: :task_name , has been assigned to you.',
     'description' => 'Description: :description .',
     'seeMore' => 'See More...',
