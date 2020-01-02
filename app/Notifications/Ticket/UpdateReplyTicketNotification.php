@@ -44,14 +44,22 @@ class UpdateReplyTicketNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        $cc = [];
+        if($this->ticketComment->ticket->mails){
+            foreach ($this->ticketComment->ticket->mails as $mail) {
+                $cc[] = $mail->email;
+            }
+            
+        }
         $message = (new MailMessage)
                     ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'))
                     ->line(__('Mail/Ticket/UpdateReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
                     ->line(__('Mail/Ticket/UpdateReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
                     ->action(__('Mail/Ticket/UpdateReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
-                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'));
+                    ->line(__('Mail/Ticket/UpdateReplyTicketNotification.footer'))
+                    ->cc($cc);
             
-        saveSysMailToSentFolder($notifiable->email, $message->data());
+        saveSysMailToSentFolder($notifiable->email, $message->data(), $cc);
 
         return $message;
     }
