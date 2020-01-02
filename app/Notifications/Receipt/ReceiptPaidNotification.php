@@ -3,12 +3,14 @@
 namespace App\Notifications\Receipt;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+
+use App\Notifications\BaseNotification;
+
 use App\Models\Receipt;
 
-class ReceiptPaidNotification extends Notification
+class ReceiptPaidNotification extends BaseNotification
 {
     use Queueable;
     private $receipt;
@@ -43,12 +45,15 @@ class ReceiptPaidNotification extends Notification
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-                    ->subject(__('Mail/Receipt/ReceiptPaidNotification.subject'))
-                    ->line(__('Mail/Receipt/ReceiptPaidNotification.receiptName', ['receipt_name' => $this->receipt->name]))
-                    ->line(__('Mail/Receipt/ReceiptPaidNotification.taskName', ['task_name' => $this->receipt->task->name]))
-                    ->line(__('Mail/Receipt/ReceiptPaidNotification.amount', ['amount' => $this->receipt->amount]))
-                    ->action(__('Mail/Receipt/ReceiptPaidNotification.seeMore'), url('/admin/receipts/list'))
-                    ->line(__('Mail/Receipt/ReceiptPaidNotification.footer'));
+                    ->subject(__('Mail/Receipt/ReceiptPaidNotification.subject'));
+
+        $message = $this->intro($message, $notifiable);
+
+        $message->line(__('Mail/Receipt/ReceiptPaidNotification.receiptName', ['receipt_name' => $this->receipt->name]))
+                ->line(__('Mail/Receipt/ReceiptPaidNotification.taskName', ['task_name' => $this->receipt->task->name]))
+                ->line(__('Mail/Receipt/ReceiptPaidNotification.amount', ['amount' => $this->receipt->amount]))
+                ->action(__('Mail/Receipt/ReceiptPaidNotification.seeMore'), url('/admin/receipts/list'))
+                ->line(__('Mail/Receipt/ReceiptPaidNotification.footer'));
         
         saveSysMailToSentFolder($notifiable->email, $message->data());
 
