@@ -31,7 +31,7 @@ class TicketCommentObserver
     
         if ($ticketComment->send_mail) {
             ReplyTicketJob::dispatch($ticketComment);
-            $this->activityLog->addToLog('Sending an email for replying on Ticket: '.$ticketComment->ticket->name.', to: '.$ticketComment->ticket->project->owner->email.' cc: '.$ticketComment->ticket->mails, $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
+            $this->activityLog->addToLog('Sending an email for replying on Ticket: '.$ticketComment->ticket->name.', to: '.$ticketComment->ticket->project->owner->email.', cc: '.$ticketComment->ticket->mails->pluck('email'), $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
         }
     }
 
@@ -50,7 +50,7 @@ class TicketCommentObserver
    
         if ($ticketComment->send_mail) {
             UpdateReplyTicketJob::dispatch($ticketComment);
-            $this->activityLog->addToLog('Sending an email for the updating reply on Ticket: '.$ticketComment->ticket->name.', to: '.$ticketComment->ticket->project->owner->email.' cc: '.$ticketComment->ticket->mails, $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
+            $this->activityLog->addToLog('Sending an email for the updating reply on Ticket: '.$ticketComment->ticket->name.', to: '.$ticketComment->ticket->project->owner->email.', cc: '.$ticketComment->ticket->mails->pluck('email'), $ticketComment->ticket->project->owner->id, $ticketComment->ticket->project->id, $ticketComment->ticket->id);
 
         }
     }
