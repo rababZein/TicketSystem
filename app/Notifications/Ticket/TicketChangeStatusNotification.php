@@ -3,13 +3,14 @@
 namespace App\Notifications\Ticket;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
+use App\Notifications\BaseNotification;
+
 use App\Models\Ticket;
 
-class TicketChangeStatusNotification extends Notification
+class TicketChangeStatusNotification extends BaseNotification
 {
     use Queueable;
     private $ticket;
@@ -44,10 +45,13 @@ class TicketChangeStatusNotification extends Notification
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-                    ->subject(__('Mail/Ticket/TicketChangeStatusNotification.subject'))
-                    ->line(__('Mail/Ticket/TicketChangeStatusNotification.ticketName', ['ticket_name' => $this->ticket->name, 'status' => $this->ticket->ticket_status->name]))
-                    ->action(__('Mail/Ticket/TicketChangeStatusNotification.seeMore'), url('/admin/ticket/'. $this->ticket->id))
-                    ->line(__('Mail/Ticket/TicketChangeStatusNotification.footer'));
+                    ->subject(__('Mail/Ticket/TicketChangeStatusNotification.subject'));
+
+        $message = $this->intro($message, $notifiable);
+
+        $message->line(__('Mail/Ticket/TicketChangeStatusNotification.ticketName', ['ticket_name' => $this->ticket->name, 'status' => $this->ticket->ticket_status->name]))
+                ->action(__('Mail/Ticket/TicketChangeStatusNotification.seeMore'), url('/admin/ticket/'. $this->ticket->id))
+                ->line(__('Mail/Ticket/TicketChangeStatusNotification.footer'));
     
         saveSysMailToSentFolder($notifiable->email, $message->data());
 

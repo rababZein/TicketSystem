@@ -12,6 +12,7 @@ return [
     |
     */
 
+    'subject' => 'Project Assign Notification',
     'projectName' => 'The project: :project_name , has been assigned to you.',
     'description' => 'Description: :description .',
     'owner' => 'Owner: :owner .',

@@ -3,14 +3,14 @@
 namespace App\Notifications\Project;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+
+use App\Notifications\BaseNotification;
+
 use App\Models\Project;
 
-use Webklex\IMAP\Facades\Client;
-
-class ProjectAssignNotification extends Notification
+class ProjectAssignNotification extends BaseNotification
 {
     use Queueable;
     private $project;
@@ -45,10 +45,13 @@ class ProjectAssignNotification extends Notification
     public function toMail($notifiable)
     {
         $message = (new MailMessage)
-        ->subject(__('Mail/Project/ProjectAssignNotification.subject'))
-        ->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
+        ->subject(__('Mail/Project/ProjectAssignNotification.subject'));
+
+        $message = $this->intro($message, $notifiable);
+
+        $message->line(__('Mail/Project/ProjectAssignNotification.projectName', ['project_name' => $this->project->name]))
         ->line(__('Mail/Project/ProjectAssignNotification.description', ['description' => $this->project->description]))
-        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner', $this->project->owner->name]))
+        ->line(__('Mail/Project/ProjectAssignNotification.owner', ['owner' => $this->project->owner->name]))
         ->action(__('Mail/Project/ProjectAssignNotification.seeMore'), url('/admin/project/'. $this->project->id))
         ->line(__('Mail/Project/ProjectAssignNotification.footer'));
 
