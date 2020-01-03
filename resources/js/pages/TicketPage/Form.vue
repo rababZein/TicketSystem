@@ -70,6 +70,9 @@
                 ></multiselect>
                 <has-error :form="form" field="client_id"></has-error>
               </div>
+              <div class="form-group col-sm-12">
+                <button type="submit" class="btn btn-success float-right">Update</button>
+              </div>
             </div>
 
             <div class="row">
@@ -83,7 +86,6 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
             </div>
-            <button type="submit" class="btn btn-success float-right">Update</button>
           </form>
         </div>
       </div>

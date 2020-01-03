@@ -86,6 +86,9 @@
                 ></multiselect>
                 <has-error :form="form" field="ticket_id"></has-error>
               </div>
+              <div class="form-group col-sm-12">
+                <button type="submit" class="btn btn-success float-right">Update</button>
+              </div>
               <div class="form-group col-sm-12 col-md-3">
                 <label for="name">Responsible</label>
                 <multiselect
@@ -134,7 +137,6 @@
                 <has-error :form="form" field="description"></has-error>
               </div>
             </div>
-            <button type="submit" class="btn btn-success float-right">Update</button>
           </form>
         </div>
       </div>
