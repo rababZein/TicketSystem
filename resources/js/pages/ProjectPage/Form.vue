@@ -1,9 +1,11 @@
 <template>
-  <div class="row justify-content-center">
+  <div class="row justify-content-center" v-if="!loading">
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
           <div class="card-title font-weight-light">Edit Project</div>
+          <div class="card-tools">
+          </div>
         </div>
         <form @submit.prevent="editProject()" @keydown="form.onKeydown($event)">
           <div class="card-body">
@@ -104,6 +106,9 @@
       </div>
     </div>
   </div>
+  <div class="card" v-else>
+    <div class="card-body justify-content-center">loading...</div>
+  </div>
 </template>
 
 <script>
@@ -121,6 +126,7 @@ export default {
   },
   data() {
     return {
+      loading: true,
       projectId: this.$route.params.id,
       form: new Form({
         id: "",
@@ -177,6 +183,7 @@ export default {
           ) {
             return value.name;
           });
+          this.loading = false;
         })
         .catch(error => {
           this.$Progress.fail();
@@ -202,7 +209,10 @@ export default {
             type: "success",
             title: response.data.message
           });
-          this.$router.push({ name: "project", params: { id: this.projectId }});
+          this.$router.push({
+            name: "project",
+            params: { id: this.projectId }
+          });
         })
         .catch(error => {
           this.$Progress.fail();
@@ -210,7 +220,7 @@ export default {
             this.form.errors.errors = error.response.data.errors;
           }
         });
-    },
+    }
   },
   mounted() {
     this.getOwners();
