@@ -58,6 +58,13 @@ let routes = [
         meta: { title: "Project" }
     },
     {
+        path: "/admin/project/:id/edit",
+        component: require("./pages/ProjectPage/Form.vue")
+            .default,
+        name: "project.edit",
+        meta: { title: "Edit Project" }
+    },
+    {
         path: "/admin/projects/:page?",
         name: "projects.list",
         component: require("./pages/ProjectPage/ProjectsComponent.vue").default,

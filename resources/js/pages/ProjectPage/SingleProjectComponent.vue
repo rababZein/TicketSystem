@@ -7,11 +7,20 @@
           <span class="font-weight-light">{{ project.name }}</span>
           <div class="card-tools">
             <router-link
-              :to="{ name: 'board', params: { projectId: project.id, pagetitle: project.name }}"
+              :to="{ name: 'project.edit', params: {id: this.$route.params.id }}"
               class="btn btn-primary btn-sm"
+            >
+              <i class="fas fa-edit fa-fw"></i> edit project
+            </router-link>
+            <router-link
+              :to="{ name: 'board', params: { projectId: project.id, pagetitle: project.name }}"
+              class="btn btn-info btn-sm"
             >
               <i class="fab fa-trello fa-fw"></i> kanban
             </router-link>
+            <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+              <i class="fas fa-trash fa-fw"></i>
+            </a>
           </div>
         </div>
 
@@ -115,6 +124,38 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
+    },
+    deleteProject(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("project/deleteProject", id)
+            .then(response => {
+              this.$Progress.finish();
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
+              this.$router.push({ name: "projects.list"});
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
