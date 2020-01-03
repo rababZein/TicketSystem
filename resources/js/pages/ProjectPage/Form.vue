@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <div class="card-title font-weight-light">Edit Project</div>
+          <div class="card-title font-weight-light">{{ form.name }}</div>
           <div class="card-tools">
           </div>
         </div>
