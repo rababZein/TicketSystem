@@ -202,6 +202,7 @@ export default {
             type: "success",
             title: response.data.message
           });
+          this.$router.push({ name: "project", params: { id: this.projectId }});
         })
         .catch(error => {
           this.$Progress.fail();

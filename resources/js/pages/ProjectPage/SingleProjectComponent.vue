@@ -18,6 +18,9 @@
             >
               <i class="fab fa-trello fa-fw"></i> kanban
             </router-link>
+            <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+              <i class="fas fa-trash fa-fw"></i>
+            </a>
           </div>
         </div>
 
@@ -121,6 +124,38 @@ export default {
         .catch(error => {
           this.$Progress.fail();
         });
+    },
+    deleteProject(id) {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!"
+      }).then(result => {
+        if (result.value) {
+          this.$Progress.start();
+          this.$store
+            .dispatch("project/deleteProject", id)
+            .then(response => {
+              this.$Progress.finish();
+              Toast.fire({
+                type: "success",
+                title: response.data.message
+              });
+              this.$router.push({ name: "projects.list"});
+            })
+            .catch(error => {
+              this.$Progress.fail();
+              Toast.fire({
+                type: "error",
+                title: error.response.data.message
+              });
+            });
+        }
+      });
     }
   },
   mounted() {
