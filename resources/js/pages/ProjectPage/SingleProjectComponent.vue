@@ -7,18 +7,18 @@
           <span class="font-weight-light">{{ project.name }}</span>
           <div class="card-tools">
             <router-link
-              :to="{ name: 'project.edit', params: {id: this.$route.params.id }}"
-              class="btn btn-primary btn-sm"
-            >
-              <i class="fas fa-edit fa-fw"></i> edit project
-            </router-link>
-            <router-link
               :to="{ name: 'board', params: { projectId: project.id, pagetitle: project.name }}"
               class="btn btn-info btn-sm"
             >
               <i class="fab fa-trello fa-fw"></i> kanban
             </router-link>
-            <a href="#" @click="deleteProject(project.id)" class="btn btn-xs btn-light">
+            <router-link
+              :to="{ name: 'project.edit', params: {id: this.$route.params.id }}"
+              class="btn btn-primary btn-sm"
+            >
+              <i class="fas fa-edit fa-fw"></i> edit project
+            </router-link>
+            <a href="#" @click="deleteProject(project.id)" class="btn btn-sm btn-danger">
               <i class="fas fa-trash fa-fw"></i>
             </a>
           </div>
@@ -145,7 +145,7 @@ export default {
                 type: "success",
                 title: response.data.message
               });
-              this.$router.push({ name: "projects.list"});
+              this.$router.push({ name: "projects.list" });
             })
             .catch(error => {
               this.$Progress.fail();
