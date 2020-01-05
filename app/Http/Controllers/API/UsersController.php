@@ -63,7 +63,63 @@ class UsersController extends BaseController
      */
     public function getEmployeesPaginated(ListUserRequest $request)
     {
-        $users = User::where('type', 'regular-user')->with('roles')->latest()->paginate();
+        $input = $request->validated()['params'];  
+
+        $users = User::where('type', 'regular-user')->with('roles');
+
+        // global search
+        if (isset($input['global_search']) && $input['global_search']) {
+            // to be all between ()
+            $users->where(function($query) use ($input){
+            // in direct relation
+            $query->whereHas('roles', function($query) use($input) {
+                $query->where('name', 'like', '%'.$input['global_search'].'%');
+            });
+            // direct relation
+            $query->orWhere('users.name','LIKE','%'.$input['global_search'].'%');
+            $query->orWhere('users.email','LIKE','%'.$input['global_search'].'%');
+            $query->orWhere('users.type','LIKE','%'.$input['global_search'].'%');
+            $query->orWhere('users.created_at','LIKE','%'.$input['global_search'].'%');
+            });
+        }
+
+        // sorting
+        if (isset($input['sort']) && $input['sort']) {
+            foreach ($input['sort'] as $sortObj) {
+            //direct relation then in-direct relation
+            if (in_array($sortObj['name'], ['created_at', 'name', 'type', 'email'])) {
+                if ($sortObj['order'] == 'desc') {
+                $users->latest($sortObj['name']);
+                } else {
+                $users->oldest($sortObj['name']);
+                }
+                // indirect relation
+            } elseif ($sortObj['name'] == 'roles.name') {
+                $users->join('model_has_roles', 'model_has_roles.model_id', '=', 'users.id');
+                $users->join('roles', 'model_has_roles.role_id', '=', 'roles.id');
+                $users->orderBy('roles.name', $sortObj['order']);
+            }
+            }
+        }
+
+        // filter 
+        if (isset($input['filters']) && $input['filters']) {
+            foreach ($input['filters'] as $filterObj) {
+                // first type of filter
+                if ($filterObj['type'] == 'simple') {
+                    if (in_array($filterObj['name'], ['name', 'email', 'type', 'created_at'])) {
+                    $users->where('users.'.$filterObj['name'],'LIKE','%'.$filterObj['text'].'%');
+                    } elseif ($filterObj['name'] == 'roles.name') {
+                        $users->whereHas('roles', function($query) use($filterObj) {
+                            $query->where('name', 'like', '%'.$filterObj['text'].'%');
+                        });
+                    } 
+                } 
+            }
+        }
+
+        $users->select('users.*');
+        $users = $users->latest()->paginate();
         return $this->sendResponse(new UserCollection($users), 'employees retrieved successfully.');
     }
 
