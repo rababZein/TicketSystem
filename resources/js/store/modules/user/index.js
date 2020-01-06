@@ -15,6 +15,9 @@ export default {
         closedTaskCountPerUser: null
     },
     getters: {
+        activeUsers(state) {
+            return state.items;
+        },
         activeSingleUser(state) {
             return state.singleUser;
         },
@@ -44,6 +47,16 @@ export default {
         }
     },
     actions: {
+        getUsers({ commit }, params) {
+            return new Promise((resolve, reject) => {
+                users.get(params).then(response => {
+                    commit('setUsers', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
         getUserById({ commit }, id) {
             return new Promise((resolve, reject) => {
                 users.show(id).then(response => {
@@ -90,6 +103,9 @@ export default {
         }
     },
     mutations: {
+        setUsers(state, users) {
+            state.items = Object.assign({}, users);
+        },
         setSingleUser(state, user) {
             state.singleUser = user;
         },

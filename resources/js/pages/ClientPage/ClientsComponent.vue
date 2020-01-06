@@ -14,6 +14,27 @@
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
+          <vue-bootstrap4-table
+            v-if="resultUsers"
+            :rows="resultUsers"
+            :columns="columns"
+            :config="config"
+            @on-change-query="onChangeQuery"
+            :total-rows="total_rows"
+            :classes="classes"
+            @on-download="onChangeQuery"
+          >
+            <template v-if="props.cell_value" slot="roles" slot-scope="props">
+              <div
+                v-for="role in props.cell_value"
+                :key="role.id"
+                class="badge badge-primary mr-1"
+              >{{ role.name }}</div>
+            </template>
+            <template slot="created_at" slot-scope="props">
+              {{ props.cell_value | DateWithTime }}
+            </template>
+          </vue-bootstrap4-table>
           <table class="table table-hover">
             <thead>
               <tr>
@@ -29,7 +50,9 @@
             <tbody>
               <tr v-for="user in users.data" :key="user.id">
                 <td>{{user.id}}</td>
-                <td><router-link :to="'/admin/profile/' + user.id">{{user.name}}</router-link></td>
+                <td>
+                  <router-link :to="'/admin/profile/' + user.id">{{user.name}}</router-link>
+                </td>
                 <td>{{user.email}}</td>
                 <td>
                   <div
@@ -160,14 +183,15 @@
 </template>
 
 <script>
-import userApi from '../../api/users';
-import roleApi from '../../api/roles';
+import userApi from "../../api/users";
+import roleApi from "../../api/roles";
+import VueBootstrap4Table from "vue-bootstrap4-table";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
       editMode: false,
-      users: {},
       form: new Form({
         id: "",
         name: "",
@@ -177,13 +201,99 @@ export default {
         type: ""
       }),
       roles: [],
-      types: ["regular-user", "client"]
+      types: ["regular-user", "client"],
+      columns: [
+        {
+          label: "title",
+          name: "name",
+          filter: {
+            type: "simple",
+            placeholder: "Enter username"
+          },
+          sort: true,
+          row_text_alignment: "text-left"
+        },
+        {
+          label: "email",
+          name: "email",
+          filter: {
+            type: "simple"
+          },
+          sort: true
+        },
+        {
+          label: "Role",
+          name: "roles",
+          filter: {
+            type: "simple"
+          },
+          sort: true
+        },
+        {
+          label: "user type",
+          name: "type",
+          filter: {
+            type: "simple"
+          },
+          sort: true
+        },
+        {
+          label: "created at",
+          name: "created_at",
+          filter: {
+            type: "simple"
+          },
+          sort: true
+        }
+      ],
+      config: {
+        server_mode: true,
+        card_mode: false,
+        show_refresh_button: false,
+        pagination: true,
+        pagination_info: true,
+        per_page: 15
+      },
+      classes: {
+        table: {
+          "table-sm": true
+        }
+      },
+      queryParams: {
+        sort: [],
+        filters: [],
+        global_search: "",
+        per_page: 15,
+        page: 1
+      },
+      total_rows: 0
     };
   },
   methods: {
+    onChangeQuery(queryParams) {
+      this.queryParams = queryParams;
+      this.getResults();
+    },
+    getUsers() {
+      this.$Progress.start();
+      this.$store
+        .dispatch("user/getUsers", {
+          queryParams: this.queryParams,
+          page: this.queryParams.page
+        })
+        .then(response => {
+          this.total_rows = response.data.data.total;
+          this.$Progress.finish();
+        })
+        .catch(error => {
+          this.$Progress.fail();
+          console.log(error);
+        });
+    },
     getResults(page = 1) {
       this.$Progress.start();
-      userApi.getClientsPaginated({ page: page })
+      userApi
+        .getClientsPaginated({ page: page })
         .then(response => {
           this.users = response.data.data;
           this.$Progress.finish();
@@ -295,8 +405,20 @@ export default {
     }
   },
   mounted() {
-    this.getResults();
+    this.getUsers();
     this.getAllRoles();
+  },
+  computed: {
+    ...mapGetters({
+      users: "user/activeUsers"
+    }),
+    resultUsers() {
+      return this.users.data;
+    }
+  },
+
+  components: {
+    VueBootstrap4Table
   }
 };
 </script>
