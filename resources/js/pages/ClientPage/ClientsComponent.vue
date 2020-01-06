@@ -24,67 +24,29 @@
             :classes="classes"
             @on-download="onChangeQuery"
           >
-            <template v-if="props.cell_value" slot="roles" slot-scope="props">
-              <div
-                v-for="role in props.cell_value"
-                :key="role.id"
-                class="badge badge-primary mr-1"
-              >{{ role.name }}</div>
+            <template slot="name" slot-scope="props">
+              <router-link :to="'/admin/profile/' + props.row.id">{{ props.cell_value }}</router-link>
             </template>
-            <template slot="created_at" slot-scope="props">
-              {{ props.cell_value | DateWithTime }}
+            <template v-if="props.cell_value" slot="roles" slot-scope="props">
+              <div v-if="props.cell_value.length > 0">
+                <div
+                  v-for="role in props.cell_value"
+                  :key="role.id"
+                  class="badge badge-primary mr-1"
+                >{{ role.name }}</div>
+              </div>
+              <div v-else></div>
+            </template>
+            <template slot="created_at" slot-scope="props">{{ props.cell_value | DateWithTime }}</template>
+            <template slot="action-buttons" slot-scope="props">
+              <a href="#" @click="editModal(props.row)" class="btn btn-primary btn-xs">
+                <i class="fas fa-edit fa-fw"></i>
+              </a>
+              <a href="#" @click="deleteUser(props.row.id)" class="btn btn-danger btn-xs">
+                <i class="fas fa-trash fa-fw"></i>
+              </a>
             </template>
           </vue-bootstrap4-table>
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>name</th>
-                <th>email</th>
-                <th>Role</th>
-                <th>user type</th>
-                <th>created at</th>
-                <th>action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="user in users.data" :key="user.id">
-                <td>{{user.id}}</td>
-                <td>
-                  <router-link :to="'/admin/profile/' + user.id">{{user.name}}</router-link>
-                </td>
-                <td>{{user.email}}</td>
-                <td>
-                  <div
-                    v-show="user.roles"
-                    v-for="role in user.roles"
-                    :key="role.id"
-                    class="badge badge-primary mr-1"
-                  >{{ role.name }}</div>
-                </td>
-                <td>{{ user.type }}</td>
-                <td>{{user.created_at | DateWithTime}}</td>
-                <td>
-                  <a href="#" class="btn btn-primary btn-xs" @click="editModal(user)">
-                    <i class="fas fa-edit fa-fw"></i>
-                  </a>
-                  <a href="#" class="btn btn-danger btn-xs" @click="deleteUser(user.id)">
-                    <i class="fas fa-trash fa-fw"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer clear-fix">
-          <pagination
-            align="right"
-            size="small"
-            :show-disabled="true"
-            :data="users"
-            :limit="3"
-            @pagination-change-page="getResults"
-          ></pagination>
         </div>
         <!-- /.card-body -->
       </div>
@@ -108,7 +70,7 @@
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editUser(form.id) : createUser()"
+            @submit.prevent="editMode ? editUser(form) : createUser(form)"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
@@ -240,10 +202,11 @@ export default {
         {
           label: "created at",
           name: "created_at",
-          filter: {
-            type: "simple"
-          },
           sort: true
+        },
+        {
+          label: "action",
+          name: "action-buttons"
         }
       ],
       config: {
@@ -272,7 +235,7 @@ export default {
   methods: {
     onChangeQuery(queryParams) {
       this.queryParams = queryParams;
-      this.getResults();
+      this.getUsers();
     },
     getUsers() {
       this.$Progress.start();
@@ -290,18 +253,6 @@ export default {
           console.log(error);
         });
     },
-    getResults(page = 1) {
-      this.$Progress.start();
-      userApi
-        .getClientsPaginated({ page: page })
-        .then(response => {
-          this.users = response.data.data;
-          this.$Progress.finish();
-        })
-        .catch(error => {
-          this.$Progress.fail();
-        });
-    },
     newModal() {
       this.editMode = false;
       this.form.reset();
@@ -316,14 +267,13 @@ export default {
         return { name: value.name };
       });
     },
-    createUser() {
+    createUser(form) {
       this.$Progress.start();
-      this.form
-        .post("/v-api/users")
+      this.$store
+        .dispatch("user/createUser", form)
         .then(response => {
-          $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
+          $("#Modal").modal("hide");
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -331,20 +281,18 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
-    editUser(id) {
+    editUser(user) {
       this.$Progress.start();
-      this.form
-        .put("/v-api/users/" + id)
+      this.$store
+        .dispatch('user/editUser', user)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -356,6 +304,9 @@ export default {
             type: "error",
             title: error.response.data.message
           });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     getAllRoles() {
@@ -387,13 +338,14 @@ export default {
             .delete(id)
             .then(response => {
               this.$Progress.finish();
-              this.getResults();
+              this.onChangeQuery(this.queryParams);
               Toast.fire({
                 type: "success",
                 title: response.data.message
               });
             })
             .catch(error => {
+              console.log(error);
               this.$Progress.fail();
               Toast.fire({
                 type: "error",

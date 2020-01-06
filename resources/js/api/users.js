@@ -3,7 +3,7 @@ import { API } from './index'
 export default {
     // all users api
     get: params => API.get('/users', { params }),
-    post: params => API.post('/users', { params }),
+    post: params => API.post('/users', params),
     edit: params => API.put('/users/' + params.id, params),
     show: params => API.get('/users/' + params),
     delete: params => API.delete('/users/' + params),
