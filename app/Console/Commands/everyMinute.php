@@ -16,7 +16,6 @@ use Carbon\Carbon;
 
 use App\Exceptions\ItemNotCreatedException;
 use App\Exceptions\ItemNotUpdatedException;
-use App\Exceptions\InvalidDataException;
 
 use App\Jobs\User\NewAccountJob;
 
@@ -88,7 +87,7 @@ class everyMinute extends Command
                     $emailData['attachmentPaths'][] = $attachmentPath;
                 } else {
                     $oMessage->setFlag(['Seen']);
-                    throw new ItemNotCreatedException('Ticket_file', 'unallaow file type');
+                    throw new ItemNotCreatedException('Ticket_file', 'unallaow file type', 'E-Mail-Inbox', $emailData['subject']);
                 }
             }
 
@@ -151,7 +150,7 @@ class everyMinute extends Command
             $project->save();
         } catch (Exception $ex) {
             $oMessage->setFlag(['Seen']);
-            throw new ItemNotCreatedException('Project', $ex->getMessage());
+            throw new ItemNotCreatedException('Project', $ex->getMessage(), 'E-Mail-Inbox', $oMessage->getSubject());
         }
 
         return $project;
@@ -186,7 +185,7 @@ class everyMinute extends Command
             $user->save();
         } catch (Exception $ex) {
             $oMessage->setFlag(['Seen']);
-            throw new ItemNotCreatedException('User', $ex->getMessage());
+            throw new ItemNotCreatedException('User', $ex->getMessage(), 'E-Mail-Inbox', $emailData['subject']);
         }
 
         // no-need to send mail now, user will click forget password
@@ -202,8 +201,8 @@ class everyMinute extends Command
         ]);
 
         if ($validator->fails()) {
-            $oMessage->setFlag(['Seen']);
-            throw new ItemNotCreatedException('User', $validator->errors());
+           // $oMessage->setFlag(['Seen']);
+            throw new ItemNotCreatedException('User', $validator->errors(), 'E-Mail-Inbox', $emailData['subject']);
         }
 
     }
@@ -222,7 +221,7 @@ class everyMinute extends Command
             $ticket->save();
         } catch (Exception $ex) {
             $oMessage->setFlag(['Seen']);
-            throw new ItemNotCreatedException('Ticket', $ex->getMessage());
+            throw new ItemNotCreatedException('Ticket', $ex->getMessage(), 'E-Mail-Inbox', $emailData['subject']);
         }
         
         // insert attachment
@@ -248,7 +247,7 @@ class everyMinute extends Command
                     $file->save();
                 } catch (Exception $ex) {
                     $oMessage->setFlag(['Seen']);
-                    throw new ItemNotCreatedException('Ticket_file', $ex->getMessage());
+                    throw new ItemNotCreatedException('Ticket_file', $ex->getMessage(), 'E-Mail-Inbox', $emailData['subject']);
                 }
             }
         }
@@ -267,7 +266,7 @@ class everyMinute extends Command
                     $ticket_cc_mail->save();
                 } catch (Exception $ex) {
                     $oMessage->setFlag(['Seen']);
-                    throw new ItemNotCreatedException('Ticket_mail', $ex->getMessage());
+                    throw new ItemNotCreatedException('Ticket_mail', $ex->getMessage(), 'E-Mail-Inbox', $oMessage->getSubject());
                 }
             }
         }
@@ -288,7 +287,7 @@ class everyMinute extends Command
                 $ticket->save();
             } catch (Exception $th) {
                 $oMessage->setFlag(['Seen']);
-                throw new ItemNotUpdatedException('Ticket', $ex->getMessage());
+                throw new ItemNotUpdatedException('Ticket', $ex->getMessage(), 'E-Mail-Inbox', $emailData['subject']);
             }
 
             // insert attachment

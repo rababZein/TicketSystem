@@ -8,8 +8,10 @@ class ItemNotUpdatedException extends Exception
 {
     private $itemType;
     private $errMsg;
+    private $from;
+    private $title;
 
-    public function __construct($itemType, $errMsg = null)
+    public function __construct($itemType, $errMsg = null, $from = null, $title = null)
     {
         $this->itemType = $itemType;
         if (! empty($errMsg)) {
@@ -17,6 +19,8 @@ class ItemNotUpdatedException extends Exception
         } else {
             $this->errMsg = 'Item not updated';
         }
+        $this->from = $from;
+        $this->title = $title;
     }
     /**
      * Render the exception into an HTTP response.
@@ -32,5 +36,26 @@ class ItemNotUpdatedException extends Exception
             'type' => 'ItemNotUpdatedException',
             'data' => $this->itemType]
             , 430); // not updated
+    }
+
+
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    public function getErrorMessage()
+    {
+        return $this->errMsg;
+    }
+
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    public function getType()
+    {
+        return 'ItemNotUpdatedException in '.$this->itemType;
     }
 }
