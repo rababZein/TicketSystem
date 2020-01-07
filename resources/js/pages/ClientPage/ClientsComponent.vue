@@ -188,25 +188,18 @@ export default {
           label: "email",
           name: "email",
           filter: {
-            type: "simple"
+            type: "simple",
+            placeholder: "Enter email"
           },
           sort: true
         },
         {
           label: "Role",
-          name: "roles",
-          filter: {
-            type: "simple"
-          },
-          sort: true
+          name: "roles"
         },
         {
           label: "user type",
           name: "type",
-          filter: {
-            type: "simple"
-          },
-          sort: true
         },
         {
           label: "created at",
