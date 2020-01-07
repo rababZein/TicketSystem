@@ -201,7 +201,7 @@ class everyMinute extends Command
         ]);
 
         if ($validator->fails()) {
-           // $oMessage->setFlag(['Seen']);
+            $oMessage->setFlag(['Seen']);
             throw new ItemNotCreatedException('User', $validator->errors(), 'E-Mail-Inbox', $emailData['subject']);
         }
 
