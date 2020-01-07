@@ -24,6 +24,15 @@
             :classes="classes"
             @on-download="onChangeQuery"
           >
+            <template slot="sort-asc-icon">
+              <i class="fas fa-sort-up"></i>
+            </template>
+            <template slot="sort-desc-icon">
+              <i class="fas fa-sort-down"></i>
+            </template>
+            <template slot="no-sort-icon">
+              <i class="fas fa-sort"></i>
+            </template>
             <template slot="name" slot-scope="props">
               <router-link :to="'/admin/profile/' + props.row.id">{{ props.cell_value }}</router-link>
             </template>
@@ -289,7 +298,7 @@ export default {
     editUser(user) {
       this.$Progress.start();
       this.$store
-        .dispatch('user/editUser', user)
+        .dispatch("user/editUser", user)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
