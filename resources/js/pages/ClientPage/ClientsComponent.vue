@@ -14,54 +14,48 @@
         </div>
         <!-- /.card-header -->
         <div class="card-body table-responsive p-0">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>name</th>
-                <th>email</th>
-                <th>Role</th>
-                <th>user type</th>
-                <th>created at</th>
-                <th>action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="user in users.data" :key="user.id">
-                <td>{{user.id}}</td>
-                <td><router-link :to="'/admin/profile/' + user.id">{{user.name}}</router-link></td>
-                <td>{{user.email}}</td>
-                <td>
-                  <div
-                    v-show="user.roles"
-                    v-for="role in user.roles"
-                    :key="role.id"
-                    class="badge badge-primary mr-1"
-                  >{{ role.name }}</div>
-                </td>
-                <td>{{ user.type }}</td>
-                <td>{{user.created_at | DateWithTime}}</td>
-                <td>
-                  <a href="#" class="btn btn-primary btn-xs" @click="editModal(user)">
-                    <i class="fas fa-edit fa-fw"></i>
-                  </a>
-                  <a href="#" class="btn btn-danger btn-xs" @click="deleteUser(user.id)">
-                    <i class="fas fa-trash fa-fw"></i>
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="card-footer clear-fix">
-          <pagination
-            align="right"
-            size="small"
-            :show-disabled="true"
-            :data="users"
-            :limit="3"
-            @pagination-change-page="getResults"
-          ></pagination>
+          <vue-bootstrap4-table
+            v-if="resultUsers"
+            :rows="resultUsers"
+            :columns="columns"
+            :config="config"
+            @on-change-query="onChangeQuery"
+            :total-rows="total_rows"
+            :classes="classes"
+            @on-download="onChangeQuery"
+          >
+            <template slot="sort-asc-icon">
+              <i class="fas fa-sort-up"></i>
+            </template>
+            <template slot="sort-desc-icon">
+              <i class="fas fa-sort-down"></i>
+            </template>
+            <template slot="no-sort-icon">
+              <i class="fas fa-sort"></i>
+            </template>
+            <template slot="name" slot-scope="props">
+              <router-link :to="'/admin/profile/' + props.row.id">{{ props.cell_value }}</router-link>
+            </template>
+            <template v-if="props.cell_value" slot="roles" slot-scope="props">
+              <div v-if="props.cell_value.length > 0">
+                <div
+                  v-for="role in props.cell_value"
+                  :key="role.id"
+                  class="badge badge-primary mr-1"
+                >{{ role.name }}</div>
+              </div>
+              <div v-else></div>
+            </template>
+            <template slot="created_at" slot-scope="props">{{ props.cell_value | DateWithTime }}</template>
+            <template slot="action-buttons" slot-scope="props">
+              <a href="#" @click="editModal(props.row)" class="btn btn-primary btn-xs">
+                <i class="fas fa-edit fa-fw"></i>
+              </a>
+              <a href="#" @click="deleteUser(props.row.id)" class="btn btn-danger btn-xs">
+                <i class="fas fa-trash fa-fw"></i>
+              </a>
+            </template>
+          </vue-bootstrap4-table>
         </div>
         <!-- /.card-body -->
       </div>
@@ -85,7 +79,7 @@
             </button>
           </div>
           <form
-            @submit.prevent="editMode ? editUser(form.id) : createUser()"
+            @submit.prevent="editMode ? editUser(form) : createUser(form)"
             @keydown="form.onKeydown($event)"
           >
             <div class="modal-body">
@@ -160,14 +154,15 @@
 </template>
 
 <script>
-import userApi from '../../api/users';
-import roleApi from '../../api/roles';
+import userApi from "../../api/users";
+import roleApi from "../../api/roles";
+import VueBootstrap4Table from "vue-bootstrap4-table";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
       editMode: false,
-      users: {},
       form: new Form({
         id: "",
         name: "",
@@ -177,19 +172,87 @@ export default {
         type: ""
       }),
       roles: [],
-      types: ["regular-user", "client"]
+      types: ["regular-user", "client"],
+      columns: [
+        {
+          label: "title",
+          name: "name",
+          filter: {
+            type: "simple",
+            placeholder: "Enter username"
+          },
+          sort: true,
+          row_text_alignment: "text-left"
+        },
+        {
+          label: "email",
+          name: "email",
+          filter: {
+            type: "simple",
+            placeholder: "Enter email"
+          },
+          sort: true
+        },
+        {
+          label: "Role",
+          name: "roles"
+        },
+        {
+          label: "user type",
+          name: "type",
+        },
+        {
+          label: "created at",
+          name: "created_at",
+          sort: true
+        },
+        {
+          label: "action",
+          name: "action-buttons"
+        }
+      ],
+      config: {
+        server_mode: true,
+        card_mode: false,
+        show_refresh_button: false,
+        pagination: true,
+        pagination_info: true,
+        per_page: 15
+      },
+      classes: {
+        table: {
+          "table-sm": true
+        }
+      },
+      queryParams: {
+        sort: [],
+        filters: [],
+        global_search: "",
+        per_page: 15,
+        page: 1
+      },
+      total_rows: 0
     };
   },
   methods: {
-    getResults(page = 1) {
+    onChangeQuery(queryParams) {
+      this.queryParams = queryParams;
+      this.getUsers();
+    },
+    getUsers() {
       this.$Progress.start();
-      userApi.getClientsPaginated({ page: page })
+      this.$store
+        .dispatch("user/getUsers", {
+          queryParams: this.queryParams,
+          page: this.queryParams.page
+        })
         .then(response => {
-          this.users = response.data.data;
+          this.total_rows = response.data.data.total;
           this.$Progress.finish();
         })
         .catch(error => {
           this.$Progress.fail();
+          console.log(error);
         });
     },
     newModal() {
@@ -206,14 +269,13 @@ export default {
         return { name: value.name };
       });
     },
-    createUser() {
+    createUser(form) {
       this.$Progress.start();
-      this.form
-        .post("/v-api/users")
+      this.$store
+        .dispatch("user/createUser", form)
         .then(response => {
-          $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
+          $("#Modal").modal("hide");
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -221,20 +283,18 @@ export default {
         })
         .catch(error => {
           this.$Progress.fail();
-          Toast.fire({
-            type: "error",
-            title: error.response.data.message
-          });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
-    editUser(id) {
+    editUser(user) {
       this.$Progress.start();
-      this.form
-        .put("/v-api/users/" + id)
+      this.$store
+        .dispatch("user/editUser", user)
         .then(response => {
           $("#Modal").modal("hide");
           this.$Progress.finish();
-          this.getResults();
           Toast.fire({
             type: "success",
             title: response.data.message
@@ -246,6 +306,9 @@ export default {
             type: "error",
             title: error.response.data.message
           });
+          if (error.response) {
+            this.form.errors.errors = error.response.data.errors;
+          }
         });
     },
     getAllRoles() {
@@ -277,13 +340,14 @@ export default {
             .delete(id)
             .then(response => {
               this.$Progress.finish();
-              this.getResults();
+              this.onChangeQuery(this.queryParams);
               Toast.fire({
                 type: "success",
                 title: response.data.message
               });
             })
             .catch(error => {
+              console.log(error);
               this.$Progress.fail();
               Toast.fire({
                 type: "error",
@@ -295,8 +359,20 @@ export default {
     }
   },
   mounted() {
-    this.getResults();
+    this.getUsers();
     this.getAllRoles();
+  },
+  computed: {
+    ...mapGetters({
+      users: "user/activeUsers"
+    }),
+    resultUsers() {
+      return this.users.data;
+    }
+  },
+
+  components: {
+    VueBootstrap4Table
   }
 };
 </script>

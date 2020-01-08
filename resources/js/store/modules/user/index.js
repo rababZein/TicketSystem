@@ -15,6 +15,9 @@ export default {
         closedTaskCountPerUser: null
     },
     getters: {
+        activeUsers(state) {
+            return state.items;
+        },
         activeSingleUser(state) {
             return state.singleUser;
         },
@@ -44,6 +47,16 @@ export default {
         }
     },
     actions: {
+        getUsers({ commit }, params) {
+            return new Promise((resolve, reject) => {
+                users.getClientsPaginated(params).then(response => {
+                    commit('setUsers', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
         getUserById({ commit }, id) {
             return new Promise((resolve, reject) => {
                 users.show(id).then(response => {
@@ -55,10 +68,20 @@ export default {
                     })
             });
         },
+        createUser({commit}, data) {
+            return new Promise((resolve, reject) => {
+                users.post(data).then(response => {
+                    commit('setUser', response.data.data);
+                    resolve(response);
+                }).catch(error => {
+                    reject(error);
+                })
+            });
+        },
         editUser({commit}, data) {
             return new Promise((resolve, reject) => {
                 users.edit(data).then(response => {
-                    commit('setSingleUser', response.data.data)
+                    commit('editUser', response.data.data)
                     resolve(response);
                 })
                     .catch(error => {
@@ -90,6 +113,19 @@ export default {
         }
     },
     mutations: {
+        setUsers(state, users) {
+            state.items = Object.assign({}, users);
+        },
+        setUser(state, user) {
+            const userObj = user;
+            state.items.data.unshift(userObj);
+        },
+        editUser(state, user) {
+            if (state.items.data) {
+                const userObj = state.items.data.find(items => items.id == user.id);
+                Object.assign(userObj, user);    
+            }
+        },
         setSingleUser(state, user) {
             state.singleUser = user;
         },
