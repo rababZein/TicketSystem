@@ -26,7 +26,7 @@ class AddClientCommentRequest extends FormRequest
     {
         return [
             'client_id' => 'required|integer|exists:users,id',
-            'comment' => 'required|min:3|max:1000',
+            'comment' => 'required|min:3|max:4294967295',
         ];
     }
 }

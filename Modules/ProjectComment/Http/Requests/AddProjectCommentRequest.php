@@ -26,7 +26,7 @@ class AddProjectCommentRequest extends FormRequest
     {
         return [
             'project_id' => 'required|integer|exists:projects,id',
-            'comment' => 'required|min:3|max:1000',
+            'comment' => 'required|min:3|max:4294967295',
         ];
     }
 }

@@ -26,7 +26,7 @@ class AddTaskCommentRequest extends FormRequest
     {
         return [
             'task_id' => 'required|integer|exists:tasks,id',
-            'comment' => 'required|min:3|max:1000',
+            'comment' => 'required|min:3|max:4294967295',
         ];
     }
 }

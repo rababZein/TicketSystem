@@ -26,7 +26,7 @@ class AddTicketCommentRequest extends FormRequest
     {
         return [
             'ticket_id' => 'required|integer|exists:tickets,id',
-            'comment' => 'required|min:3|max:1000',
+            'comment' => 'required|min:3|max:4294967295',
             'send_mail' => 'required|boolean'
         ];
     }

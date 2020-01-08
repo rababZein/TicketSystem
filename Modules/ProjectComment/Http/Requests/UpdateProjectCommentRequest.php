@@ -30,7 +30,7 @@ class UpdateProjectCommentRequest extends FormRequest
     public function rules()
     {
         return [
-            'comment' => 'min:3|max:1000',
+            'comment' => 'min:3|max:4294967295',
         ];
     }
 }
