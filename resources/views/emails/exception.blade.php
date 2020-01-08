@@ -10,7 +10,6 @@
 
     <p>Issue is: {!! $content !!}</p>
    
-    <p>Thanks,
-       Alferp</p>
+    <p>Thanks, config('app.name')</p>
 </body>
 </html>
