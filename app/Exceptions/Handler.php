@@ -12,6 +12,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Exceptions\ItemNotFoundException;
 use Illuminate\Auth\AuthenticationException;
 
+use App\Mail\ExceptionOccured;
+use Illuminate\Support\Facades\Log;
+use Mail;
+use Symfony\Component\Debug\ExceptionHandler as SymfonyExceptionHandler;
+use Symfony\Component\Debug\Exception\FlattenException;
+
+use App\Exceptions\ItemNotCreatedException;
+use App\Exceptions\ItemNotUpdatedException;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -41,7 +50,40 @@ class Handler extends ExceptionHandler
      */
     public function report(Exception $exception)
     {
+        $enableEmailExceptions = config('exceptions.emailExceptionEnabled');
+
+        if ($enableEmailExceptions === "") {
+            $enableEmailExceptions = config('exceptions.emailExceptionEnabledDefault');
+        }
+
+        if (($exception instanceof ItemNotCreatedException || $exception instanceof ItemNotUpdatedException) && $enableEmailExceptions && $this->shouldReport($exception) && $exception->getFrom() == 'E-Mail-Inbox') {
+            $this->sendEmail($exception);
+        }
+
         parent::report($exception);
+    }
+
+    /**
+     * Sends an email upon exception.
+     *
+     * @param  \Exception  $exception
+     * @return void
+     */
+    public function sendEmail(Exception $exception)
+    {
+        try {
+// dd($exception->getErrorMessage());
+            $e = FlattenException::create($exception);
+            $handler = new SymfonyExceptionHandler();
+            $html = $handler->getHtml($e);
+
+            Mail::send(new ExceptionOccured($exception->getTitle(), $exception->getType(), $exception->getErrorMessage()));
+
+        } catch (Exception $exception) {
+
+            Log::error($exception);
+
+        }
     }
 
     /**
