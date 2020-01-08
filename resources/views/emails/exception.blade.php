@@ -10,6 +10,9 @@
 
     <p>Issue is: {!! $content !!}</p>
    
-    <p>Thanks, config('app.name')</p>
+    <p>Thanks,
+    <br>
+        {{ config('app.name') }}
+    </p>
 </body>
 </html>
