@@ -293,6 +293,12 @@ export default {
       this.editMode = false;
       this.form.reset();
       this.form.clear();
+      if (this.singlePage) {
+        this.form.fill(this.ticket);
+        this.form.project_id = this.ticket.project.id;
+        this.form.ticket_id = this.ticket.id;
+        this.isDisabled = true;
+      }
       $("#newTask").modal("show");
       this.form.priority = "normal";
       this.form.deadline = moment().add(1, 'day').format("YYYY-MM-DD HH:mm:ss");
@@ -301,6 +307,11 @@ export default {
       this.editMode = true;
       this.form.reset();
       this.form.clear();
+      if (this.singlePage) {
+        this.form.project_id = this.ticket.project.id;
+        this.form.ticket_id = this.ticket.id;
+        this.isDisabled = true;
+      }
       $("#newTask").modal("show");
       this.form.fill(task);
       this.getProjects(task.project.owner.id);
