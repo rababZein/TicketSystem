@@ -83,6 +83,18 @@
           >
             <div class="modal-body">
               <div class="form-group">
+                <label for="name">Status</label>
+                <multiselect
+                  v-model="form.status"
+                  :options="status"
+                  placeholder="Select one"
+                  label="name"
+                  track-by="name"
+                  @input="opt => form.status_id = opt.id"
+                ></multiselect>
+                <has-error :form="form" field="status_id"></has-error>
+              </div>
+              <div class="form-group">
                 <label for="name">Ticket Name</label>
                 <input
                   v-model="form.name"
@@ -101,19 +113,6 @@
                   :options="editorOption"
                 ></quill-editor>
                 <has-error :form="form" field="description"></has-error>
-              </div>
-              <div class="form-group">
-                <label for="name">Status</label>
-                <multiselect
-                  v-model="form.status"
-                  :options="status"
-                  placeholder="Select one"
-                  label="name"
-                  track-by="name"
-                  @input="opt => form.status_id = opt.id"
-                ></multiselect>
-
-                <has-error :form="form" field="status_id"></has-error>
               </div>
               <div class="form-group">
                 <label for="name">Client</label>
