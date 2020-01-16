@@ -9,7 +9,6 @@ use Illuminate\Notifications\Messages\MailMessage;
 use App\Notifications\BaseNotification;
 
 use App\Models\Task;
-use Illuminate\Support\HtmlString;
 
 class TaskAssignNotification extends BaseNotification
 {
