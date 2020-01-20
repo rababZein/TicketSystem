@@ -18,6 +18,12 @@ class ProjectObserver
         $this->input = $request->all();
         $this->activityLog = $activityLog;
     }
+
+    public function retrieved(Project $project)
+    {
+        $project->owner;
+    }
+
     /**
      * Handle the project "created" event.
      *
