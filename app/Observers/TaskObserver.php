@@ -55,7 +55,7 @@ class TaskObserver
             }
         }
         if($task->responsible_id == auth()->user()->id) {
-            if(!$task->isClean(['name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id', 'count_hours', 'deleted_at', 'priority', 'deadline', 'start_at'])){
+            if(!$task->isClean(['name', 'description', 'responsible_id', 'created_by', 'created_at', 'ticket_id', 'project_id', 'count_hours', 'deleted_at', 'priority', 'deadline', 'start_at'])){
                 throw new ItemNotUpdatedException('task');
             }    
         }
