@@ -30,7 +30,7 @@ class UpdateTaskRequest extends FormRequest
         }
         
         // 2- created by
-        if ($task->created_by == auth()->user()->id) {
+        if ($task->created_by == auth()->user()->id || $task->responsible_id == auth()->user()->id) {
             return true;
         }
         
