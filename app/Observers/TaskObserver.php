@@ -6,6 +6,7 @@ use App\Models\Task;
 use \Illuminate\Http\Request;
 use App\Jobs\Task\TaskAssignJob;
 use Modules\Activity\Http\Controllers\ActivityController;
+use App\Exceptions\ItemNotUpdatedException;
 
 class TaskObserver
 {
@@ -52,7 +53,12 @@ class TaskObserver
                 $task->ticket->status_id = $task->status_id;
                 $task->ticket->save();
             }
-          }
+        }
+        if($task->responsible_id == auth()->user()->id) {
+            if(!$task->isClean(['name', 'description', 'responsible_id', 'created_by', 'updated_by', 'ticket_id', 'project_id', 'count_hours', 'deleted_at', 'priority', 'deadline', 'start_at'])){
+                throw new ItemNotUpdatedException('task');
+            }    
+        }
     }
 
     /**
