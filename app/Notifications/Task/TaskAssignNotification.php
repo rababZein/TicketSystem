@@ -44,19 +44,11 @@ class TaskAssignNotification extends BaseNotification
      */
     public function toMail($notifiable)
     {
-        $message = (new MailMessage)
-                    ->subject(__('Mail/Task/TaskAssignNotification.subject'));
-
-        $message = $this->intro($message, $notifiable);
-
-        $message->line(__('Mail/Task/TaskAssignNotification.taskName', ['task_name' => $this->task->name]))
-                ->line(__('Mail/Task/TaskAssignNotification.description', ['description' => $this->task->description]))
-                ->action(__('Mail/Task/TaskAssignNotification.seeMore'), url('/admin/task/'.$this->task->id))
-                ->line(__('Mail/Task/TaskAssignNotification.footer'));
+        return (new MailMessage)
+            ->view('emails.task-assign', ['task' => $this->task,'notifiable' => $notifiable])
+            ->subject(__('Mail/Task/TaskAssignNotification.subject'));
 
         saveSysMailToSentFolder($notifiable->email, $message->data());
-
-        return $message;
     }
 
     /**
