@@ -35,6 +35,6 @@
     </tr>
   </tbody>
 </table>
-<p>{{__('Mail/Task/ReplyTicketNotification.footer')}}</p>
+<p>{{__('Mail/Ticket/ReplyTicketNotification.footer')}}</p>
 
 @endsection
