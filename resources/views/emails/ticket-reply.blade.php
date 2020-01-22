@@ -21,18 +21,20 @@
     {!! __('Mail/Ticket/ReplyTicketNotification.reply', ['reply' => $ticketComment->comment]) !!}
 </p>
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
-    <tbody>
-      <tr>
-        <td align="center">
-          <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-            <tbody>
-              <tr>
-                <td> <a href="{{ url('/admin/ticket/'. $ticketComment->ticket->id) }}" target="_blank">{{__('Mail/Ticket/ReplyTicketNotification.seeMore')}}</a> </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <tbody>
+    <tr>
+      <td align="center">
+        <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+          <tbody>
+            <tr>
+              <td> <a href="{{ url('/admin/ticket/'. $ticketComment->ticket->id) }}" target="_blank">{{__('Mail/Ticket/ReplyTicketNotification.seeMore')}}</a> </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p>{{__('Mail/Task/ReplyTicketNotification.footer')}}</p>
+
 @endsection

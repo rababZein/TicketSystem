@@ -35,4 +35,5 @@
       </tr>
     </tbody>
   </table>
+  <p>{{__('Mail/Task/TaskAssignNotification.footer')}}</p>
 @endsection
