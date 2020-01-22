@@ -53,15 +53,9 @@ class ReplyTicketNotification extends BaseNotification
             
         }
         $message = (new MailMessage)
-                    ->subject(__('Mail/Ticket/ReplyTicketNotification.subject'));
-
-        $message = $this->intro($message, $notifiable);
-
-        $message->line(__('Mail/Ticket/ReplyTicketNotification.ticketName', ['ticket_name' => $this->ticketComment->ticket->name]))
-                ->line(__('Mail/Ticket/ReplyTicketNotification.reply', ['reply' => $this->ticketComment->comment]))
-                ->action(__('Mail/Ticket/ReplyTicketNotification.seeMore'), url('/admin/ticket/'. $this->ticketComment->ticket->id))
-                ->line(__('Mail/Ticket/ReplyTicketNotification.footer'))
-                ->cc($cc);
+                    ->view('emails.ticket-reply', ['ticketComment' => $this->ticketComment,'notifiable' => $notifiable])
+                    ->subject(__('Mail/Ticket/ReplyTicketNotification.subject'))
+                    ->cc($cc);
     
         saveSysMailToSentFolder($notifiable->email, $message->data(), $cc);
 
