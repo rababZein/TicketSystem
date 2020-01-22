@@ -53,7 +53,7 @@ class UpdateReplyTicketNotification extends BaseNotification
             
         }
         $message = (new MailMessage)
-                    ->view('emails.ticket-reply', ['ticketComment' => $this->ticketComment,'notifiable' => $notifiable])
+                    ->view('emails.update-ticket-reply', ['ticketComment' => $this->ticketComment,'notifiable' => $notifiable])
                     ->subject(__('Mail/Ticket/UpdateReplyTicketNotification.subject'))
                     ->cc($cc);
             
